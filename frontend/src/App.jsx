@@ -1,22 +1,29 @@
-import { useState } from 'react';
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import Register from './components/Register';
-import Login from './components/Login';
-import Dashboard from './components/Dashboard';
-import ProtectedRoute from './components/ProtectedRoute';
+import { BrowserRouter, Outlet, Route, Routes} from 'react-router-dom';
+import Register from './Register.jsx';
+import Login from './Login.jsx';
+import Account from './Account.jsx';
+import LoginRequired from './LoginRequired.jsx';
+
 
 function App() {
-  
-  return (<>
-    <Router>
-      <Switch>
-        <Route exact path='/register' component={Register}/>
-        <Route exact path='/login' component={Login}/>
-        <ProtectedRoute exact path='/dashboard' component={Dashboard}/>
-      </Switch>
-    </Router>
-  </>)
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/account"
+          element={
+            <LoginRequired>
+              <Account />
+            </LoginRequired>
+          }
+        />
+        <Route path="*" element={<div>404 NOT FOUND</div>} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App

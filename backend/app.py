@@ -24,7 +24,7 @@ def register():
     try:
         new_user = User(username=username, password=hashed, email=email)
         db.session.add(new_user)
-        db.commit()
+        db.session.commit()
     except Exception as error:
         db.session.rollback()
         return jsonify({"message": "Failed to register"}),500
@@ -33,8 +33,8 @@ def register():
 
 @app.route('/login', methods=['POST'])
 def login():
-    email = request.json.get(email)
-    password = request.json.get(password)
+    email = request.json.get('email')
+    password = request.json.get('password')
 
     if not email or not password:
         return jsonify({"message": "Missing credentials"}),400
@@ -66,4 +66,4 @@ def protected():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(debuf=True)
+    app.run(debug=True)
