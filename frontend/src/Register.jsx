@@ -33,6 +33,7 @@ const Register = () => {
             <input placeholder='password' type='password' value={password} onChange={(e) => setPassword(e.target.value)}></input>
             <button type='submit'>Register</button>
         </form>
+        <a href='/login'>Login</a>
         </>
     )
 }

@@ -5,9 +5,11 @@ import {jwtDecode} from 'jwt-decode';
 export const UserContext = createContext()
 
 export const UserProvider = ({children}) => {
+    // Creates user variable
     const [user, setUser] = useState({user: null, token: null})
 
     useEffect(()=>{
+        //If there is a token, store its value inside user variable
         const token = localStorage.getItem("token")
         if (token) {
             try{
@@ -24,7 +26,13 @@ export const UserProvider = ({children}) => {
 
     const login = async(email, password) => {
         try{
-            const response = await axios.post("http://localhost:5000/login", {email,password})
+            const response = await axios.post("http://localhost:5000/login", {email,password},{
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+            )
             const token = response.data.access_token
             localStorage.setItem('token',token)
             const decoded = jwtDecode(token)
@@ -36,10 +44,10 @@ export const UserProvider = ({children}) => {
         
     }
 
-    const logout = () => {
+    const logout = async () => {
         localStorage.removeItem('token')
         setUser({user:null, token:null})
-        alert("User logged out")
+        alert("User logged out!")
     }
 
     return (
