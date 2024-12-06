@@ -24,7 +24,7 @@ const Register = () => {
 
     return (
         <>
-        <form onSubmit={handleSubmit}>
+        <form className='login-form' onSubmit={handleSubmit}>
             <h2>Username</h2>
             <input placeholder='username' type='text' value={username} onChange={(e) => setUsername(e.target.value)} required></input>
             <h2>Email</h2>
@@ -33,7 +33,7 @@ const Register = () => {
             <input placeholder='password' type='password' value={password} onChange={(e) => setPassword(e.target.value)}></input>
             <button type='submit'>Register</button>
         </form>
-        <a href='/login'>Login</a>
+        <a href='/login'>Register</a>
         </>
     )
 }

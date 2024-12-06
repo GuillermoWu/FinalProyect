@@ -34,15 +34,17 @@ const Account = () => {
 
   return (
     <>
+    <div className="account-stats">
       <h2>User info</h2>
-      {currentUser ? (
-        <div>
-          <h3>{currentUser.username}</h3>
-          <h3>{currentUser.email}</h3>
-        </div>
-      ) : (
-        <h3>Gathering user info</h3>
-      )}
+        {currentUser ? (
+          <div>
+            <h3>{currentUser.username}</h3>
+            <h3>{currentUser.email}</h3>
+          </div>
+        ) : (
+          <h3>Gathering user info</h3>
+        )}
+    </div>
     </>
   );
 };

@@ -6,19 +6,19 @@ export const UserContext = createContext()
 
 export const UserProvider = ({children}) => {
     // Creates user variable
-    const [user, setUser] = useState({user: null, token: null})
+    const [user, setUser] = useState({user: null, token: null, username: null})
 
     useEffect(()=>{
         //If there is a token, store its value inside user variable
-        const token = localStorage.getItem("token")
+        const token = sessionStorage.getItem("token")
         if (token) {
             try{
                 const decoded = jwtDecode(token)
-                setUser({user:decoded, token:token})
+                setUser({user:decoded, token:token, username:decoded.sub.username})
             }catch (error){
                 console.log(error)
                 alert(error)
-                localStorage.removeItem('token')
+                sessionStorage.removeItem('token')
             }
             
         }
@@ -34,9 +34,9 @@ export const UserProvider = ({children}) => {
             }
             )
             const token = response.data.access_token
-            localStorage.setItem('token',token)
+            sessionStorage.setItem('token',token)
             const decoded = jwtDecode(token)
-            setUser({user:decoded, token:token})
+            setUser({user:decoded, token:token, username:decoded.sub.username})
         } catch(error){
             console.log(error.response.data.message)
             alert(error.response.data.message)
@@ -44,9 +44,10 @@ export const UserProvider = ({children}) => {
         
     }
 
-    const logout = async () => {
-        localStorage.removeItem('token')
-        setUser({user:null, token:null})
+    const logout = async (e) => {
+        e.preventDefault()
+        sessionStorage.removeItem('token')
+        setUser({user:null, token:null, username:null})
         alert("User logged out!")
     }
 

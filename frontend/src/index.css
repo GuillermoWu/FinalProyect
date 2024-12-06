@@ -1,9 +1,16 @@
-.logo{
-   color: rgb(255, 255, 255);
-   font-size: 120%;
+*{
+    font-family: "Gill Sans", sans-serif;
 }
 
-.logo-image-expanded{
+/* Side nav css */
+
+.logo {
+
+    color: #aaa7a7;
+    font-size: 120%;
+}
+
+.logo-image-expanded {
     width: 15%;
     margin: 5%;
     padding: 2%;
@@ -11,13 +18,121 @@
     border-radius: 10%;
 }
 
-.logo-image{
-    width: 30%;
+.logo-image {
+    margin: 10%;
+    margin-left: 15%;
+    margin-top: 25%;
+    width: 65%;
     padding: 2%;
     background-color: rgb(59, 56, 56);
     border-radius: 10%;
 }
 
-.sidenav{
-    border-radius: 5%;
+.nav-title{
+    color: white;
 }
+
+.sidenav {
+    display: flex;
+    flex-direction: column;
+    border-radius: 2%;
+    height: 100vh;
+}
+
+.sidenav hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #524e4e;
+    margin: 1em 0;
+    padding: 0;
+}
+
+
+.sidenav-body-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 0; /* Pushes the footer to the bottom */
+    padding: 1% 0% 1% 0%;
+    width: 12.8%;
+    background-color: rgb(59, 56, 56);
+}
+
+.sidebar-footer-button {
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    color: #34c3ff;
+}
+
+.sidebar-footer-button:hover {
+    color: #b3afaf;
+}
+
+.nav-user-info label{
+    color: white;
+    font-size: 110%;
+    font-weight: 550;
+    margin-left: 15%;
+}
+
+.nav-logout{
+    float:right;
+    margin-right: 10%;
+    box-shadow: 1px 1px 3px 5px rgb(46, 44, 44);
+}
+
+
+
+/* Login form css */
+
+.login-form {
+    max-width: 50%;
+    display: grid;
+    margin: auto;
+}
+
+.login-form input {
+    color: black;
+}
+
+.login-form button {
+    color: black;
+}
+
+/* Account css */
+
+.account-stats{
+    display: grid;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Todo list css */
+
+.todo-form{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.todo-form input{
+    outline: none;
+}
+
+.todo-form button{
+    background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
+

@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, session
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from models import db, User
+from models import db, User, Todos
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -15,6 +15,37 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, Access-Control-Allow-Headers')
     return response
+
+@app.route('/get_todos', methods=['GET'])
+@jwt_required()
+def get_todos():
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        todos = Todos.query.filter_by(user_id=user.id).first()
+        todo_list = list(map(lambda todo: todo.to_json(), todos))
+        return jsonify({"todos":todo_list}),200
+    except Exception as e:
+        return jsonify({"message": str(e)}),400
+
+@app.route('/create_todo', methods=['POST', 'GET'])
+@jwt_required()
+def create_todo():
+    name = request.json.get('name')
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id["id"])
+        new_todo = Todos(name=name, user_id=user.id)
+        db.session.add(new_todo)
+        db.session.commit()
+        return jsonify({"message": "todo created succesfully!"}),201
+    except Exception as e:
+        return jsonify({"message": e}),400
+
+@app.route('/update_todo', methods=['PATCH', 'GET', 'POST'])
+@jwt_required()
+def update_todo():
+    return jsonify({"message":"."})
 
 
 @app.route('/register', methods=['POST'])
@@ -55,10 +86,11 @@ def login():
 
     if user and check_password_hash(user.password, password):
         #If password matches, creates a tokenn including user's info and sends it to the frontend
-        access_token = create_access_token(identity=user.id)
+        access_token = create_access_token(identity={"id":user.id, "username":user.username})
         return jsonify({"access_token": access_token}), 200
     else:
         return jsonify({"message": "Invalid credentials"}),401
+
 
 
 #Route to get the user's info
@@ -67,8 +99,8 @@ def login():
 def protected():
     try:
         current_user_id = get_jwt_identity()
-        print(f"user id:{current_user_id}")
-        user = User.query.get(current_user_id)
+        print(f"user id:{current_user_id["id"]}")
+        user = User.query.get(current_user_id["id"])
         if user:
             return jsonify({
                 "user": {
