@@ -124,6 +124,7 @@
 
 .todo-form input{
     outline: none;
+    color: black;
 }
 
 .todo-form button{
