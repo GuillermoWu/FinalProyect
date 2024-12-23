@@ -1,68 +1,87 @@
-import { useContext, useState, useEffect } from "react";
-import UserBadgeIcon from "@rsuite/icons/UserBadge";
-import TaskIcon from "@rsuite/icons/Task";
-import { Sidenav, Nav, IconButton } from "rsuite";
+import { useContext, useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUser as faUserSolid,
+  faSquareCheck as faSquareCheckSolid,
+  faGear as faGearSolid,
+  faArrowRightFromBracket as faArrowRightFromBracketSolid,
+  faChartLine
+} from "@fortawesome/free-solid-svg-icons";
+
+import {
+  faUser as faUserRegular,
+  faSquareCheck as faSquareCheckRegular,
+
+} from "@fortawesome/free-regular-svg-icons";
+
+
+
 import "./index.css";
 import { UserContext } from "./UserContext";
 import { Outlet } from "react-router-dom";
-import GearIcon from "@rsuite/icons/Gear";
-import { useNavigate } from "react-router-dom";
-import ExitIcon from '@rsuite/icons/Exit';
 
 export default function Index() {
   const [expanded, setExpanded] = useState(true);
-  const [activeKey, setActiveKey] = useState("1");
-  const { user , logout} = useContext(UserContext);
-  const navigate = useNavigate();
+  const { user, logout } = useContext(UserContext);
+  const [section, setSection] = useState("")
+
+  useEffect (() =>{
+    setSection(localStorage.getItem("section"))
+  },[])
 
   return (
     <>
-      <div style={{ width: 240, height: 100 }}>
-        <Sidenav className="sidenav" expanded={expanded}>
-          <Sidenav.Header>
+      <div className="layout">
+        <div className="sidenav">
+          <div className="sidenav-header">
             <div className="logo">
-              <img
-                className={expanded ? "logo-image-expanded" : "logo-image"}
-                src="/images/logo.png"
-                alt="Logo"
-              ></img>
-              <label className="nav-title" style={{ display: expanded ? "inline" : "none" }}>
+              <FontAwesomeIcon className="logo-image-expanded" icon={faChartLine} />
+              <label
+                className="nav-title"
+                style={{ display: expanded ? "inline" : "none" }}
+              >
                 Progressive Life
               </label>
             </div>
-          </Sidenav.Header>
-          <hr style={{ color: "rgb(102, 98, 98)" }}></hr>
-          <Sidenav.Body>
+          </div>
+          <hr style={{ color: "rgb(102, 98, 98)" }} />
+          <div className="sidenav-body">
             <div className="sidenav-body-container">
-              <Nav activeKey={activeKey} onSelect={setActiveKey}>
-                <Nav.Item className="nav-item" eventKey="1" href="/account" icon={<UserBadgeIcon />}>
-                  <label className="nav-label">Account</label>
-                </Nav.Item>
-                <Nav.Item className="nav-item" eventKey="2" href="/todo-list" icon={<TaskIcon />}>
-                  <label className="nav-label">TodoList</label>
-                </Nav.Item>
-                <Nav.Item className="nav-item" eventKey="3" icon={<GearIcon />}>
-                  <label className="nav-label">Settings</label>
-                </Nav.Item>
-              </Nav>
-              <div className="sidebar-footer">
-                  {user.username ? (<>
-                    <div className="nav-user-info">
-                      <label className="nav-label">{user.username}</label>
-                      <IconButton onClick={(e)=>logout(e)} className="nav-logout" icon={<ExitIcon/>}/>
-                    </div>
-                    </>
-                  ) : (
-                    <a href="/login" className="sidebar-footer-button">
-                      Login
-                    </a>
-                  )}
-                </div>
+              <nav>
+                <a className={`nav-item ${section === "account" ? "background-active": ""}` } href="/account" onClick={()=>localStorage.setItem("section","account")}>
+                  <FontAwesomeIcon className={`nav-item-icon ${section === "account" ? "text-active": ""}`}  icon={section === "account" ? faUserSolid : faUserRegular} />
+                  <label className={`nav-label ${section === "account" ? "text-active": ""}`} >Account</label>
+                </a>
+                <a className={`nav-item ${section === "todo" ? "background-active": ""}` } href="/todo-list" onClick={()=>localStorage.setItem("section","todo")}>
+                  <FontAwesomeIcon className={`nav-item-icon ${section === "todo" ? "text-active": ""}`}  icon={section === "todo" ? faSquareCheckSolid : faSquareCheckRegular}/>
+                  <label className={`nav-label ${section === "todo" ? "text-active": ""}`}  >TodoList</label>
+                </a>
+                <a className={`nav-item ${section === "settings" ? "background-active": ""}` } href="/settings" onClick={()=>localStorage.setItem("section","settings")}>
+                  <FontAwesomeIcon className={`nav-item-icon ${section === "settings" ? "text-active": ""}`} icon={faGearSolid} />
+                  <label className={`nav-label ${section === "settings" ? "text-active": ""}`}  >Settings</label>
+                </a>
+              </nav>
             </div>
-          </Sidenav.Body>
-        </Sidenav>
+            <div className="sidebar-footer">
+              {user.username ? (
+                <div className="nav-user-info">
+                  <label className="nav-label">{user.username}</label>
+                  <button onClick={(e) => logout(e)} className="nav-logout">
+                    <FontAwesomeIcon className="logout-button" icon={faArrowRightFromBracketSolid} />
+                  </button>
+                </div>
+              ) : (
+                <a href="/login" className="sidebar-footer-button">
+                  Login
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="outlet">
+          <Outlet />
+        </div>
       </div>
-      <Outlet></Outlet>
     </>
   );
 }

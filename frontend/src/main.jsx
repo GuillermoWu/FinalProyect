@@ -12,7 +12,7 @@ axios.defaults.withCredentials = true
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <UserProvider>
-      <CustomProvider theme="dark">
+      <CustomProvider>
         <App />
       </CustomProvider>
     </UserProvider>

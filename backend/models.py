@@ -14,11 +14,9 @@ class Todos(db.Model):
     completed = db.Column(db.Boolean, default=False, nullable=False)
 
     def to_json(self):
-        return jsonify({
-                "todo": {
-                    "id":self.id,
-                    "user_id":self.user_id,
-                    "name":self.name,
-                    "completed":self.completed
-                }
-            })
+        return{
+            "id":self.id,
+            "user_id":self.user_id,
+            "name":self.name,
+            "completed":self.completed,
+        }

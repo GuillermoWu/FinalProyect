@@ -1,21 +1,76 @@
 *{
     font-family: "Gill Sans", sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+
+/* Colors */
+
+:root {
+    /* night mode / dark mode */
+    --background-color: #121212;
+    --hover-color:#46464f; 
+    --text-color: #d2d2d7; 
+    --highlight-text-color:#5c5cad; 
+    --highlight-light-text-color:#8381c4; 
+    --nav-item-background-active: #403e6a; 
+    --text-active: #d2d2d7; 
+    --light-grey:#8c8c94; 
+}
+
+
+
+a{
+    text-decoration: none;
+}
+
+ul{
+    list-style-type: none;
 }
 
 /* Side nav css */
+html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Index jx */
+
+.layout{
+    display: flex;
+    width: 100%;
+    height: 100vh;
+}
+
+.outlet{
+    flex: 1;             
+    background-color: var(--background-color);
+    color: white;
+    min-height: 100vh;    
+}
+
+
+/* Side nav bar */
 
 .logo {
-
+    display: flex;
     color: #aaa7a7;
     font-size: 120%;
 }
 
 .logo-image-expanded {
     width: 15%;
-    margin: 5%;
-    padding: 2%;
-    background-color: rgb(59, 56, 56);
+    font-size: 1.3rem;
+    margin: 6% 0 0 5%;
+    padding: 4% 1% 4% 1%;
+    outline: 1.5px solid var(--highlight-text-color);
     border-radius: 10%;
+    object-fit: contain;
+    object-position:50% 50%;
+    color: var(--highlight-text-color);
 }
 
 .logo-image {
@@ -26,16 +81,20 @@
     padding: 2%;
     background-color: rgb(59, 56, 56);
     border-radius: 10%;
+    object-fit: contain;
 }
 
 .nav-title{
+    margin-top: 8%;
     color: white;
+    margin-left: 8%;
 }
 
-.sidenav {
+div .sidenav {
+    width: 240px;
+    background-color: #232329;
     display: flex;
     flex-direction: column;
-    border-radius: 2%;
     height: 100vh;
 }
 
@@ -43,32 +102,76 @@
     display: block;
     height: 1px;
     border: 0;
-    border-top: 1px solid #524e4e;
+    border-top: 1px solid var(--light-grey);
     margin: 1em 0;
     padding: 0;
 }
 
-
-.sidenav-body-container {
+.sidenav-body {
+    flex: 1; 
     display: flex;
     flex-direction: column;
   }
 
+.sidenav-body-container nav{
+    flex-grow: 1;
+    display: grid;
+    flex-direction: column;
+    
+}
 
+  
+.nav-item{
+    margin: 5% 3% 0% 3%;
+    padding: 5% 0% 5% 0%;
+    border-radius: 8px;
+    text-decoration: none;
+    
+}
+
+.nav-item:hover{
+    background-color: var(--hover-color);
+}
+
+.nav-item-icon{
+    color: var(--text-color);
+    margin-left: 10%;
+}
+
+.nav-label{
+    cursor: pointer;
+    margin-left: 5%;
+    font-weight: 500;
+    color: var(--text-color)
+}
+
+.background-active{
+    margin: 5% 3% 0% 3%;
+    padding: 5% 0% 5% 0%;
+    border-radius: 8px;
+    background-color: var(--nav-item-background-active);
+}
+
+.text-active{
+    color: var(--text-active);
+}
+
+
+/* Sidebar footer */
 
 .sidebar-footer {
-    position: absolute;
-    bottom: 0; /* Pushes the footer to the bottom */
-    padding: 1% 0% 1% 0%;
-    width: 12.8%;
-    background-color: rgb(59, 56, 56);
+    padding: 10%;
+    background-color: #141418;
+    margin-top: auto;
 }
+
+/*login button*/
 
 .sidebar-footer-button {
     text-decoration: none;
     display: flex;
     justify-content: center;
-    color: #34c3ff;
+    color: var(--highlight-text-color);
 }
 
 .sidebar-footer-button:hover {
@@ -76,16 +179,27 @@
 }
 
 .nav-user-info label{
-    color: white;
+    color: var(--highlight-light-text-color);
     font-size: 110%;
     font-weight: 550;
     margin-left: 15%;
+    margin-top: 2%;
 }
 
 .nav-logout{
     float:right;
-    margin-right: 10%;
-    box-shadow: 1px 1px 3px 5px rgb(46, 44, 44);
+    margin-right: 5%;
+    padding: 3% 4% 3% 4%;
+    border-radius: 4px;
+    background-color: var(--highlight-light-text-color);
+}
+
+.logout-button{
+    color: #232329;
+}
+
+.logout-button:hover{
+    color: #d2d1e6;
 }
 
 
@@ -96,6 +210,7 @@
     max-width: 50%;
     display: grid;
     margin: auto;
+    margin-top: 20%;
 }
 
 .login-form input {
@@ -116,18 +231,44 @@
 
 /* Todo list css */
 
-.todo-form{
-    display: flex;
+
+.todo-container{
+    display: grid;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin-top: 10%;
 }
 
-.todo-form input{
-    outline: none;
-    color: black;
+.todo-form{
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 5%;
+}
+
+.input-container{
+    position: relative;
+    width: 150%;
+    font-size: 120%;
+}
+
+.input-container input{
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 6px;
+    outline: 1px solid var(--light-grey);
+    border: none;
+    color: var(--highlight-light-text-color);
+    background-color: var(--background-color);
+    padding: 4% 5%;
+    padding-right: 80px;
 }
 
 .todo-form button{
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
     background: none;
 	color: inherit;
 	border: none;
@@ -135,5 +276,100 @@
 	font: inherit;
 	cursor: pointer;
 	outline: inherit;
+    background-color: var(--nav-item-background-active);
+    padding: 4% 5%;
+    border-radius: 6px;
 }
 
+.todo-form button:hover{
+    background-color: var(--highlight-text-color);
+}
+
+.todo-list{
+    width: 160%;
+    font-size: 110%;
+    max-width: 800px;
+    list-style-type: none;
+    padding: 0;
+    margin-left: -5%;
+}
+
+
+.todo-item{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 5%;
+}
+
+.todo-checkbox{
+    appearance: none;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--light-grey);
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.todo-checkbox-checked{
+    background-color: var(--highlight-text-color);
+}
+
+.todo-checkbox-checked::after {
+    content: '✔';
+    color: white;
+    font-size: 1rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+.todo-item-label{
+    width:100%;
+    max-width: 200px;
+    color: var(--highlight-text-color);
+    font-weight: 500;
+    font-size: 110%;
+    margin-right: 30%;
+    flex: 1;
+    word-wrap: break-word; /* Allows long words to be broken and wrap to the next line */
+    word-break: break-all; /* Ensures that long words are broken and wrapped */
+    white-space: normal; /* Allows text to wrap to the next line */
+}
+
+.completed-todo{
+    text-decoration: line-through;
+    color: var(--light-grey);
+}
+
+.updating-todo-input{
+    border-radius: 6px;
+    outline: 1px solid var(--light-grey);
+    border: none;
+    color: var(--highlight-light-text-color);
+    background-color: var(--background-color);
+}
+
+
+.delete-todo-button{
+    color: var(--light-grey);
+    font-size: 90%;
+    display: flex;
+    justify-content: flex-end;
+    float: right;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.todo-info{
+    margin-top: 5%;
+    color: var(--light-grey);
+    font-weight: 600;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

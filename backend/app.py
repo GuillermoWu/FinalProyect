@@ -8,45 +8,81 @@ from config import app, db ,jwt
 
 
 
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', 'http://127.0.0.1:5173')
-    response.headers.add('Access-Control-Allow-Credentials', 'true')
-    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, Access-Control-Allow-Headers')
-    return response
 
 @app.route('/get_todos', methods=['GET'])
 @jwt_required()
 def get_todos():
     try:
         current_user_id = get_jwt_identity()
-        user = User.query.get(current_user_id)
-        todos = Todos.query.filter_by(user_id=user.id).first()
-        todo_list = list(map(lambda todo: todo.to_json(), todos))
-        return jsonify({"todos":todo_list}),200
+        user = User.query.get(current_user_id["id"])
+        if not user:
+            return jsonify({"nessage": "User not found"}), 404
+        
+        todos = Todos.query.filter_by(user_id=user.id).all()
+        if todos:
+            todo_list = list(map(lambda todo: todo.to_json(), todos))
+            return jsonify({"todos":todo_list}),200
+        return jsonify({"message": "No todos have been created"})
     except Exception as e:
+        print("error")
         return jsonify({"message": str(e)}),400
 
-@app.route('/create_todo', methods=['POST', 'GET'])
+@app.route('/create_todo', methods=['POST'])
 @jwt_required()
 def create_todo():
     name = request.json.get('name')
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id["id"])
+        if not user:
+            return jsonify({"message": "User not found"}), 404
+
         new_todo = Todos(name=name, user_id=user.id)
         db.session.add(new_todo)
-        db.session.commit()
+        db.session.commit() 
+
         return jsonify({"message": "todo created succesfully!"}),201
     except Exception as e:
-        return jsonify({"message": e}),400
+        return jsonify({"message": str(e)}),400
 
-@app.route('/update_todo', methods=['PATCH', 'GET', 'POST'])
+@app.route('/update_todo', methods=['PATCH'])
 @jwt_required()
 def update_todo():
-    return jsonify({"message":"."})
+    todo_id = request.json.get("id")
+    todo_name = request.json.get("name")
+    try:
+        current_todo = Todos.query.get(todo_id)
+        current_todo.name = todo_name
+        db.session.commit()
+        return jsonify({"message": "Todo updated succesfully!"})
+    except Exception as e:
+        return jsonify({"message":str(e)})
 
+@app.route('/complete_todo', methods=['PATCH'])
+@jwt_required()
+def complete_todo():
+    todo_id = request.json.get('id')
+    completed = request.json.get('completed')
+    try:
+        todo = Todos.query.get(todo_id)
+        todo.completed = completed
+        db.session.commit()
+        return jsonify({"message": "Todo updated succesfully!"})
+    except Exception as e:
+        return jsonify({"message": str(e)})
+
+@app.route('/delete_todo', methods=['POST'])
+@jwt_required()
+def delete_todo():
+    todo_id = request.json.get('id')
+    try:
+        todo = Todos.query.get(todo_id)
+        db.session.delete(todo)
+        db.session.commit()
+        return jsonify({"message": "Todo deleted succesfully!"})
+    except Exception as e:
+        return jsonify({"message": str(e)})
+  
 
 @app.route('/register', methods=['POST'])
 def register():
