@@ -13,7 +13,6 @@ import {
 
 
 export default function TodoForm(){
-    const {user} = useContext(UserContext)
     const [name, setName] = useState("")
     const [todos, setTodos] = useState([])
     const [shrink, setShrink] = useState(false)

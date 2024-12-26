@@ -168,6 +168,12 @@ div .sidenav {
 
 /*login button*/
 
+.nav-user-info{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .sidebar-footer-button {
     text-decoration: none;
     display: flex;
@@ -183,8 +189,8 @@ div .sidenav {
     color: var(--highlight-light-text-color);
     font-size: 110%;
     font-weight: 550;
-    margin-left: 15%;
-    margin-top: 2%;
+    max-width: 200px;
+    width: 100%;
 }
 
 .nav-logout{
@@ -412,20 +418,31 @@ div .sidenav {
 
 }
 
-.description-btn
+.description-btn-section
 {
+    border: none;
     outline: 1px solid var(--light-grey);
+    color: white;
     background-color: var(--background-color);
     border-radius: 4px;
-    padding: 6px;
-    width: 90px;
+    padding: 7px;
+    width: 100px;
     margin-left: 2%;
+    flex: 1;
+    word-wrap: break-word; /* Allows long words to be broken and wrap to the next line */
+    word-break: break-all; /* Ensures that long words are broken and wrapped */
+    white-space: normal;
+
+
     
 }
 
-.description-btn:hover{
+
+
+.description-btn-section:hover{
     background-color: var(--hover-color);
 }
+
 
 .description-btn-date{
     border: none;
@@ -433,7 +450,12 @@ div .sidenav {
     border-radius: 4px;
     background-color: var(--background-color);
     color: white;
-    padding: 4px;
+    padding: 5px;
+    width: 110px;
+}
+
+.description-btn-date:hover{
+    background-color: var(--hover-color);
 }
 
 .description-btn-priority{

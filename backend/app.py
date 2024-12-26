@@ -78,12 +78,14 @@ def update_todo():
  
     try:
         current_todo = Todos.query.get(todo_id)
-        current_todo.name = todo_name
         if todo_duedate == today_date:
             current_todo.section = "Today"
+        else:
+            current_todo.section = ""
+        current_todo.name = todo_name
         current_todo.due_date = todo_duedate
-        print(current_todo.due_date)
-        current_todo.priority = todo_priority
+        if todo_priority:
+            current_todo.priority = todo_priority
         db.session.commit()
         return jsonify({"message": "Todo updated succesfully!"})
     except Exception as e:
@@ -121,6 +123,8 @@ def register():
     password = request.json.get('password')
     email = request.json.get('email')
 
+    if len(username) > 15:
+        return jsonify({"message": "Username is too long"}),400
     if '@' not in email:
         return jsonify({"message": "Invalid email"}),400
     if not email or not username or not password:
