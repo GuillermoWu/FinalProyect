@@ -18,16 +18,22 @@ import {
 
 import "./index.css";
 import { UserContext } from "./UserContext";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 export default function Index() {
   const [expanded, setExpanded] = useState(true);
   const { user, logout } = useContext(UserContext);
-  const [section, setSection] = useState("")
+  const [section, setSection] = useState("");
+  const navigate = useNavigate();
 
   useEffect (() =>{
-    setSection(localStorage.getItem("section"))
+    setSection(localStorage.getItem("section"));
   },[])
+
+  const logout_user = (e) => {
+    logout(e);
+    navigate("/login");
+  }
 
   return (
     <>
@@ -66,7 +72,7 @@ export default function Index() {
               {user.username ? (
                 <div className="nav-user-info">
                   <label className="nav-label">{user.username}</label>
-                  <button onClick={(e) => logout(e)} className="nav-logout">
+                  <button onClick={(e) => logout_user(e)} className="nav-logout">
                     <FontAwesomeIcon className="logout-button" icon={faArrowRightFromBracketSolid} />
                   </button>
                 </div>

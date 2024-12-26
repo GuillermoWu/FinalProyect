@@ -1,12 +1,14 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import {jwtDecode} from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 export const UserContext = createContext()
 
 export const UserProvider = ({children}) => {
     // Creates user variable
     const [user, setUser] = useState({user: null, token: null, username: null})
+    
 
     useEffect(()=>{
         //If there is a token, store its value inside user variable

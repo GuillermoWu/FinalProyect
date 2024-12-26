@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, session
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from models import db, User, Todos
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from datetime import date
 
 from config import app, db ,jwt
 
@@ -31,13 +31,20 @@ def get_todos():
 @jwt_required()
 def create_todo():
     name = request.json.get('name')
+    due_date = request.json.get('due_date')
+    today = date.today()
+    today_date = today.strftime('%Y-%m-%d')
+    section = ""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id["id"])
         if not user:
             return jsonify({"message": "User not found"}), 404
-
-        new_todo = Todos(name=name, user_id=user.id)
+        print("js" +due_date)
+        print("python" + today_date)
+        if due_date == today_date:
+            section = "Today"
+        new_todo = Todos(name=name, user_id=user.id, due_date=due_date, section=section)
         db.session.add(new_todo)
         db.session.commit() 
 
@@ -45,14 +52,38 @@ def create_todo():
     except Exception as e:
         return jsonify({"message": str(e)}),400
 
+@app.route('/update_priority', methods=['PATCH'])
+@jwt_required()
+def update_priority():
+    todo_id = request.json.get('id')
+    priority = request.json.get('priority')
+    try:
+        todo = Todos.query.get(todo_id)
+        todo.priority = priority
+        db.session.commit()
+        return jsonify({"message": "Priority updated succesfully!"})
+    except Exception as e:
+        return jsonify({"message": str(e)}) 
+
 @app.route('/update_todo', methods=['PATCH'])
 @jwt_required()
 def update_todo():
     todo_id = request.json.get("id")
-    todo_name = request.json.get("name")
+    todo_name = request.json.get("name") 
+    todo_duedate = request.json.get("due_date") 
+    today = date.today()
+    today_date = today.strftime('%Y-%m-%d')
+    print("todo_duedate: "+str(todo_duedate))
+    todo_priority = request.json.get("priority") 
+ 
     try:
         current_todo = Todos.query.get(todo_id)
         current_todo.name = todo_name
+        if todo_duedate == today_date:
+            current_todo.section = "Today"
+        current_todo.due_date = todo_duedate
+        print(current_todo.due_date)
+        current_todo.priority = todo_priority
         db.session.commit()
         return jsonify({"message": "Todo updated succesfully!"})
     except Exception as e:
