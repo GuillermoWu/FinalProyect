@@ -51,6 +51,7 @@ html, body, #root {
     background-color: var(--background-color);
     color: white;
     min-height: 100vh;    
+    overflow: scroll;
 }
 
 
@@ -155,6 +156,125 @@ div .sidenav {
 
 .text-active{
     color: var(--text-active);
+}
+
+.sidenav-dropdown{
+    display: grid;
+    width: 100%;
+}
+
+.dropdown-icon-sidenav{
+    display: flex;
+    float: right;
+    margin-right: 5%;
+    margin-top: 1%;
+}
+
+.dropdown-content-sidenav{
+    display: none;
+    margin: 0% 3px 0% 3%;
+    padding: 5% 0% 5% 0%;
+    background-color: var(--dark-grey);
+    width: 225px;
+    border-radius: 8px;
+}
+
+.dropdown-content-sidenav-show{
+    display: grid;
+}
+
+.sidenav-section-icon{
+    color: var(--text-color);
+    margin-left: 10%;
+}
+
+.sidenav-section{
+    cursor: pointer;
+    margin: 2% 0% 2% 0%;
+    color: var(--text-color);
+}
+
+.sidenav-section:hover{
+    margin: 2% 2% 0% 2%;
+    padding: 2% 0% 2% 0%;
+    border-radius: 8px;
+    background-color: var(--hover-color);
+}
+
+.subsection-active{
+    margin: 5% 3% 0% 3%;
+    padding: 5% 0% 5% 0%;
+    border-radius: 8px;
+    background-color: var(--nav-item-background-active);
+    outline: 1px solid white;
+}
+
+.subsection-active:hover{
+    background-color: var(--hover-color);
+    outline: 1px solid white;
+}
+.create-section{
+    margin-top: 10%;
+    cursor: pointer;
+    margin-left: 10%;
+    color: var(--light-grey);
+}
+
+.create-section-icon{
+    color: var(--light-grey);
+    margin-right: 5%;
+}
+
+.create-section:hover{
+    color: var(--text-active);
+
+    .create-section-icon{
+        color: var(--text-active);
+    }
+}
+
+
+.create-section-label{
+    display: none;
+}
+
+.create-section-label input{
+    border: none;
+    outline: 1px solid var(--highlight-text-color);
+    border-radius: 8px;
+    margin: 5%;
+    padding: 3% 2% 3% 5%;
+    background-color: var(--dark-grey);
+    color: white;
+}
+
+.show-section-label{
+    display: grid;
+}
+
+.create-section-btns{
+    display: flex;
+    float: right;
+    align-items: center;
+    justify-content: right;
+    margin-right: 5%;
+}
+
+.cancel-btn{
+    background-color: var(--hover-color);
+    color: white;
+    border-radius: 6px;
+    width: 80px;
+    padding: 1.5%;
+
+}
+
+.submit-btn{
+    background-color: var(--highlight-text-color);
+    color: white;
+    border-radius: 6px;
+    width: 80px;
+    padding: 1.5%;
 }
 
 
@@ -313,6 +433,10 @@ div .sidenav {
     background-color: var(--highlight-text-color);
 }
 
+
+
+
+/* Todo list styles */
 .todo-filter-label{
     color: white;
     font-size: 1.1rem;
@@ -320,20 +444,24 @@ div .sidenav {
     cursor: pointer;
 }
 
-/* Todo list styles */
-
 .todo-today-content hr{
     border-top: 1px solid var(--light-grey);
     width: 100%;
 }
 
+.dropdown-icon{
+    float: right;
+}
+
 .todo-list-container{
-    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    transition: max-height 0.3s ease-out opacity 0.3s ease-out transform 0.3s ease-out;
     max-height: 1000px;
     opacity: 1;
+    overflow: visible; 
 }
 
 .todo-list-container.shrink {
+    overflow: hidden;
     max-height: 0;
     opacity: 0;
   }
@@ -356,6 +484,8 @@ div .sidenav {
     justify-content: space-between;
     margin-top: 1%;
 }
+
+
 
 .todo-checkbox{
     appearance: none;
@@ -517,7 +647,7 @@ div .sidenav {
     background-color: #46464f;
 }
 
-.save-btn{
+.submit-btn{
     width: 70px;
     background-color: var(--highlight-text-color);
     border-radius: 6px;
@@ -525,7 +655,7 @@ div .sidenav {
     margin-left: 2%;
 }
 
-.save-btn:hover{
+.submit-btn:hover{
     background-color: #8381c4;
 }
 

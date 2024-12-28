@@ -9,7 +9,7 @@ load_dotenv()
 
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True) 
+
 
 
 app.config['JWT_SECRET_KEY'] = '6a432013ecb84893d2149f78f1ca047ed9e9734ed430a29ee3da0070e50a2562'

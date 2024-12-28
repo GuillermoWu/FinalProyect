@@ -23,13 +23,13 @@ export default function TodoList({ todos, fetch_todos, section }) {
       alert("You must be logged in to view your todos.");
       navigate("/login");
     }
-  }, [navigate]);
+  }, []);
 
   const complete_todo = async (id, e, completed) => {
     e.preventDefault();
     try {
       await axios.patch(
-        "http://localhost:5000/complete_todo",
+        "/api/complete_todo",
         { id, completed },
         {
           withCredentials: true,
@@ -52,7 +52,7 @@ export default function TodoList({ todos, fetch_todos, section }) {
     e.preventDefault();
     try {
       await axios.post(
-        "http://localhost:5000/delete_todo",
+        "/api/delete_todo",
         { id },
         {
           withCredentials: true,
@@ -72,7 +72,7 @@ export default function TodoList({ todos, fetch_todos, section }) {
     e.preventDefault();
     try {
       await axios.patch(
-        "http://localhost:5000/update_todo",
+        "/api/update_todo",
         { id, name, due_date, priority, section },
         {
           withCredentials: true,
@@ -94,7 +94,7 @@ export default function TodoList({ todos, fetch_todos, section }) {
     setTodoItem((prevState)=>({...prevState, updating:false}));
     try {
       await axios.patch(
-        "http://localhost:5000/update_priority",
+        "/api/update_priority",
         { id, priority },
         {
           withCredentials: true,
@@ -114,10 +114,10 @@ export default function TodoList({ todos, fetch_todos, section }) {
   return (
     <div>
       <ul className="todo-list">
-        {todos ? (
+        {todos && (
           todos.map(
             (todo) =>
-              todo.section === section && (
+              todo.section === section ? (
                   <React.Fragment key={todo.id}>
                     <li key={todo.id}>
                       <div className="todo-item" key={todo.id}>
@@ -231,7 +231,7 @@ export default function TodoList({ todos, fetch_todos, section }) {
                                   Cancel
                                 </button>
                                 <button
-                                  className="save-btn"
+                                  className="submit-btn"
                                   onClick={(e) =>
                                     update_todo(
                                       e,
@@ -408,11 +408,12 @@ export default function TodoList({ todos, fetch_todos, section }) {
                     </li>
                     <hr className="todolist-section-separator"></hr>
                   </React.Fragment>
+              ): (
+                section === "Today" ?
+                <div key={todo.id} className="todo-info">No tasks for today!</div> : section === "Overdue" ? <div key={todo.id} className="todo-info">No overdue tasks!</div> : <div key={todo.id} className="todo-info">No upcomingt tasks!</div>
               )
           )
-        ) : (
-          <div className="todo-info">No tasks for today!</div>
-        )}
+        ) }
       </ul>
     </div>
   );

@@ -13,9 +13,15 @@ import {
 
 
 export default function TodoForm(){
+    const {user, logout, fetchUser} = useContext(UserContext)
+    const [currentUser, setCurrentUser] = useState({})
     const [name, setName] = useState("")
     const [todos, setTodos] = useState([])
-    const [shrink, setShrink] = useState(false)
+    const [shrink, setShrink] = useState({
+        today: false,
+        overdue: false,
+        upcoming: false
+    })
     const navigate = useNavigate()
 
     const date = new Date()
@@ -25,17 +31,23 @@ export default function TodoForm(){
 
     const due_date = `${year}-${month}-${day}`
     
-    const token = sessionStorage.getItem("token")
-    if (!token){
-        alert("You must be logged in to view your todos.");
-        navigate("/login")
-    }
+    useEffect(() => {
+        fetchUser()
+        const token = sessionStorage.getItem("token");
+        if (!token) {
+          alert("You must be logged in to view your todos.");
+          navigate("/login");
+        }
+    }, []);
 
     const fetch_todos = async () => {
-        const response = await axios.get("http://localhost:5000/get_todos", {
+        if (!sessionStorage.getItem("token")){
+            alert("Session expired")
+        }
+        const response = await axios.get("/api/get_todos", {
             withCredentials: true,
             headers: {
-                "Authorization": `Bearer ${token}`,
+                "Authorization": `Bearer ${sessionStorage.getItem("token")}`,
                 "Content-Type": "application/json", 
             }
         })
@@ -44,7 +56,8 @@ export default function TodoForm(){
             setTodos(todos)
         }
         catch(error){
-            alert(error)
+            const data = await response.data
+            alert(data.message)
             setTodos([])
         }
     }
@@ -57,11 +70,11 @@ export default function TodoForm(){
     const create_todo =  async (e, due_date) => {
         e.preventDefault()
         try{
-            const response = await axios.post("http://localhost:5000/create_todo", {name, due_date},{
+            await axios.post("/api/create_todo", {name, due_date},{
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${sessionStorage.getItem("token")}`    
                 }
             }
             )
@@ -83,11 +96,31 @@ export default function TodoForm(){
                         <button type="submit">Create</button>
                     </div>
                 </form>
-                <label onClick={ ()=> setShrink(!shrink) } className="todo-filter-label">Today's tasks <FontAwesomeIcon icon={shrink ? faAngleUp: faAngleDown} /></label>
-                <hr></hr>
-                <div className={`todo-list-container ${shrink ? "shrink": ""}`}>
-                    <TodoList  todos={todos} fetch_todos={fetch_todos} section={"Today"}/>
+                
+                <div className="overdue-tasks">
+                    <label onClick={ ()=> setShrink((prevState)=>({...prevState,overdue:!shrink.overdue}))} className="todo-filter-label">Overdue tasks <FontAwesomeIcon className="dropdown-icon" icon={shrink.overdue ? faAngleUp: faAngleDown} /></label>
+                    <hr></hr>
+                    <div className={`todo-list-container ${shrink.overdue ? "shrink": ""}`}>
+                        <TodoList  todos={todos} fetch_todos={fetch_todos} section={"Overdue"}/>
+                    </div>
                 </div>
+                
+                <div className="today-tasks">
+                    <label onClick={ ()=> setShrink((prevState)=>({...prevState,today:!shrink.today}))} className="todo-filter-label">Today's tasks <FontAwesomeIcon className="dropdown-icon" icon={shrink.today ? faAngleUp: faAngleDown} /></label>
+                    <hr></hr>
+                    <div className={`todo-list-container ${shrink.today ? "shrink": ""}`}>
+                        <TodoList  todos={todos} fetch_todos={fetch_todos} section={"Today"}/>
+                    </div>
+                </div>
+
+                <div className="today-tasks">
+                    <label onClick={ ()=> setShrink((prevState)=>({...prevState,upcoming:!shrink.upcoming}))} className="todo-filter-label">Upcoming tasks <FontAwesomeIcon className="dropdown-icon" icon={shrink.upcoming ? faAngleUp: faAngleDown} /></label>
+                    <hr></hr>
+                    <div className={`todo-list-container ${shrink.upcoming ? "shrink": ""}`}>
+                        <TodoList  todos={todos} fetch_todos={fetch_todos} section={"Upcoming"}/>
+                    </div>
+                </div>
+                
             </div>
         </div>
     )
