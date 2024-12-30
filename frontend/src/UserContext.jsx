@@ -1,90 +1,161 @@
-import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
-import {jwtDecode} from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
+import React, { createContext, useState, useEffect } from "react";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
-export const UserContext = createContext()
 
-export const UserProvider = ({children}) => {
-    // Creates user variable
-    const [user, setUser] = useState({user: null, token: null, username: null, sections: null, email:null})
-    
+export const UserContext = createContext();
 
-    //useEffect(()=>{
-        //If there is a token, store its value inside user variable
-        //const token = sessionStorage.getItem("token")
-        //if (token) {
-           // try{
-               // const decoded = jwtDecode(token)
-              //  setUser({user:decoded, token:token, username:decoded.sub.username, sections:decoded.sub.sections})
-          //  }catch (error){
-              //  console.log(error)
-              //  alert(error)
-              //  sessionStorage.removeItem('token')
-              //  logout()
-          //  }
-            
-      //  }
-   // },[])
+export const UserProvider = ({ children }) => {
+ 
+  const [user, setUser] = useState({
+    user: null,
+    token: null,
+    username: null,
+    email: null,
+  });
 
-    const login = async(email, password) => {
-        try{
-            const response = await axios.post("/api/login", {email,password},{
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }
-            )
-            const token = response.data.access_token
-            sessionStorage.setItem('token',token)
-            const decoded = jwtDecode(token)
-            setUser({user:decoded, token:token, username:decoded.sub.username, sections:decoded.sub.sections, email:decoded.sub.sections})
-        } catch(error){
-            console.log(error.response.data.message)
-            alert(error.response.data.message)
-        }
-        
-    }
-
-    const fetchUser = async () => {
-        const token = sessionStorage.getItem("token")
-        if (token){
-            try {
-            const response = await axios.get("/api/protected", {
-                withCredentials: true,
-                headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json", 
-                },
-            });
-            if (response.data.user) {
-                const data = response.data.user
-                setUser({user:data, token:token, username:data.username, sections:data.sections, email:data.email})
-            }
-            } catch (error) {
-            alert(error.response?.data?.message||"Session Expired");
-            logout();
-            navigate("/login");
-            }
-        }else{
-            alert("Session expired")
-            navigate('/login')
-        }
-    };
-    
-
-    const logout = async () => {
+  useEffect(()=>{
+    const token = sessionStorage.getItem('token')
+    if (token){
+      try{
+        const decoded = jwtDecode(token)
+        setUser({
+          user:decoded,
+          token:token,
+          username:decoded.sub.username,
+          email:decoded.sub.email
+      })
+      }catch(error){
+        alert(error)
+        logout()
         sessionStorage.removeItem('token')
-        setUser({user:null, token:null, username:null, sections:null, email:null})
-        alert("User logged out!")
+      }
+      
     }
+  },[])
 
-    
+  const fetchUser = async () => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      try {
+        const response = await axios.get("/api/protected", {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (response.data.user) {
+          const data = response.data.user;
+          setUser({
+            user: data,
+            token: token,
+            username: data.username,
+            email: data.email,
+          });
+        }
+      } catch (error) {
+        alert(error.response?.data?.message || "Session Expired");
+        logout();
+      }
+    } else {
+      alert("Session expired");
+      logout();
+    }
+  };
 
-    return (
-        <UserContext.Provider value={{user,login,logout, fetchUser}}>
-            {children}
-        </UserContext.Provider>
-    )
-}
+  const [currentSection, setCurrentSection] = useState([])
+  const [todoSections, setTodoSections] = useState([])
+  
+  const fetchSections = async () => {
+    try {
+    const response = await axios.get('/api/get_sections', {
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+        'Content-Type': 'application/json',
+      },
+    });
+      setTodoSections(data.sections);
+    } catch (error) {
+      alert(error);
+      setTodoSections([]);
+    }
+  };
+
+  const [todos, setTodos] = useState([])
+
+  const fetchTodos = async () => {
+    if (!sessionStorage.getItem("token")) {
+      alert("Session expired");
+      return
+    }
+    try {
+    const response = await axios.get("/api/get_todos", {
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
+      setTodos(response.data.todos);
+    } catch (error) {
+      alert(error);
+      setTodos([]);
+    }
+  };
+
+  const login = async (email, password) => {
+    try {
+      const response = await axios.post(
+        "/api/login",
+        { email, password },
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const token = response.data.access_token;
+      sessionStorage.setItem("token", token);
+      const decoded = jwtDecode(token);
+      setUser({
+        user: decoded,
+        token: token,
+        username: decoded.sub.username,
+        email: decoded.sub.email,
+      });
+      fetchSections()
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
+
+
+
+  const logout = async () => {
+    sessionStorage.removeItem("token");
+    setUser({ user: null, token: null, username: null, email: null });
+    alert("User logged out!");
+
+  };
+
+  return (
+    <UserContext.Provider value={{
+       user, 
+       login, 
+       logout, 
+       fetchUser, 
+       fetchSections, 
+       fetchTodos, 
+       currentSection, 
+       setCurrentSection, 
+       todoSections, 
+       todos,
+       }}
+    >
+      {children}
+    </UserContext.Provider>
+  );
+};
