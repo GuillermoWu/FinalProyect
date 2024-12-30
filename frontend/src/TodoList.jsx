@@ -137,7 +137,7 @@ export default function TodoList({ todo, section }) {
               <div className="todo-item" key={todo.id}>
                 <input
                   style={
-                    todoItem.updating == todo.id ? { display: "none" } : {}
+                    todoItem.updating === todo.id ? { display: "none" } : {}
                   }
                   className={`todo-checkbox ${
                     todo.completed ? "todo-checkbox-checked" : ""
@@ -146,7 +146,7 @@ export default function TodoList({ todo, section }) {
                   value={todo.completed}
                   type="checkbox"
                 ></input>
-                {todoItem.updating == todo.id ? (
+                {todoItem.updating === todo.id ? (
                   <>
                     <div key={todo.id} className="updating-todo-label">
                       <input
@@ -200,8 +200,8 @@ export default function TodoList({ todo, section }) {
                           </button>
                           <div
                             className={`label-dropdown-content ${
-                              todoItem.priorityLabelUpdating.id == todo.id &&
-                              todoItem.priorityLabelUpdating.state == true
+                              todoItem.priorityLabelUpdating.id === todo.id &&
+                              todoItem.priorityLabelUpdating.state
                                 ? "show-priority-content"
                                 : ""
                             }`}
@@ -258,24 +258,22 @@ export default function TodoList({ todo, section }) {
                           <select
                             name="section"
                             className="description-btn-section"
-                            onChange={() =>
+                            onChange={(e) =>
                               setTodoItem((prevState) => ({
                                 ...prevState,
                                 section: e.target.value,
                               }))
                             }
                           >
-                            <option
-                              >
-                                {section}
-                            </option>
+                           <option>{section}</option>
                             {todoSections && 
                             todoSections.map((todoSection) => (
-                              <option key={todoSection.id} value={todoSection.name}>
-                                  {todoSection.name}
-                              </option>
-                                )
-                                )}
+                              
+                                <option key={todoSection.id} value={todoSection.name}>
+                                {todoSection.name !== section && todoSection.name}
+                                </option>
+                              
+                            ))}
                           </select>
                         </div>
                       </div>
@@ -301,7 +299,6 @@ export default function TodoList({ todo, section }) {
                               todoItem.priorityLabelUpdating.priority,
                               todoItem.currentDueDate,
                               todoItem.section,
-                              todoItem.section_id
                             )
                           }
                         >
@@ -336,7 +333,7 @@ export default function TodoList({ todo, section }) {
                     <div
                       className="todo-priority-dropdown"
                       style={
-                        todoItem.updating == todo.id && { display: "none" }
+                        todoItem.updating === todo.id ? { display: "none" } : {}
                       }
                     >
                       <button
@@ -357,7 +354,7 @@ export default function TodoList({ todo, section }) {
                         className={`todo-priority-dropdown-content ${
                           todoItem.priorityUpdating.id == todo.id &&
                           todoItem.priorityUpdating.state 
-                            && "show-priority-content"
+                            ? "show-priority-content" : ""
                            
                         }`}
                       >
@@ -427,7 +424,7 @@ export default function TodoList({ todo, section }) {
                       <div
                         className="todo-priority-dropdown"
                         style={
-                          todoItem.updating == todo.id
+                          todoItem.updating === todo.id
                             ? { display: "none" }
                             : {}
                         }

@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useContext, useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser as faUserSolid,
   faSquareCheck as faSquareCheckSolid,
@@ -11,24 +11,24 @@ import {
   faAngleDown,
   faCalendarWeek,
   faX,
-} from '@fortawesome/free-solid-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
 
 import {
   faUser as faUserRegular,
   faSquareCheck as faSquareCheckRegular,
-} from '@fortawesome/free-regular-svg-icons';
+} from "@fortawesome/free-regular-svg-icons";
 
-import './index.css';
-import { UserContext } from './UserContext';
-import { Outlet, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import "./index.css";
+import { UserContext } from "./UserContext";
+import { Outlet, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Index() {
-  const url = 'http://127.0.0.1:5173/';
+  const url = "http://127.0.0.1:5173/";
   const location = window.location.href;
   const navigate = useNavigate();
 
-  const { user, logout, fetchSections ,setCurrentSection, todoSections} = useContext(UserContext);
+  const { user, logout, fetchSections, fetchUser ,setCurrentSection, todoSections} = useContext(UserContext);
   
   const [sectionExpanded, setSectionExpanded] = useState({
     state: false,
@@ -37,26 +37,27 @@ export default function Index() {
 
   const [createSectionLabel, setCreateSectionLabel] = useState({
     state: false,
-    name: '',
+    name: "",
   });
 
  
 
   useEffect(() => {
-    if (sessionStorage.getItem('token')) {
+    fetchUser()
+    if (sessionStorage.getItem("token")) {
       fetchSections();
     }
     setSectionExpanded((prevState) => ({
       ...prevState,
-      name: localStorage.getItem('subsection'),
-      state: true && localStorage.getItem('subsection'),
+      name: localStorage.getItem("subsection"),
+      state: true && localStorage.getItem("subsection"),
     }));
   }, []);
 
   
   const logout_user = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
  
@@ -64,14 +65,14 @@ export default function Index() {
   const create_section = async (e, name) => {
     e.preventDefault();
     try {
-      await axios.post(
-        'api/create_section',
+      const response = await axios.post(
+        "/api/create_section",
         { name },
         {
           withCredentials: true,
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
           },
         }
       );
@@ -85,13 +86,13 @@ export default function Index() {
     e.preventDefault();
     try{
       await axios.post(
-        '/api/delete_section',
+        "/api/delete_section",
         { section_id },
         {
           withCredentials: true,
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
           },
         }
       );
@@ -103,34 +104,34 @@ export default function Index() {
 
   return (
     <>
-      <div className='layout'>
-        <div className='sidenav'>
-          <div className='sidenav-header'>
-            <div className='logo'>
+      <div className="layout">
+        <div className="sidenav">
+          <div className="sidenav-header">
+            <div className="logo">
               <FontAwesomeIcon
-                className='logo-image-expanded'
+                className="logo-image-expanded"
                 icon={faChartLine}
               />
               <label
-                className='nav-title'
+                className="nav-title"
               >
                 Progressive Life
               </label>
             </div>
           </div>
-          <hr style={{ color: 'rgb(102, 98, 98)' }} />
-          <div className='sidenav-body'>
-            <div className='sidenav-body-container'>
+          <hr style={{ color: "rgb(102, 98, 98)" }} />
+          <div className="sidenav-body">
+            <div className="sidenav-body-container">
               <nav>
                 <a
                   className={`nav-item ${
-                    location === `${url}account` && 'background-active'
+                    location === `${url}account` && "background-active"
                   }`}
-                  href='/account'
+                  href="/account"
                 >
                   <FontAwesomeIcon
                     className={`nav-item-icon ${
-                      location === `${url}account` && 'text-active'
+                      location === `${url}account` && "text-active"
                     }`}
                     icon={
                       location === `${url}account` ? faUserSolid : faUserRegular
@@ -138,17 +139,17 @@ export default function Index() {
                   />
                   <label
                     className={`nav-label ${
-                      location === `${url}account` && 'text-active'
+                      location === `${url}account` && "text-active"
                     }`}
                   >
                     Account
                   </label>
                 </a>
 
-                <div className='sidenav-dropdown'>
+                <div className="sidenav-dropdown">
                   <label
                     className={`nav-item ${
-                     location.startsWith(`${url}todo-list/`) && 'background-active'
+                     location.startsWith(`${url}todo-list/`) ? "background-active" : ""
                     }`}
                     onClick={() =>
                       setSectionExpanded((prevState) => ({
@@ -159,7 +160,7 @@ export default function Index() {
                   >
                     <FontAwesomeIcon
                       className={`nav-item-icon ${
-                        location.startsWith(`${url}todo-list/`) && 'text-active'
+                        location.startsWith(`${url}todo-list/`) ? "text-active" : ""
                       }`}
                       icon={
                         location.startsWith(`${url}todo-list/`)
@@ -169,12 +170,12 @@ export default function Index() {
                     />
                     <label
                       className={`nav-label ${
-                        location.startsWith(`${url}todo-list/`) && 'text-active'
+                        location.startsWith(`${url}todo-list/`) ? "text-active" : ""
                       }`}
                     >
-                      TodoList{' '}
+                      TodoList{" "}
                       <FontAwesomeIcon
-                        className='dropdown-icon-sidenav'
+                        className="dropdown-icon-sidenav"
                         icon={sectionExpanded.state ? faAngleDown : faAngleUp}
                       />
                     </label>
@@ -182,26 +183,26 @@ export default function Index() {
 
                   <div
                     className={`dropdown-content-sidenav ${
-                      sectionExpanded.state && 'dropdown-content-sidenav-show'
+                      sectionExpanded.state ? "dropdown-content-sidenav-show" : ""
                     }`}
                   >
                     <a
                       className={`sidenav-section ${
-                        sectionExpanded.name === 'Today' &&
+                        sectionExpanded.name === "Today" &&
                         location === `${url}todo-list/today` &&
-                        'subsection-active'
+                        "subsection-active"
                       }`}
                       onClick={() =>
-                        localStorage.setItem('subsection', 'Today') 
+                        localStorage.setItem("subsection", "Today")
                        
                       }
-                      href='/todo-list/today'
+                      href="/todo-list/today"
                     >
                       <FontAwesomeIcon
-                        className='sidenav-section-icon'
+                        className="sidenav-section-icon"
                         icon={faCalendarWeek}
                       />
-                      <label className='nav-label'>Today</label>
+                      <label className="nav-label">Today</label>
                     </a>
                     {todoSections &&
                       todoSections.map((section) => (
@@ -211,21 +212,21 @@ export default function Index() {
                             className={`sidenav-section ${
                               sectionExpanded.name === section.name &&
                               location.startsWith(`${url}todo-list/`) &&
-                              'subsection-active'
+                              "subsection-active"
                             }`}
                             onClick={() =>
-                              localStorage.setItem('subsection', section.name) &&
+                              localStorage.setItem("subsection", section.name) &&
                               setCurrentSection(section)
                             }
-                            href='/todo-list/section'
+                            href="/todo-list/section"
                           >
                             <FontAwesomeIcon
-                              className='sidenav-section-icon'
+                              className="sidenav-section-icon"
                               icon={faCalendarWeek}
                             />
-                            <label className='nav-label'>{section.name}</label>
+                            <label className="nav-label">{section.name}</label>
                             <FontAwesomeIcon
-                            className='delete-section-button'
+                            className="delete-section-button"
                             onClick={(e) => delete_section(e, section.id)}
                             icon={faX}
                             />
@@ -241,21 +242,21 @@ export default function Index() {
                           state: !createSectionLabel.state,
                         }))
                       }
-                      className='create-section'
+                      className="create-section"
                     >
                       <FontAwesomeIcon
-                        className='create-section-icon'
+                        className="create-section-icon"
                         icon={faPlus}
                       />
                       Create Section
                     </label>
                     <div
                       className={`create-section-label ${
-                        createSectionLabel.state && 'show-section-label'
+                        createSectionLabel.state && "show-section-label"
                       }`}
                     >
                       <input
-                        placeholder='Section Name'
+                        placeholder="Section Name"
                         value={createSectionLabel.name}
                         onChange={(e) =>
                           setCreateSectionLabel((prevState) => ({
@@ -264,9 +265,9 @@ export default function Index() {
                           }))
                         }
                       ></input>
-                      <div className='create-section-btns'>
+                      <div className="create-section-btns">
                         <button
-                          className='cancel-btn'
+                          className="cancel-btn"
                           onClick={() =>
                             setCreateSectionLabel((prevState) => ({
                               ...prevState,
@@ -277,7 +278,7 @@ export default function Index() {
                           Cancel
                         </button>
                         <button
-                          className='submit-btn'
+                          className="submit-btn"
                           onClick={(e) =>
                             create_section(e, createSectionLabel.name)
                           }
@@ -291,20 +292,20 @@ export default function Index() {
 
                 <a
                   className={`nav-item ${
-                    location === `${url}settings` && 'background-active'
+                    location === `${url}settings` && "background-active"
                   }`}
-                  href='/settings'
-                  onClick={() => localStorage.setItem('section', 'settings')}
+                  href="/settings"
+                  onClick={() => localStorage.setItem("section", "settings")}
                 >
                   <FontAwesomeIcon
                     className={`nav-item-icon ${
-                      location === `${url}settings` && 'text-active'
+                      location === `${url}settings` && "text-active"
                     }`}
                     icon={faGearSolid}
                   />
                   <label
                     className={`nav-label ${
-                      location === `${url}settings` && 'text-active'
+                      location === `${url}settings` && "text-active"
                     }`}
                   >
                     Settings
@@ -312,29 +313,29 @@ export default function Index() {
                 </a>
               </nav>
             </div>
-            <div className='sidebar-footer'>
+            <div className="sidebar-footer">
               {user.username ? (
-                <div className='nav-user-info'>
-                  <label className='nav-label'>{user.username}</label>
+                <div className="nav-user-info">
+                  <label className="nav-label">{user.username}</label>
                   <button
                     onClick={() => logout_user()}
-                    className='nav-logout'
+                    className="nav-logout"
                   >
                     <FontAwesomeIcon
-                      className='logout-button'
+                      className="logout-button"
                       icon={faArrowRightFromBracketSolid}
                     />
                   </button>
                 </div>
               ) : (
-                <a href='/login' className='sidebar-footer-button'>
+                <a href="/login" className="sidebar-footer-button">
                   Login
                 </a>
               )}
             </div>
           </div>
         </div>
-        <div className='outlet'>
+        <div className="outlet">
           <Outlet />
         </div>
       </div>

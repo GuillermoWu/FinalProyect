@@ -1,5 +1,5 @@
 * {
-  font-family: 'Gill Sans', sans-serif;
+  font-family: "Gill Sans", sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -501,7 +501,7 @@ div .sidenav {
 }
 
 .todo-checkbox-checked::after {
-  content: '✔';
+  content: "✔";
   color: white;
   font-size: 1rem;
   position: absolute;

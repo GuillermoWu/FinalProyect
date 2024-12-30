@@ -55,7 +55,7 @@ export const UserProvider = ({ children }) => {
           });
         }
       } catch (error) {
-        alert(error.response?.data?.message || "Session Expired");
+        alert("Session Expired");
         logout();
       }
     } else {
@@ -76,7 +76,7 @@ export const UserProvider = ({ children }) => {
         'Content-Type': 'application/json',
       },
     });
-      setTodoSections(data.sections);
+      setTodoSections(response.data.sections);
     } catch (error) {
       alert(error);
       setTodoSections([]);
