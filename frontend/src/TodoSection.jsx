@@ -13,7 +13,7 @@ export default function TodoSection() {
       updating: false,
       current: "",
       currentDueDate: "",
-      section: "",
+      section: location.slice(40, location.length),
       priorityUpdating: { id: null, state: false },
       priorityLabelUpdating: {
         id: null,
@@ -28,6 +28,7 @@ export default function TodoSection() {
   }, []);
 
   const create_todo = async (e, name, priority, due_date, section) => {
+    setCreating(!creating)
     e.preventDefault();
     try {
       await axios.post(
@@ -201,10 +202,7 @@ export default function TodoSection() {
               <button
                 className="cancel-btn"
                 onClick={() =>
-                  setTodoItem((prevState) => ({
-                    ...prevState,
-                    updating: null,
-                  }))
+                  setCreating(!creating)
                 }
               >
                 Cancel
@@ -217,7 +215,7 @@ export default function TodoSection() {
                     todoItem.current,
                     todoItem.priorityLabelUpdating.priority,
                     todoItem.currentDueDate,
-                    location.slice(40, location.length)
+                    todoItem.section
                   )
                 }
               >

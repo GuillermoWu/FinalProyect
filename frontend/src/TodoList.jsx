@@ -6,7 +6,8 @@ import { faFlag } from "@fortawesome/free-regular-svg-icons";
 import { UserContext } from "./UserContext";
 
 export default function TodoList({ todo, section }) {
-  const {fetchUser, todoSections, fetchTodos} = useContext(UserContext)
+  const { fetchUser, todoSections, fetchTodos, axiosRequest } =
+    useContext(UserContext);
   const [todoItem, setTodoItem] = useState({
     updating: false,
     current: "",
@@ -20,109 +21,109 @@ export default function TodoList({ todo, section }) {
       priority: null,
     },
   });
- 
- 
 
+  const resetTodoItem = () => {
+    setTodoItem({
+      updating: false,
+      current: "",
+      currentDueDate: "",
+      section: "",
+      priorityUpdating: { id: null, state: false },
+      priorityLabelUpdating: {
+        id: null,
+        state: false,
+        name: null,
+        priority: null,
+      },
+    });
+  };
 
   const complete_todo = async (id, e, completed) => {
     e.preventDefault();
-    try {
-      await axios.patch(
-        "/api/complete_todo",
-        { id, completed },
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-          },
-        }
-      );
-      fetchTodos();
-      setTimeout(() => {
-        delete_todo(id, e);
-      }, 500);
-    } catch (error) {
-      alert(error);
-    }
+    axiosRequest("/api/complete_todo", "post", { id, completed });
+    setTimeout(() => {
+      delete_todo(id, e);
+    }, 500);
   };
 
   const delete_todo = async (id, e) => {
     e.preventDefault();
-    try {
-      await axios.post(
-        "/api/delete_todo",
-        { id },
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-          },
-        }
-      );
-      fetchTodos();
-    } catch (error) {
-      alert(error);
-    }
+    axiosRequest("/api/delete_todo", "post", { id });
   };
 
   const update_todo = async (e, id, name, priority, due_date, section) => {
     e.preventDefault();
-    try {
-      await axios.patch(
-        "/api/update_todo",
-        { id, name, due_date, priority, section},
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-          },
-        }
-      );
-      fetchTodos();
-      setTodoItem((prevState) => ({
-        ...prevState,
-        current: "",
-        currentDueDate: "",
-        section: "",
-        updating: false,
-        priorityUpdating: {
-          id: null,
-          state: false,
-          name: null,
-          priority: null,
-        },
-      }));
-    } catch (error) {
-      alert(error);
-    }
+    axiosRequest("/api/update_todo", "patch", {
+      id,
+      name,
+      priority,
+      due_date,
+      section,
+    });
+    resetTodoItem();
   };
 
   const updatePriority = async (e, id, priority) => {
     e.preventDefault();
     setTodoItem((prevState) => ({ ...prevState, updating: false }));
-    try {
-      await axios.patch(
-        "/api/update_priority",
-        { id, priority },
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-          },
-        }
-      );
-      fetchTodos();
-      setTodoItem((prevState) => ({
-        ...prevState,
-        priorityUpdating: { id: null, state: false },
-      }));
-    } catch (error) {
-      alert(error);
-    }
+    axiosRequest("/api/update_priority", "patch", { id, priority });
+    setTodoItem((prevState) => ({
+      ...prevState,
+      priorityUpdating: { id: null, state: false },
+    }));
+  };
+  const [priorities, setPriorities] = useState({
+    0: { name: "Low", id: 0 },
+    1: { name: "Medium", id: 1 },
+    2: { name: "High", id: 2 },
+  });
+  const priorityDropdown = (todo) => {
+    return (
+      
+      <div className="todo-priority-dropdown" style={todoItem.updating === todo.id ? {display:"none"} : {}}>
+        <button
+          onClick={(e) =>
+            setTodoItem((prevState) => ({
+              ...prevState,
+              priorityUpdating: {
+                id: todo.id,
+                state: !todoItem.priorityUpdating.state,
+              },
+            }))
+          }
+          className={`todo-priority-dropdown-button ${
+            todo.priority === 0
+              ? "low"
+              : todo.priority === 1
+              ? "medium"
+              : "high"
+          }`}
+        >
+          {todo.priority === 0
+            ? "Low"
+            : todo.priority === 1
+            ? "Medium"
+            : "High"}{" "}
+          Priority
+        </button>
+        {todoItem.priorityUpdating.id == todo.id &&
+          todoItem.priorityUpdating.state &&(
+            <div className={`todo-priority-dropdown-content`}>
+              {Object.values(priorities)
+                .filter((priority) => todo.priority !== priority.id)
+                .map((priority) => (
+                  <button
+                    key={priority.id}
+                    className="todo-priority-btn"
+                    onClick={(e) => updatePriority(e, todo.id, priority.id)}
+                  >
+                    {priority.name}
+                  </button>
+                ))}
+            </div>
+          )}
+      </div>
+    );
   };
 
   return (
@@ -262,15 +263,17 @@ export default function TodoList({ todo, section }) {
                               }))
                             }
                           >
-                           <option>{section}</option>
-                            {todoSections && 
-                            todoSections.map((todoSection) => (
-                              
-                                <option key={todoSection.id} value={todoSection.name}>
-                                {todoSection.name !== section && todoSection.name}
+                            <option>{section}</option>
+                            {todoSections &&
+                              todoSections.map((todoSection) => (
+                                <option
+                                  key={todoSection.id}
+                                  value={todoSection.name}
+                                >
+                                  {todoSection.name !== section &&
+                                    todoSection.name}
                                 </option>
-                              
-                            ))}
+                              ))}
                           </select>
                         </div>
                       </div>
@@ -295,7 +298,7 @@ export default function TodoList({ todo, section }) {
                               todoItem.current,
                               todoItem.priorityLabelUpdating.priority,
                               todoItem.currentDueDate,
-                              todoItem.section,
+                              todoItem.section
                             )
                           }
                         >
@@ -325,146 +328,7 @@ export default function TodoList({ todo, section }) {
                   </label>
                 )}
 
-                <div>
-                  {todo.priority == 0 ? (
-                    <div
-                      className="todo-priority-dropdown"
-                      style={
-                        todoItem.updating === todo.id ? { display: "none" } : {}
-                      }
-                    >
-                      <button
-                        className="todo-priority-btn-low"
-                        onClick={(e) =>
-                          setTodoItem((prevState) => ({
-                            ...prevState,
-                            priorityUpdating: {
-                              id: todo.id,
-                              state: !todoItem.priorityUpdating.state,
-                            },
-                          }))
-                        }
-                      >
-                        Low Priority
-                      </button>
-                      <div
-                        className={`todo-priority-dropdown-content ${
-                          todoItem.priorityUpdating.id == todo.id &&
-                          todoItem.priorityUpdating.state 
-                            ? "show-priority-content" : ""
-                           
-                        }`}
-                      >
-                        <button
-                          className="todo-priority-btn"
-                          onClick={(e) => updatePriority(e, todo.id, 1)}
-                        >
-                          Medium Priority
-                        </button>
-                        <button
-                          className="todo-priority-btn"
-                          onClick={(e) => updatePriority(e, todo.id, 2)}
-                        >
-                          High Priority
-                        </button>
-                      </div>
-                    </div>
-                  ) : todo.priority == 1 ? (
-                    <>
-                      <div
-                        className="todo-priority-dropdown"
-                        style={
-                          todoItem.updating == todo.id
-                            ? { display: "none" }
-                            : {}
-                        }
-                      >
-                        <button
-                          className="todo-priority-btn-medium"
-                          onClick={(e) =>
-                            setTodoItem((prevState) => ({
-                              ...prevState,
-                              priorityUpdating: {
-                                id: todo.id,
-                                state: !todoItem.priorityUpdating.state,
-                              },
-                            }))
-                          }
-                        >
-                          Medium Priority
-                        </button>
-                        <div
-                          className={`todo-priority-dropdown-content ${
-                            todoItem.priorityUpdating.id == todo.id &&
-                            todoItem.priorityUpdating.state == true
-                              ? "show-priority-content"
-                              : ""
-                          }`}
-                        >
-                          <button
-                            className="todo-priority-btn"
-                            onClick={(e) => updatePriority(e, todo.id, 0)}
-                          >
-                            Low Priority
-                          </button>
-                          <button
-                            className="todo-priority-btn"
-                            onClick={(e) => updatePriority(e, todo.id, 2)}
-                          >
-                            High Priority
-                          </button>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div
-                        className="todo-priority-dropdown"
-                        style={
-                          todoItem.updating === todo.id
-                            ? { display: "none" }
-                            : {}
-                        }
-                      >
-                        <button
-                          className="todo-priority-btn-high"
-                          onClick={(e) =>
-                            setTodoItem((prevState) => ({
-                              ...prevState,
-                              priorityUpdating: {
-                                id: todo.id,
-                                state: !todoItem.priorityUpdating.state,
-                              },
-                            }))
-                          }
-                        >
-                          High Priority
-                        </button>
-                        <div
-                          className={`todo-priority-dropdown-content ${
-                            todoItem.priorityUpdating.id == todo.id &&
-                            todoItem.priorityUpdating.state == true
-                              ? "show-priority-content"
-                              : ""
-                          }`}
-                        >
-                          <button
-                            className="todo-priority-btn"
-                            onClick={(e) => updatePriority(e, todo.id, 0)}
-                          >
-                            Low Priority
-                          </button>
-                          <button
-                            className="todo-priority-btn"
-                            onClick={(e) => updatePriority(e, todo.id, 1)}
-                          >
-                            Medium Priority
-                          </button>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
+                <div>{priorityDropdown(todo)}</div>
                 <FontAwesomeIcon
                   style={
                     todoItem.updating == todo.id ? { display: "none" } : {}

@@ -512,8 +512,8 @@ div .sidenav {
   color: var(--highlight-text-color);
   font-weight: 500;
   font-size: 110%;
-  margin-left: -10%;
-  margin-right: 35%;
+  margin-left: -5rem;
+  margin-right: 25rem;
   flex: 1;
   word-wrap: break-word; /* Allows long words to be broken and wrap to the next line */
   word-break: break-all; /* Ensures that long words are broken and wrapped */
@@ -649,7 +649,7 @@ div .sidenav {
 
 /* Todo prioprity button styles*/
 
-.todo-priority-btn-low {
+.todo-priority-dropdown-button{
   background-color: #1f1717;
   border-radius: 8px;
   outline: 2px solid #ff8383;
@@ -657,34 +657,28 @@ div .sidenav {
   padding: 2% 12px 2% 12px;
 }
 
-.todo-priority-btn-medium {
-  display: flex;
-  background-color: #1e1900;
-  border-radius: 8px;
-  outline: 2px solid #f17634;
-  color: #f17634;
-  padding: 2% 12px 2% 12px;
+.low {
+  outline: 2px solid #ff8383;
+  color: #ff8383;
 }
 
-.todo-priority-btn-high {
-  display: flex;
-  background-color: #0a1d17;
-  border-radius: 8px;
+.medium {
+  outline: 2px solid #f17634;
+  color: #f17634;
+
+}
+
+.high {
   outline: 2px solid #31a783;
   color: #31a783;
-  padding: 2% 12px 2% 12px;
 }
 
 .todo-priority-dropdown-content {
-  display: none;
+  display: grid;
   position: absolute;
 }
 
-.show-priority-content {
-  display: grid;
-}
-
-.show-priority-content button {
+.todo-priority-btn {
   margin-top: 5%;
   background-color: var(--dark-grey);
   padding: 4%;

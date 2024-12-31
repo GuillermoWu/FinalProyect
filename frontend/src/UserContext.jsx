@@ -142,8 +142,26 @@ export const UserProvider = ({ children }) => {
 
   };
 
+  const axiosRequest = async (url, method, data) => {
+    try{
+      await axios({
+        url,
+        method,
+        data,
+        withCredentials: true,
+        headers:{
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`
+        }
+      })
+      fetchTodos()
+    }catch(error){
+      alert(error);
+    }
+  }
+
   return (
     <UserContext.Provider value={{
+       axiosRequest,
        user, 
        login, 
        logout, 
