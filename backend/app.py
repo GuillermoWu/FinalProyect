@@ -26,7 +26,7 @@ def get_todos():
         return jsonify({"todos":todo_list}),200
         
     except Exception as e:
-        print("error")
+        print(str(e))
         return jsonify({"message": str(e)}),400
 
 
@@ -34,16 +34,18 @@ def get_todos():
 @jwt_required()
 def create_todo():
     name = request.json.get("name")
+    priority = request.json.get("priority")
     due_date = request.json.get("due_date")
-
+    section = request.json.get("section")
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id["id"])
-
+        section = TodoSections.query.filter_by(name=section, user_id=user.id).first()
+        
         if not user:
             return jsonify({"message": "User not found"}), 404
 
-        new_todo = Todos(name=name, user_id=user.id, due_date=due_date, section="", section_id="")
+        new_todo = Todos(name=name, user_id=user.id, priority=priority if priority else "",due_date=due_date, section=section.name if section else "", section_id=section.id if section else "")
         db.session.add(new_todo)
         db.session.commit() 
 

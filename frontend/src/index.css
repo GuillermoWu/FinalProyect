@@ -18,6 +18,7 @@
   --nav-item-background-active: #403e6a;
   --text-active: #d2d2d7;
   --light-grey: #8c8c94;
+  --white-grey: #c3c3ca;
 }
 
 a {
@@ -200,7 +201,7 @@ div .sidenav {
 .subsection-active {
   border-radius: 8px;
   background-color: var(--nav-item-background-active);
-  outline: 1px solid white;
+  outline: 2px solid white;
 }
 
 .subsection-active:hover {
@@ -235,7 +236,7 @@ div .sidenav {
 
 .create-section-label input {
   border: none;
-  outline: 1px solid var(--highlight-text-color);
+  outline: 2px solid var(--highlight-text-color);
   border-radius: 8px;
   margin: 5%;
   padding: 3% 2% 3% 5%;
@@ -407,7 +408,7 @@ div .sidenav {
   min-width: 400px;
   box-sizing: border-box;
   border-radius: 6px;
-  outline: 1px solid var(--light-grey);
+  outline: 2px solid var(--light-grey);
   border: none;
   color: var(--highlight-light-text-color);
   background-color: var(--background-color);
@@ -437,12 +438,7 @@ div .sidenav {
 }
 
 /* Todo list styles */
-.todo-filter-label {
-  color: white;
-  font-size: 1.1rem;
-  margin-top: 2.5%;
-  cursor: pointer;
-}
+
 
 .todo-today-content hr {
   border-top: 1px solid var(--light-grey);
@@ -470,26 +466,26 @@ div .sidenav {
 .todo-list {
   display: grid;
   align-items: center;
-  position: relative;
-  width: 100%;
   font-size: 100%;
-  width: 400px;
+  width: 100%;
+  width: 1000px;
   list-style-type: none;
   padding: 0;
+ 
 }
 
 .todo-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 1%;
+  width: 100%;
 }
 
 .todo-checkbox {
   appearance: none;
   width: 30px;
   height: 30px;
-  border: 1.5px solid var(--light-grey);
+  border: 1px solid var(--light-grey);
   border-radius: 50%;
   outline: none;
   cursor: pointer;
@@ -516,7 +512,8 @@ div .sidenav {
   color: var(--highlight-text-color);
   font-weight: 500;
   font-size: 110%;
-  margin-right: 6%;
+  margin-left: -10%;
+  margin-right: 35%;
   flex: 1;
   word-wrap: break-word; /* Allows long words to be broken and wrap to the next line */
   word-break: break-all; /* Ensures that long words are broken and wrapped */
@@ -536,19 +533,18 @@ div .sidenav {
 }
 
 .todo-description-label {
-  margin-left: 5%;
+  margin-left: 3%;
   color: var(--light-grey);
 }
 
 .description-btns-container {
-  margin-left: 2%;
   display: flex;
 }
 
 .description-btn-section {
   border: none;
-  outline: 1px solid var(--light-grey);
-  color: white;
+  outline: 1px solid var(--hover-color);
+  color: var(--white-grey);
   background-color: var(--background-color);
   border-radius: 4px;
   padding: 7px;
@@ -566,10 +562,10 @@ div .sidenav {
 
 .description-btn-date {
   border: none;
-  outline: 1px solid var(--light-grey);
+  outline: 1px solid var(--hover-color);
   border-radius: 4px;
   background-color: var(--background-color);
-  color: white;
+  color:  var(--white-grey);
   padding: 5px;
   width: 110px;
 }
@@ -579,12 +575,13 @@ div .sidenav {
 }
 
 .description-btn-priority {
-  outline: 1px solid var(--light-grey);
+  outline: 1px solid var(--hover-color);
   background-color: var(--background-color);
   border-radius: 4px;
   padding: 6px;
   width: 130px;
   margin-left: 2%;
+  color:  var(--white-grey);
 }
 
 .description-btn-priority:hover {
@@ -604,8 +601,10 @@ div .sidenav {
 }
 
 .updating-todo-input {
-  margin-left: 5%;
-  outline: 0px solid var(--light-grey);
+  outline: 1px solid var(--nav-item-background-active);
+  padding: 0% 3%;
+  margin: 2% 2% 1% 2%;
+  border-radius: 8px;
   border: none;
   color: var(--highlight-light-text-color);
   background-color: var(--background-color);
@@ -651,7 +650,6 @@ div .sidenav {
 /* Todo prioprity button styles*/
 
 .todo-priority-btn-low {
-  display: flex;
   background-color: #1f1717;
   border-radius: 8px;
   outline: 2px solid #ff8383;
@@ -699,7 +697,7 @@ div .sidenav {
 /* Todo delete button styles*/
 
 .delete-todo-button {
-  color: var(--light-grey);
+  color: var(--text-active);
   font-size: 90%;
   display: flex;
   justify-content: flex-end;
@@ -708,7 +706,49 @@ div .sidenav {
   cursor: pointer;
 }
 
+/* Section todo tasks*/
+.section-container{
+  margin: 5% 20%;
+}
 
+.section-title{
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}
+
+.section-tasks{
+  display: grid;
+  align-items: center;
+  justify-content: left;
+  margin-top: 5%;
+ 
+}
+
+.section-task-list{
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  width: 100%;
+  width: 900px;
+}
+
+.create-task{
+  color: var(--light-grey);
+  cursor: pointer;
+}
+.create-task-icon{
+  color: var(--highlight-text-color);
+  margin-right: 1%;
+}
+
+.create-task:hover{
+  color: var(--text-active);
+
+  .create-task-icon{
+    color: var(--highlight-light-text-color);
+  }
+}
 
 /* Text shown when no todos left*/
 
@@ -723,6 +763,6 @@ div .sidenav {
 }
 
 .todolist-section-separator {
-  margin-top: 5%;
-  border-top: 1px solid var(--light-grey);
+  margin-top: 3%;
+  border-top: 1px solid rgb(68, 65, 65)
 }

@@ -14,25 +14,25 @@ export const UserProvider = ({ children }) => {
     email: null,
   });
 
-  useEffect(()=>{
-    const token = sessionStorage.getItem('token')
-    if (token){
-      try{
-        const decoded = jwtDecode(token)
-        setUser({
-          user:decoded,
-          token:token,
-          username:decoded.sub.username,
-          email:decoded.sub.email
-      })
-      }catch(error){
-        alert(error)
-        logout()
-        sessionStorage.removeItem('token')
-      }
+  //useEffect(()=>{
+    //const token = sessionStorage.getItem('token')
+    //if (token){
+      //try{
+       // const decoded = jwtDecode(token)
+       // setUser({
+         // user:decoded,
+        //  token:token,
+        //  username:decoded.sub.username,
+        //  email:decoded.sub.email
+     // })
+     // }catch(error){
+     //   alert(error)
+    //    logout()
+     //   sessionStorage.removeItem('token')
+     // }
       
-    }
-  },[])
+  //  }
+ // },[])
 
   const fetchUser = async () => {
     const token = sessionStorage.getItem("token");
@@ -57,10 +57,12 @@ export const UserProvider = ({ children }) => {
       } catch (error) {
         alert("Session Expired");
         logout();
+        return
       }
     } else {
       alert("Session expired");
       logout();
+      return
     }
   };
 
@@ -78,7 +80,6 @@ export const UserProvider = ({ children }) => {
     });
       setTodoSections(response.data.sections);
     } catch (error) {
-      alert(error);
       setTodoSections([]);
     }
   };

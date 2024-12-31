@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX } from "@fortawesome/free-solid-svg-icons";
@@ -23,9 +23,6 @@ export default function TodoList({ todo, section }) {
  
  
 
-  useEffect(() => {
-    fetchUser()
-  }, []);
 
   const complete_todo = async (id, e, completed) => {
     e.preventDefault();

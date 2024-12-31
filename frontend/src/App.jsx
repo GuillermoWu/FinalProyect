@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Register from "./Register.jsx";
 import Login from "./Login.jsx";
@@ -7,10 +7,19 @@ import LoginRequired from "./LoginRequired.jsx";
 import Index from "./Index.jsx";
 import TodoForm from "./TodoForm.jsx";
 import TodoSection from "./TodoSection.jsx";
+import { UserContext } from "./UserContext"
+
 
 
 
 function App() {
+
+  const {todoSections, fetchSections} = useContext(UserContext)
+
+  useEffect(()=>{
+    fetchSections()
+  },[])
+
   return (
     <BrowserRouter>
       <Routes>
@@ -33,14 +42,17 @@ function App() {
               </LoginRequired>
             }
           />
-          <Route
-            path="/todo-list/section"
-            element={
-              <LoginRequired>
-                <TodoSection/>
-              </LoginRequired>
-            }
-          />
+          {todoSections && todoSections.map((section) =>(
+              <Route key={section.id}
+              path={`/todo-list/section/${section.name}`}
+              element={
+                <LoginRequired>
+                  <TodoSection/>
+                </LoginRequired>
+              }
+            />
+          ))}
+          
           <Route path="*" element={<div>404 NOT FOUND</div>} />
         </Route>
       </Routes>

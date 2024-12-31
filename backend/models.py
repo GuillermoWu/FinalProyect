@@ -12,7 +12,7 @@ class TodoSections(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
-
+    
     def to_json(self):
         return{
             'id':self.id,
@@ -33,8 +33,7 @@ class Todos(db.Model):
     due_date = db.Column(db.Text(), nullable=True)
 
     def to_json(self):
-        if self.due_date:
-            due_date_formatted = datetime.strptime(self.due_date, '%Y-%m-%d').date().isoformat()
+        
         return{
             'id':self.id,
             'user_id':self.user_id,
@@ -42,5 +41,5 @@ class Todos(db.Model):
             'completed':self.completed,
             'section': self.section,
             'priority': self.priority,
-            'due_date': due_date_formatted
+            'due_date': self.due_date
         }

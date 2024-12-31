@@ -28,7 +28,7 @@ export default function Index() {
   const location = window.location.href;
   const navigate = useNavigate();
 
-  const { user, logout, fetchSections, fetchUser ,setCurrentSection, todoSections} = useContext(UserContext);
+  const { user, logout, fetchSections, fetchUser , todoSections} = useContext(UserContext);
   
   const [sectionExpanded, setSectionExpanded] = useState({
     state: false,
@@ -43,9 +43,11 @@ export default function Index() {
  
 
   useEffect(() => {
-    fetchUser()
-    if (sessionStorage.getItem("token")) {
+    try{
       fetchSections();
+    }catch(error){
+      alert("session expired")
+      return
     }
     setSectionExpanded((prevState) => ({
       ...prevState,
@@ -208,24 +210,24 @@ export default function Index() {
                       todoSections.map((section) => (
                         <>
                         <React.Fragment key={section.id}>
-                          <a 
+                          <a  key={section.id}
                             className={`sidenav-section ${
                               sectionExpanded.name === section.name &&
                               location.startsWith(`${url}todo-list/`) &&
                               "subsection-active"
                             }`}
                             onClick={() =>
-                              localStorage.setItem("subsection", section.name) &&
-                              setCurrentSection(section)
+                              localStorage.setItem("subsection", section.name) 
+                          
                             }
-                            href="/todo-list/section"
+                            href={`/todo-list/section/${section.name}`}
                           >
                             <FontAwesomeIcon
                               className="sidenav-section-icon"
                               icon={faCalendarWeek}
                             />
-                            <label className="nav-label">{section.name}</label>
-                            <FontAwesomeIcon
+                            <label key={section.id} className="nav-label">{section.name}</label>
+                            <FontAwesomeIcon 
                             className="delete-section-button"
                             onClick={(e) => delete_section(e, section.id)}
                             icon={faX}
