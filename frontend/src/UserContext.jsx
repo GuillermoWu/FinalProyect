@@ -55,12 +55,10 @@ export const UserProvider = ({ children }) => {
           });
         }
       } catch (error) {
-        alert("Session Expired");
         logout();
         return
       }
     } else {
-      alert("Session expired");
       logout();
       return
     }

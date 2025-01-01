@@ -6,7 +6,7 @@ import { faFlag } from "@fortawesome/free-regular-svg-icons";
 import { UserContext } from "./UserContext";
 
 export default function TodoList({ todo, section }) {
-  const { fetchUser, todoSections, fetchTodos, axiosRequest } =
+  const {todoSections, axiosRequest } =
     useContext(UserContext);
   const [todoItem, setTodoItem] = useState({
     updating: false,
@@ -40,10 +40,10 @@ export default function TodoList({ todo, section }) {
 
   const complete_todo = async (id, e, completed) => {
     e.preventDefault();
-    axiosRequest("/api/complete_todo", "post", { id, completed });
-    setTimeout(() => {
-      delete_todo(id, e);
-    }, 500);
+    axiosRequest("/api/complete_todo", "patch", { id, completed });
+    //setTimeout(() => {
+     // delete_todo(id, e);
+    //}, 500);
   };
 
   const delete_todo = async (id, e) => {
@@ -177,6 +177,7 @@ export default function TodoList({ todo, section }) {
                           ></input>
                         </div>
 
+                        {/*}
                         <div className="description-btns-content">
                           <button
                             className="description-btn-priority"
@@ -251,7 +252,8 @@ export default function TodoList({ todo, section }) {
                             </button>
                           </div>
                         </div>
-
+                        */}
+                        
                         <div className="description-btns-content">
                           <select
                             name="section"

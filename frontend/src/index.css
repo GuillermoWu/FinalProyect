@@ -374,7 +374,8 @@ div .sidenav {
   display: grid;
   align-items: center;
   justify-content: center;
-  margin-top: 10%;
+  margin-top: 7%;
+  min-width: 1000px;
 }
 
 .todo-container {
@@ -394,18 +395,20 @@ div .sidenav {
 }
 
 .input-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 400px;
+  position: absolute;
+  width: 400px;
   font-size: 120%;
+  margin-left: auto;
+  margin-right: auto;
+  left: 15%;
+  top: 15%;
+  right: 0px;
+  text-align: center;
 }
 
 .input-container input {
   width: 100%;
-  min-width: 400px;
+  width: 400px;
   box-sizing: border-box;
   border-radius: 6px;
   outline: 2px solid var(--light-grey);
@@ -601,8 +604,8 @@ div .sidenav {
 }
 
 .updating-todo-input {
-  outline: 1px solid var(--nav-item-background-active);
-  padding: 0% 3%;
+  outline: 2px solid var(--nav-item-background-active);
+  padding: 0% 2%;
   margin: 2% 2% 1% 2%;
   border-radius: 8px;
   border: none;
@@ -650,7 +653,6 @@ div .sidenav {
 /* Todo prioprity button styles*/
 
 .todo-priority-dropdown-button{
-  background-color: #1f1717;
   border-radius: 8px;
   outline: 2px solid #ff8383;
   color: #ff8383;
@@ -660,17 +662,19 @@ div .sidenav {
 .low {
   outline: 2px solid #ff8383;
   color: #ff8383;
+  background-color: #1f1717;
 }
 
 .medium {
   outline: 2px solid #f17634;
   color: #f17634;
-
+  background-color: #22190d;
 }
 
 .high {
   outline: 2px solid #31a783;
   color: #31a783;
+  background-color: #0a1d17;
 }
 
 .todo-priority-dropdown-content {
@@ -702,7 +706,7 @@ div .sidenav {
 
 /* Section todo tasks*/
 .section-container{
-  margin: 5% 20%;
+  margin: 5% 20% 0% 15vw;
 }
 
 .section-title{
@@ -724,12 +728,13 @@ div .sidenav {
   align-items: center;
   justify-content: left;
   width: 100%;
-  width: 900px;
+  width: 1000px;
 }
 
 .create-task{
   color: var(--light-grey);
   cursor: pointer;
+  margin-bottom: 10%;
 }
 .create-task-icon{
   color: var(--highlight-text-color);

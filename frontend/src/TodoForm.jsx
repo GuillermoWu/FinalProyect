@@ -3,30 +3,32 @@ import { UserContext } from "./UserContext";
 import axios from "axios";
 import TodoList from "./TodoList";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons";
-
+import {
+  faAngleDown,
+  faAngleUp,
+  faPlus,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function TodoForm() {
-  const { fetchUser, fetchTodos, todos} = useContext(UserContext);
+  const { fetchTodos, todos } = useContext(UserContext);
   const [name, setName] = useState("");
   const [shrink, setShrink] = useState({
     today: false,
     overdue: false,
     upcoming: false,
   });
- 
 
   const date = new Date();
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
-  const today_date = `${year}-${month}-${day}`;
+  const today_date = `${year}-${month >= 10 ?  month : `0${month}`}-${day >= 10 ?  day : `0${day}`}`;
+  
+
 
   useEffect(() => {
     fetchTodos();
   }, []);
-
- 
 
   const create_todo = async (e, due_date) => {
     e.preventDefault();
@@ -53,6 +55,7 @@ export default function TodoForm() {
     <div className="todo-container">
       <div className="todo-today-title">Today</div>
       <div className="todo-today-content">
+      
         <form
           className="todo-form"
           onSubmit={(e) => create_todo(e, today_date)}
@@ -68,7 +71,7 @@ export default function TodoForm() {
           </div>
         </form>
 
-        {todos && (
+        {todos.filter(todo => todo.due_date < today_date) && (
           <div className="overdue-tasks">
             <label
               onClick={() =>
@@ -92,13 +95,14 @@ export default function TodoForm() {
               }`}
             >
               {todos
-                .filter((todo) => todo.due_date < today_date)
+                .filter(
+                  (todo) =>
+                    todo.due_date < today_date &&
+                    todo.due_date &&
+                    !todo.completed
+                )
                 .map((todo) => (
-                  <TodoList
-                    key={todo.id}
-                    todo={todo}
-                    fetchTodos={fetchTodos}
-                  />
+                  <TodoList key={todo.id} todo={todo} fetchTodos={fetchTodos} />
                 ))}
             </div>
           </div>
@@ -126,13 +130,11 @@ export default function TodoForm() {
               className={`todo-list-container ${shrink.today ? "shrink" : ""}`}
             >
               {todos
-                .filter((todo) => todo.due_date === today_date)
+                .filter(
+                  (todo) => todo.due_date === today_date && !todo.completed
+                )
                 .map((todo) => (
-                  <TodoList
-                    key={todo.id}
-                    todo={todo}
-                    section={"Today"}
-                  />
+                  <TodoList key={todo.id} todo={todo} section={"Today"} />
                 ))}
             </div>
           </div>
@@ -140,7 +142,7 @@ export default function TodoForm() {
           <div className="todo-info">No tasks for today!</div>
         )}
 
-        {todos && (
+        {todos.filter(todo => todo.due_date > today_date) && (
           <div className="today-tasks">
             <label
               onClick={() =>
@@ -166,11 +168,7 @@ export default function TodoForm() {
               {todos
                 .filter((todo) => todo.due_date > today_date)
                 .map((todo) => (
-                  <TodoList
-                    key={todo.id}
-                    todo={todo}
-                    fetchTodos={fetchTodos}
-                  />
+                  <TodoList key={todo.id} todo={todo} fetchTodos={fetchTodos} />
                 ))}
             </div>
           </div>

@@ -61,10 +61,13 @@ export default function TodoSection() {
                 (todo) => todo.section === location.slice(40, location.length)
               )
               .map((todo) => (
+                <>
                 <div className="section-task-list">
                   <TodoList key={todo.id} todo={todo} section={todo.section} />
                 </div>
+                </>
               ))}
+              
           </div>
         )}
         <label

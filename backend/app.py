@@ -45,7 +45,7 @@ def create_todo():
         if not user:
             return jsonify({"message": "User not found"}), 404
 
-        new_todo = Todos(name=name, user_id=user.id, priority=priority if priority else "",due_date=due_date, section=section.name if section else "", section_id=section.id if section else "")
+        new_todo = Todos(name=name, user_id=user.id, priority=priority if priority else 2,due_date=due_date, section=section.name if section else "", section_id=section.id if section else "")
         db.session.add(new_todo)
         db.session.commit() 
 

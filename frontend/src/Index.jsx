@@ -43,6 +43,7 @@ export default function Index() {
  
 
   useEffect(() => {
+    fetchUser();
     try{
       fetchSections();
     }catch(error){
