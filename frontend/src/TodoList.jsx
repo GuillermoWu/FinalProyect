@@ -1,12 +1,11 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faX } from "@fortawesome/free-solid-svg-icons";
-import { faFlag } from "@fortawesome/free-regular-svg-icons";
+import { faX, faCalendarWeek} from "@fortawesome/free-solid-svg-icons";
 import { UserContext } from "./UserContext";
 
 export default function TodoList({ todo, section }) {
-  const {todoSections, axiosRequest } =
+  const {todoSections, axiosRequest, today_date, today} =
     useContext(UserContext);
   const [todoItem, setTodoItem] = useState({
     updating: false,
@@ -51,12 +50,11 @@ export default function TodoList({ todo, section }) {
     axiosRequest("/api/delete_todo", "post", { id });
   };
 
-  const update_todo = async (e, id, name, priority, due_date, section) => {
+  const update_todo = async (e, id, name, due_date, section) => {
     e.preventDefault();
     axiosRequest("/api/update_todo", "patch", {
       id,
       name,
-      priority,
       due_date,
       section,
     });
@@ -72,11 +70,49 @@ export default function TodoList({ todo, section }) {
       priorityUpdating: { id: null, state: false },
     }));
   };
+
+  const formatDate = (todoDate) =>{
+    if (todoDate.length >=1)
+    {
+    const date = new Date(todoDate);
+    const day = date.getDate(date);
+    const month = date.toLocaleDateString('en-US', {month: 'short'});
+
+    const tomorrow = new Date(today)
+    tomorrow.setDate(today.getDate() + 1)
+
+    const tday = tomorrow.getDate();
+    const tmonth = tomorrow.getMonth() + 1;
+    const tyear = tomorrow.getFullYear();
+    const tomorrowDate = `${tyear}-${tmonth >= 10 ?  tmonth : `0${tmonth}`}-${tday >= 10 ?  tday : `0${tday}`}`;
+  
+
+      if (todoDate === today_date)
+      {
+        return "Today"
+      }
+      else if (todoDate === tomorrowDate)
+      {
+        return "Tomorrow"
+      }
+      else
+      {
+        return (`${day} ${month}`)
+      }
+    }
+    else
+    {
+      return "No Due Date"
+    }
+  }
+
   const [priorities, setPriorities] = useState({
     0: { name: "Low", id: 0 },
     1: { name: "Medium", id: 1 },
     2: { name: "High", id: 2 },
   });
+
+
   const priorityDropdown = (todo) => {
     return (
       
@@ -117,7 +153,7 @@ export default function TodoList({ todo, section }) {
                     className="todo-priority-btn"
                     onClick={(e) => updatePriority(e, todo.id, priority.id)}
                   >
-                    {priority.name}
+                    {priority.name} Priority
                   </button>
                 ))}
             </div>
@@ -176,83 +212,6 @@ export default function TodoList({ todo, section }) {
                             className="description-btn-date"
                           ></input>
                         </div>
-
-                        {/*}
-                        <div className="description-btns-content">
-                          <button
-                            className="description-btn-priority"
-                            onClick={(e) =>
-                              setTodoItem((prevState) => ({
-                                ...prevState,
-                                priorityLabelUpdating: {
-                                  id: todo.id,
-                                  state: !todoItem.priorityLabelUpdating.state,
-                                },
-                              }))
-                            }
-                          >
-                            {" "}
-                            <FontAwesomeIcon icon={faFlag} />{" "}
-                            {todoItem.priorityLabelUpdating.name
-                              ? todoItem.priorityLabelUpdating.name
-                              : "Priority"}
-                          </button>
-                          <div
-                            className={`label-dropdown-content ${
-                              todoItem.priorityLabelUpdating.id === todo.id &&
-                              todoItem.priorityLabelUpdating.state
-                                ? "show-priority-content"
-                                : ""
-                            }`}
-                          >
-                            <button
-                              className="todo-priority-btn"
-                              onClick={(e) =>
-                                setTodoItem((prevState) => ({
-                                  ...prevState,
-                                  priorityLabelUpdating: {
-                                    name: "Low Priority",
-                                    state: false,
-                                    priority: 0,
-                                  },
-                                }))
-                              }
-                            >
-                              Low Priority
-                            </button>
-                            <button
-                              className="todo-priority-btn"
-                              onClick={(e) =>
-                                setTodoItem((prevState) => ({
-                                  ...prevState,
-                                  priorityLabelUpdating: {
-                                    name: "Medium Priority",
-                                    state: false,
-                                    priority: 1,
-                                  },
-                                }))
-                              }
-                            >
-                              Medium Priority
-                            </button>
-                            <button
-                              className="todo-priority-btn"
-                              onClick={(e) =>
-                                setTodoItem((prevState) => ({
-                                  ...prevState,
-                                  priorityLabelUpdating: {
-                                    name: "High Priority",
-                                    state: false,
-                                    priority: 2,
-                                  },
-                                }))
-                              }
-                            >
-                              High Priority
-                            </button>
-                          </div>
-                        </div>
-                        */}
                         
                         <div className="description-btns-content">
                           <select
@@ -265,15 +224,15 @@ export default function TodoList({ todo, section }) {
                               }))
                             }
                           >
-                            <option>{section}</option>
+                            <option value={section}>{section}</option>
+                            {section !== "None" && <option value="">None</option>}
                             {todoSections &&
-                              todoSections.map((todoSection) => (
+                              todoSections.filter(todoSection => todoSection.name !== section).map((todoSection) => (
                                 <option
                                   key={todoSection.id}
                                   value={todoSection.name}
                                 >
-                                  {todoSection.name !== section &&
-                                    todoSection.name}
+                                  {todoSection.name}
                                 </option>
                               ))}
                           </select>
@@ -298,9 +257,8 @@ export default function TodoList({ todo, section }) {
                               e,
                               todo.id,
                               todoItem.current,
-                              todoItem.priorityLabelUpdating.priority,
                               todoItem.currentDueDate,
-                              todoItem.section
+                              todoItem.section.length >=1 ? todoItem.section : ""
                             )
                           }
                         >
@@ -341,6 +299,10 @@ export default function TodoList({ todo, section }) {
                 />
               </div>
             </li>
+            <div className="todo-info-display">
+              <div className="todo-duedate-display"><FontAwesomeIcon className="todo-duedate-icon" icon={faCalendarWeek} /><label>{formatDate(todo.due_date)}</label></div>
+              <div className="todo-section-display">Section: <label className="todo-section-label">{todo.section.length >= 1 ? todo.section : section}</label></div>
+            </div>
             <hr className="todolist-section-separator"></hr>
           </React.Fragment>
         )}

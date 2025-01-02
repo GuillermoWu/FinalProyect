@@ -157,6 +157,12 @@ export const UserProvider = ({ children }) => {
     }
   }
 
+  const today = new Date();
+  const day = today.getDate();
+  const month = today.getMonth() + 1;
+  const year = today.getFullYear();
+  const today_date = `${year}-${month >= 10 ?  month : `0${month}`}-${day >= 10 ?  day : `0${day}`}`;
+
   return (
     <UserContext.Provider value={{
        axiosRequest,
@@ -170,6 +176,8 @@ export const UserProvider = ({ children }) => {
        setCurrentSection, 
        todoSections, 
        todos,
+       today_date,
+       today,
        }}
     >
       {children}

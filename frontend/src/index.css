@@ -11,6 +11,7 @@
   /* night mode / dark mode */
   --background-color: #121212;
   --dark-grey: #141418;
+  --grey:rgb(68, 65, 65);
   --hover-color: #46464f;
   --text-color: #d2d2d7;
   --highlight-text-color: #5c5cad;
@@ -442,14 +443,15 @@ div .sidenav {
 
 /* Todo list styles */
 
-
-.todo-today-content hr {
-  border-top: 1px solid var(--light-grey);
-  width: 100%;
+.todo-filter-separator{
+  border: 1px solid var(--grey);
 }
+
+
 
 .dropdown-icon {
   float: right;
+  cursor: pointer;
 }
 
 .todo-list-container {
@@ -493,6 +495,7 @@ div .sidenav {
   outline: none;
   cursor: pointer;
   position: relative;
+  margin-right: 20px;
 }
 
 .todo-checkbox-checked {
@@ -510,14 +513,10 @@ div .sidenav {
 }
 
 .todo-item-label {
-  width: 100%;
-  max-width: 150px;
+  flex-grow: 1;
   color: var(--highlight-text-color);
   font-weight: 500;
   font-size: 110%;
-  margin-left: -5rem;
-  margin-right: 25rem;
-  flex: 1;
   word-wrap: break-word; /* Allows long words to be broken and wrap to the next line */
   word-break: break-all; /* Ensures that long words are broken and wrapped */
   white-space: normal; /* Allows text to wrap to the next line */
@@ -656,7 +655,9 @@ div .sidenav {
   border-radius: 8px;
   outline: 2px solid #ff8383;
   color: #ff8383;
-  padding: 2% 12px 2% 12px;
+  padding: 2px 12px 2px 12px;
+  margin-right: 50px;
+  
 }
 
 .low {
@@ -704,6 +705,27 @@ div .sidenav {
   cursor: pointer;
 }
 
+.todo-info-display{
+  display: flex;
+  margin: 2% 5% 0 ;
+  font-size: 1rem;
+}
+
+.todo-duedate-icon{
+  margin-right: 0.5rem;
+  color: var(--white-grey);
+}
+
+
+.todo-section-display{
+  margin-left: 5%;
+  color: var(--white-grey);
+}
+
+.todo-section-label{
+  color: white;
+}
+
 /* Section todo tasks*/
 .section-container{
   margin: 5% 20% 0% 15vw;
@@ -731,23 +753,34 @@ div .sidenav {
   width: 1000px;
 }
 
-.create-task{
-  color: var(--light-grey);
-  cursor: pointer;
-  margin-bottom: 10%;
-}
+
+
+.create-task{background-image: linear-gradient(to right, #614385 0%, #516395  51%, #614385  100%)}
+.create-task {
+   margin: 10px;
+   padding: 1.5%;
+   width: 150px;
+   text-align: center;
+   transition: 0.5s;
+   background-size: 200% auto;
+   color: white;            
+   box-shadow: 0 0 15px var(--grey);
+   border-radius: 10px;
+   display: block;
+ }
+
+ .create-task:hover {
+   background-position: right center; /* change the direction of the change here */
+   color: #fff;
+   text-decoration: none;
+ }
+
+  
 .create-task-icon{
-  color: var(--highlight-text-color);
-  margin-right: 1%;
+  color: white;
+  margin-right: 2%;
 }
 
-.create-task:hover{
-  color: var(--text-active);
-
-  .create-task-icon{
-    color: var(--highlight-light-text-color);
-  }
-}
 
 /* Text shown when no todos left*/
 
@@ -762,6 +795,7 @@ div .sidenav {
 }
 
 .todolist-section-separator {
-  margin-top: 3%;
-  border-top: 1px solid rgb(68, 65, 65)
+  margin-top: 2%;
+  margin-bottom: 1%;
+  border-top: 1px solid var(--grey);
 }

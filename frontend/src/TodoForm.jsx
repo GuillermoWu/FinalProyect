@@ -10,7 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function TodoForm() {
-  const { fetchTodos, todos } = useContext(UserContext);
+  const { fetchTodos, todos, today_date } = useContext(UserContext);
   const [name, setName] = useState("");
   const [shrink, setShrink] = useState({
     today: false,
@@ -18,11 +18,7 @@ export default function TodoForm() {
     upcoming: false,
   });
 
-  const date = new Date();
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-  const today_date = `${year}-${month >= 10 ?  month : `0${month}`}-${day >= 10 ?  day : `0${day}`}`;
+  
   
 
 
@@ -62,6 +58,7 @@ export default function TodoForm() {
         >
           <div className="input-container">
             <input
+              required
               spellCheck="false"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -71,7 +68,7 @@ export default function TodoForm() {
           </div>
         </form>
 
-        {todos.filter(todo => todo.due_date < today_date) && (
+        {todos && todos.filter(todo => todo.due_date < today_date && !todo.completed).length >= 1 && (
           <div className="overdue-tasks">
             <label
               onClick={() =>
@@ -88,7 +85,7 @@ export default function TodoForm() {
                 icon={shrink.overdue ? faAngleUp : faAngleDown}
               />
             </label>
-            <hr></hr>
+            <hr className="todo-filter-separator"></hr>
             <div
               className={`todo-list-container ${
                 shrink.overdue ? "shrink" : ""
@@ -102,13 +99,13 @@ export default function TodoForm() {
                     !todo.completed
                 )
                 .map((todo) => (
-                  <TodoList key={todo.id} todo={todo} fetchTodos={fetchTodos} />
+                  <TodoList key={todo.id} todo={todo} fetchTodos={fetchTodos} section={todo.section.length >= 1 ? todo.section : "None"}/>
                 ))}
             </div>
           </div>
         )}
 
-        {todos ? (
+        {todos && todos.filter(todo => todo.due_date === today_date && !todo.completed).length >= 1 ? (
           <div className="today-tasks">
             <label
               onClick={() =>
@@ -125,7 +122,7 @@ export default function TodoForm() {
                 icon={shrink.today ? faAngleUp : faAngleDown}
               />
             </label>
-            <hr></hr>
+            <hr className="todo-filter-separator"></hr>
             <div
               className={`todo-list-container ${shrink.today ? "shrink" : ""}`}
             >
@@ -134,7 +131,7 @@ export default function TodoForm() {
                   (todo) => todo.due_date === today_date && !todo.completed
                 )
                 .map((todo) => (
-                  <TodoList key={todo.id} todo={todo} section={"Today"} />
+                  <TodoList key={todo.id} todo={todo} section={todo.section.length >= 1 ? todo.section : "None"} />
                 ))}
             </div>
           </div>
@@ -142,7 +139,7 @@ export default function TodoForm() {
           <div className="todo-info">No tasks for today!</div>
         )}
 
-        {todos.filter(todo => todo.due_date > today_date) && (
+        {todos && todos.filter(todo => todo.due_date > today_date && !todo.completed).length >= 1 && (
           <div className="today-tasks">
             <label
               onClick={() =>
@@ -159,7 +156,7 @@ export default function TodoForm() {
                 icon={shrink.upcoming ? faAngleUp : faAngleDown}
               />
             </label>
-            <hr></hr>
+            <hr className="todo-filter-separator"></hr>
             <div
               className={`todo-list-container ${
                 shrink.upcoming ? "shrink" : ""
@@ -168,7 +165,7 @@ export default function TodoForm() {
               {todos
                 .filter((todo) => todo.due_date > today_date)
                 .map((todo) => (
-                  <TodoList key={todo.id} todo={todo} fetchTodos={fetchTodos} />
+                  <TodoList key={todo.id} todo={todo} fetchTodos={fetchTodos} section={todo.section.length >= 1 ? todo.section : "None"} />
                 ))}
             </div>
           </div>

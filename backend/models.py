@@ -27,8 +27,8 @@ class Todos(db.Model):
     user_id = db.Column(db.Integer, nullable=False)
     name = db.Column(db.String(150), nullable=False)
     completed = db.Column(db.Boolean, default=False, nullable=False)
-    section = db.Column(db.String(20), nullable=False)
-    section_id = db.Column(db.Integer, nullable=False)
+    section = db.Column(db.String(20), nullable=True)
+    section_id = db.Column(db.Integer, nullable=True)
     priority = db.Column(db.Integer(), default=0)
     due_date = db.Column(db.Text(), nullable=True)
 

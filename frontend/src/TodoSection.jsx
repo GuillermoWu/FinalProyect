@@ -27,13 +27,13 @@ export default function TodoSection() {
     fetchTodos();
   }, []);
 
-  const create_todo = async (e, name, priority, due_date, section) => {
+  const create_todo = async (e, name, due_date, section) => {
     setCreating(!creating)
     e.preventDefault();
     try {
       await axios.post(
         "/api/create_todo",
-        { name, priority, due_date, section },
+        { name, due_date, section },
         {
           withCredentials: true,
           headers: {
@@ -70,16 +70,24 @@ export default function TodoSection() {
               
           </div>
         )}
-        <label
+        <button
           onClick={()=>setCreating(!creating)}
           className="create-task"
         >
           <FontAwesomeIcon className="create-task-icon" icon={faPlus} />
           Create task
-        </label>
+        </button>
         {creating && (
-          <div className="updating-todo-label">
+          <form onSubmit={(e) =>
+            create_todo(
+              e,
+              todoItem.current,
+              todoItem.currentDueDate,
+              todoItem.section
+            )
+          } className="updating-todo-label">
             <input
+              required
               value={todoItem.current}
               onChange={(e) =>
                 setTodoItem((prevState) => ({
@@ -107,78 +115,6 @@ export default function TodoSection() {
                 ></input>
               </div>
 
-              <div className="description-btns-content">
-                <button
-                  className="description-btn-priority"
-                  onClick={(e) =>
-                    setTodoItem((prevState) => ({
-                      ...prevState,
-                      priorityLabelUpdating: {
-                        state: !todoItem.priorityLabelUpdating.state,
-                      },
-                    }))
-                  }
-                >
-                  {" "}
-                  <FontAwesomeIcon icon={faFlag} />{" "}
-                  {todoItem.priorityLabelUpdating.name
-                    ? todoItem.priorityLabelUpdating.name
-                    : "Priority"}
-                </button>
-                <div
-                  className={`label-dropdown-content ${
-                    todoItem.priorityLabelUpdating.state
-                      ? "show-priority-content"
-                      : ""
-                  }`}
-                >
-                  <button
-                    className="todo-priority-btn"
-                    onClick={(e) =>
-                      setTodoItem((prevState) => ({
-                        ...prevState,
-                        priorityLabelUpdating: {
-                          name: "Low Priority",
-                          state: false,
-                          priority: 0,
-                        },
-                      }))
-                    }
-                  >
-                    Low Priority
-                  </button>
-                  <button
-                    className="todo-priority-btn"
-                    onClick={(e) =>
-                      setTodoItem((prevState) => ({
-                        ...prevState,
-                        priorityLabelUpdating: {
-                          name: "Medium Priority",
-                          state: false,
-                          priority: 1,
-                        },
-                      }))
-                    }
-                  >
-                    Medium Priority
-                  </button>
-                  <button
-                    className="todo-priority-btn"
-                    onClick={(e) =>
-                      setTodoItem((prevState) => ({
-                        ...prevState,
-                        priorityLabelUpdating: {
-                          name: "High Priority",
-                          state: false,
-                          priority: 2,
-                        },
-                      }))
-                    }
-                  >
-                    High Priority
-                  </button>
-                </div>
-              </div>
 
               <div className="description-btns-content">
                 <select
@@ -193,9 +129,9 @@ export default function TodoSection() {
                 >
                   <option value={location.slice(40, location.length)}>{location.slice(40, location.length)}</option>
                   {todoSections &&
-                    todoSections.map((todoSection) => (
+                    todoSections.filter(todoSection => todoSection.name !== location.slice(40, location.length)).map((todoSection) => (
                       <option key={todoSection.id} value={todoSection.name}>
-                        {todoSection.name !== location.slice(40, location.length) && todoSection.name}
+                        {todoSection.name}
                       </option>
                     ))}
                 </select>
@@ -211,21 +147,13 @@ export default function TodoSection() {
                 Cancel
               </button>
               <button
+                type="submit"
                 className="submit-btn"
-                onClick={(e) =>
-                  create_todo(
-                    e,
-                    todoItem.current,
-                    todoItem.priorityLabelUpdating.priority,
-                    todoItem.currentDueDate,
-                    todoItem.section
-                  )
-                }
               >
                 Create
               </button>
             </div>
-          </div>
+          </form>
         )}
       </div>
     </>

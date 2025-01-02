@@ -75,30 +75,25 @@ def update_todo():
     todo_id = request.json.get("id")
     todo_name = request.json.get("name") 
     todo_duedate = request.json.get("due_date") 
-    todo_priority = request.json.get("priority") 
     todo_section = request.json.get("section")
     
-    
-
     try:
         current_user = get_jwt_identity()
         user = User.query.get(current_user["id"])
 
         current_todo = Todos.query.get(todo_id)
         current_todo.name = todo_name
-        section = TodoSections.query.filter_by(name=todo_section, user_id=user.id).first()
 
-        if not section:
-            return jsonify({"message": "Section doesn't exist"})
-        
-      
         current_todo.due_date = todo_duedate
 
-        if todo_priority:
-            current_todo.priority = todo_priority
-            
-        current_todo.section = section.name
-        current_todo.section_id = section.id
+        if todo_section == "":
+            current_todo.section = ""
+            current_todo.section_id = None
+        else:
+            section = TodoSections.query.filter_by(name=todo_section, user_id=user.id).first()
+            current_todo.section = section.name
+            current_todo.section_id = section.id
+    
         db.session.commit()
         return jsonify({"message": "Todo updated succesfully!"})
 
