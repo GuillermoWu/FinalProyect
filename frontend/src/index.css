@@ -11,6 +11,7 @@
   /* night mode / dark mode */
   --background-color: #121212;
   --dark-grey: #141418;
+  --sidenav-background:#232329;
   --grey:rgb(68, 65, 65);
   --hover-color: #46464f;
   --text-color: #d2d2d7;
@@ -94,7 +95,7 @@ body,
 
 div .sidenav {
   width: 240px;
-  background-color: #232329;
+  background-color: var(--sidenav-background);
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -338,18 +339,130 @@ div .sidenav {
 /* Login form css */
 
 .login-form {
-  max-width: 50%;
+  max-width: 600px;
   display: grid;
   margin: auto;
-  margin-top: 20%;
+  margin-top: 10%;
+  background-color: var(--dark-grey);
+  box-shadow: 0 0 15px var(--light-grey);
+  border-radius: 12px;
+  height: 70vh;
+}
+
+.login-form-title{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 2rem;
+  margin-bottom: 2%;
+}
+
+.login-form p{
+  color: var(--white-grey);
+}
+
+.login-form h4{
+  color: var(--white-grey);
+  margin-left: 10%;
+  font-size: 1rem;
+  margin-bottom: none;
 }
 
 .login-form input {
   color: black;
+  background: none;
+  border: none;
+  color: var(--light-grey);
+  padding: 2%;
+  padding-left: 6%;
+  border-bottom: 1px solid var(--light-grey);
+  width: 80%;
+  display: flex;
+  margin: auto;
+  margin-top: -5%;
+  font-size: 1rem;
 }
 
-.login-form button {
-  color: black;
+
+.login-form input:active{
+  border: none;
+  outline: none;
+}
+
+.input-icon{
+  position: absolute;
+  margin-left: 4%;
+  margin-top: -0.8%;
+  color: var(--light-grey);
+
+}
+.show-password-icon{
+  position: absolute;
+  margin-left: 30%;
+  margin-top: -1.7%;
+  color: var(--light-grey);
+  cursor: pointer;
+}
+
+
+.login-to-register{
+  display: flex;
+  justify-content: right;
+  margin-right: 10%;
+  margin-top: -5%;
+}
+
+.register-link{
+  color: var(--highlight-text-color);
+  margin-left: 1%;
+}
+
+.login-btn{background-image: linear-gradient(to right, #614385 0%, #516395  51%, #614385  100%)}
+.login-btn {
+   margin: 0 10% 10% 10%;
+   padding: 1px;
+   text-align: center;
+   transition: 0.5s;
+   background-size: 200% auto;
+   color: white;            
+   box-shadow: 0 0 15px var(--grey);
+   border-radius: 32px;
+   display: block;
+ }
+
+ .login-btn:hover {
+   background-position: right center; /* change the direction of the change here */
+   color: #fff;
+   text-decoration: none;
+ }
+
+/* Session expired layout */
+
+.session-expired-layout{
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 2rem;
+  margin-top: 20%;
+}
+
+.session-expired-layout a{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5%;
+  border-radius: 8px;
+  padding: 2%;
+  color: white;
+  background-color: var(--highlight-text-color);
+}
+
+.session-expired-layout a:hover{
+  text-decoration: none;
+  color: white;
+  background-color: var(--highlight-light-text-color);
 }
 
 /* Account css */

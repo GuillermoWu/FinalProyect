@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faAt,
+  faEye,
+  faLock,
+  faUser
+} from "@fortawesome/free-solid-svg-icons";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -27,32 +34,45 @@ const Register = () => {
   return (
     <>
       <form className="login-form" onSubmit={handleSubmit}>
-        <h2>Username</h2>
-        <input
-          placeholder="username"
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        ></input>
-        <h2>Email</h2>
-        <input
-          placeholder="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        ></input>
-        <h2>Password</h2>
-        <input
-          placeholder="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        ></input>
-        <button type="submit">Register</button>
+        <p className="login-form-title">Register</p>
+        <h4>Username</h4>
+        <div>
+          <FontAwesomeIcon className="input-icon" icon={faUser} />
+          <input
+            placeholder="Type your username here"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          ></input>
+        </div>
+          
+        
+        <h4>Email</h4>
+        <div>
+          <FontAwesomeIcon className="input-icon" icon={faAt} />
+          <input
+            placeholder="Type your email here"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          ></input>
+        </div>
+        <h4>Password</h4>
+        <div>
+          <FontAwesomeIcon className="input-icon" icon={faLock} />
+          <input
+            placeholder="Type your password here"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          ></input>
+        </div>
+        <p className="login-to-register">Already have an account?: <a href="/login" className="register-link">Login here</a></p>
+        <button className="login-btn" type="submit">Register</button>
       </form>
-      <a href="/login">Register</a>
+
     </>
   );
 };

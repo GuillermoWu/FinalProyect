@@ -56,11 +56,11 @@ export const UserProvider = ({ children }) => {
         }
       } catch (error) {
         logout();
-        return
+        return "session-expired"
       }
     } else {
-      logout();
-      return
+      logout()
+      return "session-expired"
     }
   };
 
@@ -136,7 +136,6 @@ export const UserProvider = ({ children }) => {
   const logout = async () => {
     sessionStorage.removeItem("token");
     setUser({ user: null, token: null, username: null, email: null });
-    alert("User logged out!");
 
   };
 

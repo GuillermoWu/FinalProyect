@@ -43,7 +43,9 @@ export default function Index() {
  
 
   useEffect(() => {
-    fetchUser();
+    if (fetchUser() === "session-expired"){
+      navigate("/session-expired")
+    };
     try{
       fetchSections();
     }catch(error){

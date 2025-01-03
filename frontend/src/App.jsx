@@ -8,6 +8,7 @@ import Index from "./Index.jsx";
 import TodoForm from "./TodoForm.jsx";
 import TodoSection from "./TodoSection.jsx";
 import { UserContext } from "./UserContext"
+import SessionExpired from "./SessionExpired.jsx";
 
 
 
@@ -52,7 +53,7 @@ function App() {
               }
             />
           ))}
-          
+          <Route path="/session-expired" element={<SessionExpired/>}/>
           <Route path="*" element={<div>404 NOT FOUND</div>} />
         </Route>
       </Routes>
