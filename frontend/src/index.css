@@ -50,7 +50,7 @@ body,
 
 .outlet {
   flex: 1;
-  background-color: var(--background-color);
+  background-color:var(--background-color);
   color: white;
   min-height: 100vh;
   overflow: auto;
@@ -342,12 +342,14 @@ div .sidenav {
   max-width: 600px;
   display: grid;
   margin: auto;
-  margin-top: 10%;
+  margin-top: 7%;
   background-color: var(--dark-grey);
   box-shadow: 0 0 15px var(--light-grey);
   border-radius: 12px;
   height: 70vh;
 }
+
+
 
 .login-form-title{
   display: flex;
@@ -355,7 +357,7 @@ div .sidenav {
   justify-content: center;
   font-weight: 700;
   font-size: 2rem;
-  margin-bottom: 2%;
+  margin-bottom: 6%;
 }
 
 .login-form p{
@@ -392,14 +394,14 @@ div .sidenav {
 
 .input-icon{
   position: absolute;
-  margin-left: 4%;
+  margin-left: 70px;
   margin-top: -0.8%;
   color: var(--light-grey);
 
 }
 .show-password-icon{
   position: absolute;
-  margin-left: 30%;
+  margin-left: 500px;
   margin-top: -1.7%;
   color: var(--light-grey);
   cursor: pointer;
@@ -420,8 +422,7 @@ div .sidenav {
 
 .login-btn{background-image: linear-gradient(to right, #614385 0%, #516395  51%, #614385  100%)}
 .login-btn {
-   margin: 0 10% 10% 10%;
-   padding: 1px;
+   margin: 1rem 10% 10% 10%;
    text-align: center;
    transition: 0.5s;
    background-size: 200% auto;
@@ -553,6 +554,8 @@ div .sidenav {
 .todo-form button:hover {
   background-color: var(--highlight-text-color);
 }
+
+
 
 /* Todo list styles */
 
@@ -713,6 +716,7 @@ div .sidenav {
   border-radius: 8px;
   width: 100%;
   height: 200px;
+  margin-bottom: 5%;
 }
 
 .updating-todo-input {

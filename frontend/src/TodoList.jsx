@@ -5,21 +5,7 @@ import { faX, faCalendarWeek} from "@fortawesome/free-solid-svg-icons";
 import { UserContext } from "./UserContext";
 
 export default function TodoList({ todo, section }) {
-  const {todoSections, axiosRequest, today_date, today} =
-    useContext(UserContext);
-  const [todoItem, setTodoItem] = useState({
-    updating: false,
-    current: "",
-    currentDueDate: "",
-    section: "",
-    priorityUpdating: { id: null, state: false },
-    priorityLabelUpdating: {
-      id: null,
-      state: false,
-      name: null,
-      priority: null,
-    },
-  });
+  const {todoSections, axiosRequest, today_date, today, todoItem, setTodoItem} = useContext(UserContext);
 
   const resetTodoItem = () => {
     setTodoItem({

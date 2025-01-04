@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
-import axios from "axios";
 import TodoList from "./TodoList";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -10,63 +9,22 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function TodoForm() {
-  const { fetchTodos, todos, today_date } = useContext(UserContext);
-  const [name, setName] = useState("");
+  const { fetchTodos, todos, today_date, creating_label, creating, setCreating} = useContext(UserContext);
   const [shrink, setShrink] = useState({
     today: false,
     overdue: false,
     upcoming: false,
   });
 
-  
-  
-
-
   useEffect(() => {
     fetchTodos();
   }, []);
 
-  const create_todo = async (e, due_date) => {
-    e.preventDefault();
-    try {
-      await axios.post(
-        "/api/create_todo",
-        { name, due_date },
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-          },
-        }
-      );
-      fetchTodos();
-      setName("");
-    } catch (error) {
-      alert(error);
-    }
-  };
 
   return (
     <div className="todo-container">
       <div className="todo-today-title">Today</div>
       <div className="todo-today-content">
-      
-        <form
-          className="todo-form"
-          onSubmit={(e) => create_todo(e, today_date)}
-        >
-          <div className="input-container">
-            <input
-              required
-              spellCheck="false"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Todo Name"
-            ></input>
-            <button type="submit">Create</button>
-          </div>
-        </form>
 
         {todos && todos.filter(todo => todo.due_date < today_date && !todo.completed).length >= 1 && (
           <div className="overdue-tasks">
@@ -105,7 +63,7 @@ export default function TodoForm() {
           </div>
         )}
 
-        {todos && todos.filter(todo => todo.due_date === today_date && !todo.completed).length >= 1 ? (
+        {todos && todos.filter(todo => todo.due_date === today_date && !todo.completed).length >= 1 ? (<>
           <div className="today-tasks">
             <label
               onClick={() =>
@@ -135,6 +93,16 @@ export default function TodoForm() {
                 ))}
             </div>
           </div>
+          <button
+            onClick={(e)=>setCreating(!creating)}
+            className="create-task"
+          >
+            <FontAwesomeIcon className="create-task-icon" icon={faPlus} />
+            &nbsp;Create task
+          </button>
+
+          {creating && (creating_label())}
+          </>
         ) : (
           <div className="todo-info">No tasks for today!</div>
         )}
