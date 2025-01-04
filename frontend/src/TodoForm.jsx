@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef} from "react";
 import { UserContext } from "./UserContext";
 import TodoList from "./TodoList";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,10 +15,17 @@ export default function TodoForm() {
     overdue: false,
     upcoming: false,
   });
+  const createTaskRef = useRef(null);
 
   useEffect(() => {
     fetchTodos();
   }, []);
+
+  useEffect(() => {
+    if (creating && createTaskRef.current) {
+      createTaskRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [creating]);
 
 
   return (
@@ -101,7 +108,12 @@ export default function TodoForm() {
             &nbsp;Create task
           </button>
 
-          {creating && (creating_label())}
+          {creating && 
+          <div ref={createTaskRef}>
+            {creating_label()}
+          </div>
+          
+          }
           </>
         ) : (
           <div className="todo-info">No tasks for today!</div>

@@ -503,11 +503,6 @@ div .sidenav {
 
 /*Todo form styles*/
 
-.todo-form {
-  width: 100%;
-  max-width: 600px;
-  margin-bottom: 5%;
-}
 
 .input-container {
   position: absolute;

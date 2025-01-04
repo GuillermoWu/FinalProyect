@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { UserContext } from "./UserContext";
 import TodoList from "./TodoList";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -7,10 +7,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function TodoSection() {
   const { todos, fetchTodos, location, creating_label, creating, setCreating} = useContext(UserContext);
+  const createTaskRef = useRef(null);
 
   useEffect(() => {
     fetchTodos();
   }, []);
+
+  useEffect(() => {
+    if (creating && createTaskRef.current) {
+      createTaskRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [creating]);
 
   return (
     <>
@@ -42,7 +49,10 @@ export default function TodoSection() {
           &nbsp;Create task
         </button>
         {creating && (
-          creating_label()
+          <div ref={createTaskRef}>
+            {creating_label()}
+          </div>
+          
         )}
       </div>
     </>

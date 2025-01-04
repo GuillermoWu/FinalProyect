@@ -257,7 +257,6 @@ export const UserProvider = ({ children }) => {
 
     )
   }
- 
 
   const today = new Date();
   const day = today.getDate();
