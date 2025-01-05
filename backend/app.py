@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from models import db, User, Todos, TodoSections
+from models import db, User, Todos, TodoSections, Classes
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date
 from config import app, db 
@@ -127,6 +127,38 @@ def delete_todo():
     except Exception as e:
         return jsonify({"message": str(e)})
   
+@app.route("/api/get_classes", methods=["GET"])
+@jwt_required()
+def get_classes():
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user ["id"])
+        if not user:
+            return jsonify({"message": "Session expired"}), 404
+        
+        classes = Classes.query.filter_by(user_id=user.id).all()
+        classes_list = map(lambda class_item: class_item.to_json(), classes)
+        return jsonify({"classes": classes_list})
+    
+    except ValueError as error:
+        return jsonify({"message": str(error)})
+    
+@app.route("/api/create_class", methods=["POST"])
+@jwt_required()
+def create_class():
+    name = request.json.get("name")
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user ["id"])
+        if not user:
+            return jsonify({"message": "Session expired"})
+        
+        new_class = Classes(name=name, user_id=user.id)
+        db.session.add(new_class)
+        db.session.commit()
+    except ValueError as error:
+        return jsonify({"message": str(error)})
+
 @app.route("/api/get_sections", methods=["GET"])
 @jwt_required()
 def get_sections():

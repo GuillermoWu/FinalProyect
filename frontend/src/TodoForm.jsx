@@ -100,6 +100,12 @@ export default function TodoForm() {
                 ))}
             </div>
           </div>
+          
+          </>
+        ) : (
+          <div className="todo-info">No tasks for today!</div>
+        )}
+
           <button
             onClick={(e)=>setCreating(!creating)}
             className="create-task"
@@ -114,10 +120,6 @@ export default function TodoForm() {
           </div>
           
           }
-          </>
-        ) : (
-          <div className="todo-info">No tasks for today!</div>
-        )}
 
         {todos && todos.filter(todo => todo.due_date > today_date && !todo.completed).length >= 1 && (
           <div className="today-tasks">

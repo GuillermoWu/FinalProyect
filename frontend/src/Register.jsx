@@ -6,7 +6,8 @@ import {
   faAt,
   faEye,
   faLock,
-  faUser
+  faUser,
+  faEyeSlash
 } from "@fortawesome/free-solid-svg-icons";
 
 const Register = () => {
@@ -14,6 +15,19 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
+
+  const [showingPassword, setShowingPassword] = useState(false);
+  
+    const showPassword = () => {
+      setShowingPassword(!showingPassword);
+      const input = document.getElementById("password");
+      if (input.type === "password"){
+        input.type = "text";
+      }
+      else{
+        input.type = "password";
+      }
+    }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,11 +77,13 @@ const Register = () => {
         <div>
           <FontAwesomeIcon className="input-icon" icon={faLock} />
           <input
+            id="password"
             placeholder="Type your password here"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           ></input>
+          <FontAwesomeIcon className="show-password-icon" icon={showingPassword ? faEyeSlash : faEye} onClick={() => showPassword()} />
         </div>
         <p className="login-to-register">Already have an account?: <a href="/login" className="register-link">Login here</a></p>
         <button className="login-btn" type="submit">Register</button>

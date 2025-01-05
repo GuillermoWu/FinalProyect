@@ -469,9 +469,97 @@ div .sidenav {
 /* Account css */
 
 .account-stats {
-  display: grid;
+  display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 10rem;
+}
+
+.account-image-circle{
+  height: 300px;  
+  width: 300px; 
+  border: solid 1px;  
+  border-radius: 50%;  
+  
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  float: left;
+}
+
+.profile{
+  display: grid;
+}
+
+.profile label{
+  display: flex;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-top: 1.5rem;
+  color: var(--white-grey);
+}
+
+.progress-bars-container{
+  margin-top: 2%;
+  margin-left: 5%;
+}
+
+.progress-label{
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.progress-bar{
+  display: flex;
+  align-items: center;
+  width: 35vw;
+  border-radius: 16px;
+  height: 30px;
+  border: 2px solid var(--white-grey);
+  background-color: var(--dark-grey);
+  margin-bottom: 7%;
+}
+
+.progress-bar-children{
+  display: flex;
+  align-items: center;
+  width: 30vw;
+  border-radius: 16px;
+  height: 15px;
+  border: 1px solid var(--white-grey);
+  background-color: var(--dark-grey);
+  margin-bottom: 7%;
+}
+
+.school-content{
+  display: block;
+  border: 2px solid var(--light-grey);
+  border-radius: 16px;
+  padding: 5%;
+  margin-bottom: 2%;
+  transition: max-height 0.3s ease-out opacity 0.3s ease-out transform 0.3s
+    ease-out;
+  max-height: 1000px;
+  opacity: 1;
+  overflow: visible;
+}
+
+
+
+.shrink {
+  display: none;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+}
+
+
+.add-class-btn{
+  background-color: var(--dark-grey);
+  box-shadow: 0 0 5px var(--light-grey);
+  padding: 1%;
+  border-radius: 12px;
 }
 
 /* Todo Today section styles */

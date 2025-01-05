@@ -8,6 +8,18 @@ class User(db.Model):
     email = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(200), nullable=False)
 
+class Classes(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
+
+    def to_json(self):
+        return{
+            'id':self.id,
+            'name':self.name,
+            'user_id':self.user_id
+    }
+
 class TodoSections(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), nullable=False)
@@ -19,7 +31,7 @@ class TodoSections(db.Model):
             'name':self.name,
             'user_id':self.user_id
         }
-    
+
 
 #Creates flask database model of Todos
 class Todos(db.Model):
