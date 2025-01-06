@@ -66,8 +66,7 @@ export const UserProvider = ({ children }) => {
 
   const fetchTodos = async () => {
     if (!sessionStorage.getItem("token")) {
-      alert("Session expired");
-      return
+      return "session-expired"
     }
     try {
     const response = await axios.get("/api/get_todos", {
@@ -79,7 +78,6 @@ export const UserProvider = ({ children }) => {
     });
       setTodos(response.data.todos);
     } catch (error) {
-      alert(error);
       setTodos([]);
     }
   };
@@ -107,7 +105,7 @@ export const UserProvider = ({ children }) => {
       });
       fetchSections()
     } catch (error) {
-      alert(error.response.data.message);
+        return
     }
   };
 
@@ -130,9 +128,9 @@ export const UserProvider = ({ children }) => {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`
         }
       })
-      fetchTodos()
+      
     }catch(error){
-      alert(error);
+      return
     }
   }
   
@@ -170,7 +168,7 @@ export const UserProvider = ({ children }) => {
         fetchTodos();
         setCreating(!creating)
       } catch (error) {
-        alert(error);
+       return
       }
     };
 

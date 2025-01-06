@@ -132,16 +132,20 @@ def delete_todo():
 def get_classes():
     try:
         current_user = get_jwt_identity()
-        user = User.query.get(current_user ["id"])
+        user = User.query.get(current_user["id"])
         if not user:
             return jsonify({"message": "Session expired"}), 404
         
         classes = Classes.query.filter_by(user_id=user.id).all()
-        classes_list = map(lambda class_item: class_item.to_json(), classes)
-        return jsonify({"classes": classes_list})
+
+        if not classes:
+            return jsonify({"message": "No classes have been created"})
+        
+        classes_list = list(map(lambda class_item: class_item.to_json(), classes))
+        return jsonify({"classes": classes_list}),200
     
-    except ValueError as error:
-        return jsonify({"message": str(error)})
+    except Exception as error:
+        return jsonify({"message": str(error)}),400
     
 @app.route("/api/create_class", methods=["POST"])
 @jwt_required()
@@ -156,7 +160,8 @@ def create_class():
         new_class = Classes(name=name, user_id=user.id)
         db.session.add(new_class)
         db.session.commit()
-    except ValueError as error:
+        return jsonify({"message": "Class created succesfully"}),201
+    except Exception as error:
         return jsonify({"message": str(error)})
 
 @app.route("/api/get_sections", methods=["GET"])
@@ -172,7 +177,7 @@ def get_sections():
         sections_list = list(map(lambda section: section.to_json(), sections))
         return jsonify({"sections": sections_list})
         
-    except ValueError as e:
+    except Exception as e:
         return jsonify({"message": str(e)})
 
 @app.route("/api/create_section", methods=["POST"])
@@ -190,7 +195,7 @@ def create_section():
         db.session.add(new_section)
         db.session.commit()
         return({"message": "Section created sucessfully"}),201
-    except ValueError as error:
+    except Exception as error:
         return jsonify({"message": "Could not create section"})
 
 @app.route("/api/delete_section", methods=["POST"])
@@ -207,7 +212,7 @@ def delete_section():
         db.session.delete(section)
         db.session.commit()
         return jsonify({"message": "Section deleted succesfully!"})
-    except ValueError as e:
+    except Exception as e:
         return jsonify({"message": "Failed to delete section"})
 
 @app.route("/api/register", methods=["POST"])

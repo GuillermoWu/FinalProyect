@@ -7,29 +7,59 @@ import {
   faP,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Account = () => {
   const { user, fetchUser, axiosRequest } = useContext(UserContext);
   const [name, setName] = useState("");
   const [addingClass, setAddingClass] = useState(false)
   const [classes, setClasses] = useState([])
+  const [showSchool, setShowSchool] = useState(false)
 
-  const get_classes = async()=>{
-    const response = await axiosRequest("/api/get_classes", "get")
-    setClasses(response.data.classes)
+  const navigate = useNavigate()
+
+  const fetchClasses = async () => {
+    if (!sessionStorage.getItem("token")) {
+      return "session-expired"
+    }
+    try {
+    const response = await axios.get("/api/get_classes", {
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
+      setClasses(response.data.classes);
+    } catch (error) {
+      setClasses([]);
+    }
+    
   }
 
   const create_class = async(e) => {
     e.preventDefault()
-    axiosRequest("/api/create_class", "post", {name})
+    try{
+      axiosRequest("/api/create_class", "post", {name});
+      setAddingClass(!addingClass)
+    }
+    catch(error){
+      return
+    }
+   
+    
   }
 
   useEffect(() => {
     fetchUser();
-    get_classes()
+    if (fetchUser() == "session-expired"){
+      navigate("/session-expired")
+    }
+    fetchClasses()
   }, []);
 
-  const [showSchool, setShowSchool] = useState(false)
+
 
   return (
     <>
@@ -50,11 +80,18 @@ const Account = () => {
               <div className="progress-bar-content"></div>
             </div>
             <label  className={`school-content ${!showSchool && "shrink"}`}>
-              <div className="progress-bar-children">
-                <div className="progress-bar-content"></div>
-              </div>
-              <button className="add-class-btn"><FontAwesomeIcon icon={faPlus}/>Add Class</button>
-              <label>
+              
+              {classes && classes.map(class_item => (
+                <div key={class_item.id}>
+                <label>{class_item.name}</label>
+                <div className="progress-bar-children">
+                  <div className="progress-bar-content"></div>
+                </div>
+                </div>
+              ))}
+              
+              <button className="add-class-btn" onClick={() => setAddingClass(!addingClass)}><FontAwesomeIcon icon={faPlus}/>&nbsp;Add Class</button>
+              <label className={`add-class-content ${!addingClass && "shrink"}`}>
                 <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Class Name"></input>
                 <div className="addClass-btn-container">
                   <button className="cancel-btn" onClick={() => setAddingClass(!addingClass)}>Cancel</button>

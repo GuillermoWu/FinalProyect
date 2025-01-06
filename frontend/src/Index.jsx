@@ -49,8 +49,7 @@ export default function Index() {
     try{
       fetchSections();
     }catch(error){
-      alert("session expired")
-      return
+      navigate("/session-expired")
     }
     setSectionExpanded((prevState) => ({
       ...prevState,

@@ -7,6 +7,7 @@ import {
   faAngleUp,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 export default function TodoForm() {
   const { fetchTodos, todos, today_date, creating_label, creating, setCreating} = useContext(UserContext);
@@ -17,8 +18,13 @@ export default function TodoForm() {
   });
   const createTaskRef = useRef(null);
 
+  const navigate = useNavigate()
+
   useEffect(() => {
     fetchTodos();
+    if (fetchTodos() === "session-expired"){
+      navigate("/session-expired")
+    }
   }, []);
 
   useEffect(() => {

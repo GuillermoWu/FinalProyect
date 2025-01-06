@@ -1,11 +1,11 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX, faCalendarWeek} from "@fortawesome/free-solid-svg-icons";
 import { UserContext } from "./UserContext";
 
 export default function TodoList({ todo, section }) {
-  const {todoSections, axiosRequest, today_date, today, todoItem, setTodoItem} = useContext(UserContext);
+  const {todoSections, axiosRequest, today_date, today, todoItem, setTodoItem, fetchTodos} = useContext(UserContext);
 
   const resetTodoItem = () => {
     setTodoItem({
@@ -23,9 +23,15 @@ export default function TodoList({ todo, section }) {
     });
   };
 
+  useEffect(()=>{
+    
+  },[])
+
   const complete_todo = async (id, e, completed) => {
     e.preventDefault();
     axiosRequest("/api/complete_todo", "patch", { id, completed });
+    fetchTodos()
+
     //setTimeout(() => {
      // delete_todo(id, e);
     //}, 500);
@@ -34,6 +40,8 @@ export default function TodoList({ todo, section }) {
   const delete_todo = async (id, e) => {
     e.preventDefault();
     axiosRequest("/api/delete_todo", "post", { id });
+    fetchTodos()
+
   };
 
   const update_todo = async (e, id, name, due_date, section) => {
@@ -45,6 +53,8 @@ export default function TodoList({ todo, section }) {
       section,
     });
     resetTodoItem();
+    fetchTodos()
+
   };
 
   const updatePriority = async (e, id, priority) => {
@@ -55,6 +65,8 @@ export default function TodoList({ todo, section }) {
       ...prevState,
       priorityUpdating: { id: null, state: false },
     }));
+    fetchTodos()
+
   };
 
   const formatDate = (todoDate) =>{

@@ -554,13 +554,37 @@ div .sidenav {
   opacity: 0;
 }
 
-
+.add-class-btn{background-image: linear-gradient(to right, #614385 0%, #516395  51%, #614385  100%)}
 .add-class-btn{
-  background-color: var(--dark-grey);
-  box-shadow: 0 0 5px var(--light-grey);
-  padding: 1%;
-  border-radius: 12px;
+   padding: 1.5%;
+   text-align: center;
+   transition: 0.5s;
+   background-size: 200% auto;
+   color: white;            
+   box-shadow: 0 0 5px var(--grey);
+   border-radius: 12px;
+   display: block;
+ }
+
+.add-class-btn:hover {
+   background-position: right center; /* change the direction of the change here */
+   color: #fff;
+   text-decoration: none;
+ }
+
+
+.add-class-content{
+  display: grid;
 }
+
+.add-class-content input{
+  background-color: var(--dark-grey);
+  border: 1px solid var(--highlight-text-color);
+  border-radius: 12px;
+  padding: 1% 2%;
+  margin: 2% 0 2% 0;
+}
+
 
 /* Todo Today section styles */
 
@@ -798,6 +822,7 @@ div .sidenav {
   outline: 1px solid var(--light-grey);
   border-radius: 8px;
   width: 100%;
+  min-width: 800px;
   height: 200px;
   margin-bottom: 5%;
 }
@@ -957,8 +982,9 @@ div .sidenav {
 
 .create-task{background-image: linear-gradient(to right, #614385 0%, #516395  51%, #614385  100%)}
 .create-task {
-   margin: 10px;
-   padding: 1.5%;
+   margin: 20px 10px;
+   padding: 1%;
+   min-height: 40px;
    width: 150px;
    text-align: center;
    transition: 0.5s;
