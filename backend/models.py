@@ -1,7 +1,7 @@
 from datetime import datetime
 from config import db
 
-#Creates flask database model of User
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(15), nullable=False, unique=True)
@@ -20,6 +20,40 @@ class Classes(db.Model):
             'user_id':self.user_id
     }
 
+class Terms(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False) 
+    user_id = db.Column(db.Integer, nullable=False)
+    class_id = db.Column(db.Integer, nullable=False)
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'user_id': self.user_id,
+            'class_id': self.class_id
+    }
+
+class Exams(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    date = db.Column(db.Text(), nullable=True)
+    grade = db.Column(db.Integer, nullable = False)
+    user_id = db.Column(db.Integer, nullable=False)
+    class_id = db.Column(db.Integer, nullable=False)
+    term_id = db.Column(db.Integer, nullable=False)
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'date': self.date,
+            'grade': self.grade,
+            'user_id': self.user_id,
+            'class_id': self.class_id,
+            'term_id': self.term_id
+    }
+
 class TodoSections(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), nullable=False)
@@ -33,7 +67,6 @@ class TodoSections(db.Model):
         }
 
 
-#Creates flask database model of Todos
 class Todos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False)

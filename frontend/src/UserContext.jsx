@@ -105,7 +105,7 @@ export const UserProvider = ({ children }) => {
       });
       fetchSections()
     } catch (error) {
-        return
+        alert("Incorrect password or email")
     }
   };
 
@@ -119,7 +119,7 @@ export const UserProvider = ({ children }) => {
 
   const axiosRequest = async (url, method, data) => {
     try{
-      await axios({
+      const response = await axios({
         url,
         method,
         data,
@@ -128,7 +128,7 @@ export const UserProvider = ({ children }) => {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`
         }
       })
-      
+      return response
     }catch(error){
       return
     }
@@ -149,6 +149,22 @@ export const UserProvider = ({ children }) => {
     },
   }); 
 
+  const resetTodoItem = () => {
+    setTodoItem({
+      updating: false,
+      current: "",
+      currentDueDate: "",
+      section: "",
+      priorityUpdating: { id: null, state: false },
+      priorityLabelUpdating: {
+        id: null,
+        state: false,
+        name: null,
+        priority: null,
+      },
+    });
+  };
+
   const [creating, setCreating] = useState(false);
 
   const create_todo = async (e, name, due_date, section) => {
@@ -167,6 +183,7 @@ export const UserProvider = ({ children }) => {
         );
         fetchTodos();
         setCreating(!creating)
+        resetTodoItem()
       } catch (error) {
        return
       }
@@ -283,7 +300,8 @@ export const UserProvider = ({ children }) => {
        location,
        creating_label,
        creating,
-       setCreating
+       setCreating,
+       resetTodoItem
        }}
     >
       {children}

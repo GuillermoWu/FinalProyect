@@ -6,6 +6,7 @@ import {
   faAngleDown,
   faAngleUp,
   faPlus,
+  
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
@@ -39,7 +40,7 @@ export default function TodoForm() {
       <div className="todo-today-title">Today</div>
       <div className="todo-today-content">
 
-        {todos && todos.filter(todo => todo.due_date < today_date && !todo.completed).length >= 1 && (
+        {todos && todos.filter(todo => todo.due_date && todo.due_date < today_date && !todo.completed).length >= 1 && (
           <div className="overdue-tasks">
             <label
               onClick={() =>

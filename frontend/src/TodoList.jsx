@@ -5,43 +5,19 @@ import { faX, faCalendarWeek} from "@fortawesome/free-solid-svg-icons";
 import { UserContext } from "./UserContext";
 
 export default function TodoList({ todo, section }) {
-  const {todoSections, axiosRequest, today_date, today, todoItem, setTodoItem, fetchTodos} = useContext(UserContext);
+  const {todoSections, axiosRequest, today_date, today, todoItem, setTodoItem, fetchTodos, resetTodoItem} = useContext(UserContext);
 
-  const resetTodoItem = () => {
-    setTodoItem({
-      updating: false,
-      current: "",
-      currentDueDate: "",
-      section: "",
-      priorityUpdating: { id: null, state: false },
-      priorityLabelUpdating: {
-        id: null,
-        state: false,
-        name: null,
-        priority: null,
-      },
-    });
-  };
-
-  useEffect(()=>{
-    
-  },[])
-
+ 
   const complete_todo = async (id, e, completed) => {
     e.preventDefault();
     axiosRequest("/api/complete_todo", "patch", { id, completed });
-    fetchTodos()
-
     //setTimeout(() => {
      // delete_todo(id, e);
     //}, 500);
   };
 
   const delete_todo = async (id, e) => {
-    e.preventDefault();
     axiosRequest("/api/delete_todo", "post", { id });
-    fetchTodos()
-
   };
 
   const update_todo = async (e, id, name, due_date, section) => {
@@ -53,8 +29,6 @@ export default function TodoList({ todo, section }) {
       section,
     });
     resetTodoItem();
-    fetchTodos()
-
   };
 
   const updatePriority = async (e, id, priority) => {
@@ -159,6 +133,11 @@ export default function TodoList({ todo, section }) {
       </div>
     );
   };
+
+  useEffect(()=>{
+    fetchTodos()
+  },[complete_todo,delete_todo,updatePriority,update_todo])
+
 
   return (
     <div>

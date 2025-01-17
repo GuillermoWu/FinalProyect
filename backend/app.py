@@ -1,12 +1,13 @@
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from models import db, User, Todos, TodoSections, Classes
+from models import db, User, Todos, TodoSections, Classes, Exams, Terms
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date
 from config import app, db 
 
 
 
+# Todos
 
 @app.route("/api/get_todos", methods=["GET"])
 @jwt_required()
@@ -61,7 +62,9 @@ def update_priority():
     priority = request.json.get("priority")
 
     try:
-        todo = Todos.query.get(todo_id)
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user["id"])
+        todo = Todos.query.filter_by(id=todo_id, user_id=user.id).first()
         todo.priority = priority
         db.session.commit()
         return jsonify({"message": "Priority updated succesfully!"})
@@ -81,7 +84,7 @@ def update_todo():
         current_user = get_jwt_identity()
         user = User.query.get(current_user["id"])
 
-        current_todo = Todos.query.get(todo_id)
+        current_todo = Todos.query.filter_by(id=todo_id, user_id=user.id).first()
         current_todo.name = todo_name
 
         current_todo.due_date = todo_duedate
@@ -106,7 +109,9 @@ def complete_todo():
     todo_id = request.json.get("id")
     completed = request.json.get("completed")
     try:
-        todo = Todos.query.get(todo_id)
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user["id"])
+        todo = Todos.query.filter_by(id=todo_id, user_id=user.id).first()
         todo.completed = completed
         db.session.commit()
         return jsonify({"message": "Todo updated succesfully!"})
@@ -127,6 +132,9 @@ def delete_todo():
     except Exception as e:
         return jsonify({"message": str(e)})
   
+
+# Classes
+
 @app.route("/api/get_classes", methods=["GET"])
 @jwt_required()
 def get_classes():
@@ -163,6 +171,124 @@ def create_class():
         return jsonify({"message": "Class created succesfully"}),201
     except Exception as error:
         return jsonify({"message": str(error)})
+
+@app.route("/api/update_class", methods=["PATCH"])
+@jwt_required()
+def update_class():
+    new_name = request.json.get("name")
+    class_id = request.json("class_id")
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user ["id"])
+        if not user:
+            return jsonify({"message": "Session expired"})
+        
+        classItem = Classes.query.filter_by(id=class_id, user_id=user.id).first()
+        classItem.name = new_name
+        db.session.commit()
+        
+        return jsonify({"message": "Class updated succesfully"}),200
+    except Exception as error:
+        return jsonify({"message": str(error)})
+
+@app.route("/api/delete_class", methods=["POST"])
+@jwt_required()
+def delete_class():
+    class_id = request.json.get("id")
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user ["id"])
+        class_item = Classes.query.filter_by(id=class_id, user_id=user.id).first()
+        db.session.delete(class_item)
+        db.session.commit()
+        return 0
+    except Exception as error:
+        return jsonify({"message": str(error)})
+
+
+# Get Terms
+
+@app.route("/api/get_terms", methods=["GET"])
+@jwt_required()
+def get_terms():
+
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user["id"])
+        if not user:
+            return jsonify({"message": "Session expired"}), 404
+        
+        terms = Terms.query.filter_by(user_id=user.id).all()
+
+        if not terms:
+            return jsonify({"message": "No classes have been created"})
+        
+        terms_list = list(map(lambda term_item: term_item.to_json(), terms))
+        return jsonify({"terms": terms_list}),200
+    
+    except Exception as error:
+        return jsonify({"message": str(error)}),400
+    
+@app.route("/api/create_term", methods=["POST"])
+@jwt_required()
+def create_term():
+    term_name = request.json.get("term")
+    class_id = request.json.get("class_id")
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user["id"])
+        if not user:
+            return jsonify({"message": "Session expired"}), 404
+        
+        new_term = Terms(name=term_name, user_id=user.id, class_id=class_id)
+        db.session.add(new_term)
+        db.session.commit()
+        return jsonify({"message": "Term created!"}),201
+    except Exception as error:
+        return jsonify({"message": str(error)})
+
+# Exams
+
+@app.route("/api/get_exams", methods=["GET"])
+@jwt_required()
+def get_exams():
+
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user["id"])
+        if not user:
+            return jsonify({"message": "Session expired"}), 404
+        
+        exams = Exams.query.filter_by(user_id=user.id).all()
+
+        if not exams:
+            return jsonify({"message": "No classes have been created"})
+        
+        exams_list = list(map(lambda exam: exam.to_json(), exams))
+        return jsonify({"exams": exams_list}),200
+    
+    except Exception as error:
+        return jsonify({"message": str(error)}),400
+
+@app.route("/api/create_exam", methods=["POST"])
+@jwt_required()
+def crrate_exam():
+    exam_name = request.json.get("exam_name")
+    class_id = request.json.get("class_id")
+    term_id = request.json.get("term_id")
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user["id"])
+        if not user:
+            return jsonify({"message": "Session expired"}), 404
+
+        new_exam = Exams(name=exam_name, user_id=user.id, class_id=class_id, term_id=term_id)
+        db.session.add(new_exam)
+        db.session.commit()
+        return jsonify({"message": "Exam created"}),201
+    except Exception as error:
+        return jsonify({"message": str(error)})
+# Sections
 
 @app.route("/api/get_sections", methods=["GET"])
 @jwt_required()
@@ -215,6 +341,9 @@ def delete_section():
     except Exception as e:
         return jsonify({"message": "Failed to delete section"})
 
+
+# Authentification
+
 @app.route("/api/register", methods=["POST"])
 def register():
     username = request.json.get("username")
@@ -262,7 +391,6 @@ def login():
 
 
 
-#Route to get the user"s info
 @app.route("/api/protected", methods=["GET"])
 @jwt_required()
 def protected():
