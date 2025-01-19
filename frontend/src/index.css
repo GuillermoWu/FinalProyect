@@ -551,6 +551,10 @@ div .sidenav {
   opacity: 0;
 }
 
+.addClass-btn-container{
+  margin-bottom: 2%;
+}
+
 .add-class-btn{background-image: linear-gradient(to right, #614385 0%, #516395  51%, #614385  100%)}
 .add-class-btn{
    padding: 1.5%;
@@ -726,6 +730,7 @@ div .sidenav {
 
 .exam-content-headers{
   display: flex;
+  justify-content: space-between;
   font-weight: 600;
   font-size: 1.2rem;
   align-items: center;
@@ -734,12 +739,114 @@ div .sidenav {
 }
 
 
-.exam-separator{
-  width: 100%;
-  border-top: 1px solid var(--white-grey);
+
+.exam-header:last-child {
+  margin-right: 50px;
 }
 
 
+
+.exam-display{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 500px;
+}
+
+.exam-name,
+.exam-date,
+.exam-grade {
+  flex: 1;
+  text-align: center;
+}
+
+.exam-name {
+  color: var(--highlight-light-text-color);
+  text-align: left;
+}
+
+.exam-date{
+  margin-left: 25px;
+}
+
+
+.exam-grade {
+  text-align: right;
+  margin-right: 40px;
+}
+
+.editing-exam{
+  background: none;
+  border: 1px solid var(--white-grey);
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+.editing-exam,
+.editing-exam-grade {
+  flex: 1;
+  text-align: center;
+}
+
+.editing-exam:first-child,
+.editing-exam-grade:first-child {
+  text-align: left;
+}
+
+.editing-exam:last-child,
+.editing-exam-grade:last-child {
+  text-align: right;
+}
+
+.editing-exam-name{
+  background: none;
+  border: 1px solid var(--white-grey);
+  border-radius: 8px;
+  height: 35px;
+  width: 150px;
+  padding-left: 10px;
+  
+}
+
+.editing-exam-date{
+  background: none;
+  border: 1px solid var(--white-grey);
+  border-radius: 8px;
+  height: 35px;
+  width: 120px;
+  padding-left: 10px;
+  margin-right: 50px;
+}
+
+.editing-exam-grade{
+  background: none;
+  border: 1px solid var(--white-grey);
+  border-radius: 8px;
+  height: 35px;
+  width: 30px;
+  padding-left: 10px;
+  max-width: 30px;
+
+}
+
+
+.exam-separator{
+  width: 100%;
+  border-top: 1px solid var(--white-grey);
+  cursor: pointer;
+  margin-top: none;
+}
+
+.edit-icon{
+  cursor: pointer;
+  color: var(--white-grey);
+  margin-right: 5px;
+}
+
+.delete-icon{
+  color: rgb(233, 105, 105);
+  cursor: pointer;
+}
 
 /* Todo Today section styles */
 

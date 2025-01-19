@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { UserContext } from "./UserContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,12 +7,15 @@ import {
   faEllipsis,
   faPlus,
   faXmark,
+  faPenToSquare,
+  faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { debounce } from "./utils";
 
 const Account = () => {
-  const { user, fetchUser, axiosRequest } = useContext(UserContext);
+  const { user, fetchUser, axiosRequest, today_date } = useContext(UserContext);
   const [name, setName] = useState("");
   const [addingClass, setAddingClass] = useState(false);
   const [classes, setClasses] = useState([]);
@@ -22,8 +25,16 @@ const Account = () => {
   const [terms, setTerms] = useState([]);
   const [addingTerm, setAddingTerm] = useState(false);
   const [term, setTerm] = useState("");
-
   const [exams, setExams] = useState([]);
+  const [exam, setExam] = useState("")
+  const [addingExam, setAddingExam] = useState(false);
+  const [examItem, setExamItem] = useState({
+    name:null,
+    grade:null,
+    date:null,
+    editing:false,
+    state:false,
+  })
 
   const navigate = useNavigate();
 
@@ -55,6 +66,7 @@ const Account = () => {
       return 1;
     }
   };
+
   const delete_class = async (e, id) => {
     e.preventDefault();
     try {
@@ -69,7 +81,6 @@ const Account = () => {
     try {
       const response = await axiosRequest("/api/get_terms", "get");
       setTerms(response.data.terms);
-      console.log(terms)
     } catch (error) {
       alert(error);
     }
@@ -93,6 +104,62 @@ const Account = () => {
     }
   };
 
+  const create_exam = async (exam_name, class_id, term_id) => {
+      try{
+        await axiosRequest("/api/create_exam", "post", {exam_name, class_id, term_id, today_date});
+        fetchExams();
+        setAddingExam(!addingExam);
+      }catch (error){
+        alert(error);
+      }
+  }
+
+  const update_exam = async (id, exam_name, date, grade) =>{
+    try{
+      axiosRequest("/api/update_exam", "patch", {id, exam_name, date, grade})
+      fetchExams()
+    }catch(error){
+      return 1
+    }
+  }
+
+  const delete_exam = async (e, id) => {
+    e.preventDefault();
+    try {
+      await axiosRequest("/api/delete_exam", "post", { id });
+      fetchExams();
+    } catch (error) {
+      return 1;
+    }
+  };
+
+  // code suggested by copilot
+  const debouncedUpdateExam = useCallback(
+    debounce((id, exam_name, date, grade) => {
+      update_exam(id, exam_name, date, grade);
+    }, 500),
+    []
+  );
+
+  const handleInput = (name, date, grade, id) =>{
+    setExamItem(prevState => ({...prevState, name:name}))
+    setExamItem(prevState => ({...prevState, date:date}))
+    setExamItem(prevState => ({...prevState, grade:grade}))
+    // code suggested by copilot
+    debouncedUpdateExam(id, name, date, grade);
+
+  }
+
+  useEffect(()=>{
+    fetchUser();
+    if (fetchUser() == "session-expired") {
+      navigate("/session-expired");
+    }
+    fetchClasses();
+    fetchExams();
+    fetchTerms();
+  },[]);
+
   const configure_class = (classItem, terms) => {
     return (
       <div className="class-config-container">
@@ -108,41 +175,72 @@ const Account = () => {
         {terms &&
           terms
             .filter((term) => term.class_id === classItem.id)
-            .map((term) => 
+            .map((term) => (
               <div key={term.id}>
                 <div className="term-container">
-                <label className="term-label">{term.name}</label>
-                <div className="exam-container">
-                  <ul className="exam-content-headers">
-                    <header>Name</header>
-                    <header>Date</header>
-                    <header>Grade</header>
-                  </ul>
-                  {exams &&
-                    exams
-                      .filter(
-                        (exam) =>
-                          exam.class_id === classItem.id &&
-                          exam.term_id === term.id
-                      )
-                      .map((exam) => {
-                        <>
-                          <ul key={exam.id}>
-                            <label>{exam.name}</label>
-                            <label>{exam.date}</label>
-                            <label>{exam.grade}</label>
-                          </ul>
-                        </>;
-                      })}
-                  <hr className="exam-separator"></hr>
-                  <button className="add-term-btn">
-                    <FontAwesomeIcon icon={faPlus} />
-                    &nbsp;Add Exam
-                  </button>
-                </div>
+                  <label className="term-label">{term.name}</label>
+                  <div className="exam-container">
+                    {exams &&
+                    <ul className="exam-content-headers">
+                      <header className="exam-header">Name</header>
+                      <header className="exam-header">Date</header>
+                      <header className="exam-header">Grade</header>
+                    </ul>}
+                    {exams &&
+                      exams
+                        .filter(
+                          (exam) =>
+                            exam.class_id === classItem.id &&
+                            exam.term_id === term.id
+                        )
+                        .map((exam) => (
+                          <>
+                            <ul className="exam-display" key={exam.id}>
+                              {examItem.editing === exam.id && examItem.state ? <input className="editing-exam-name" value={examItem.name} onChange={(e) => handleInput(e.target.value,"", "", exam.id)}></input> : <label className="exam-name">{exam.name}</label>}
+                              {examItem.editing === exam.id && examItem.state ? <input type="date" className="editing-exam-date" value={examItem.date} onChange={(e) => handleInput("", e.target.value, "", exam.id)}></input> : <label className="exam-date">{exam.date}</label>}
+                              {examItem.editing === exam.id && examItem.state ? <input className="editing-exam-grade" value={examItem.grade} onChange={(e) => handleInput("", "", e.target.value, exam.id)} ></input> : <label className="exam-grade">{exam.grade}</label>}
+                              <div className="icons">
+                                <FontAwesomeIcon onClick={()=>setExamItem(prevState => ({...prevState, editing:exam.id, state:!examItem.state, name:exam.name, date:exam.date, grade:exam.grade}))} className="edit-icon" icon={faPenToSquare} />
+                                <FontAwesomeIcon onClick={(e)=>delete_exam(e, exam.id)} className="delete-icon" icon={faTrashCan} />
+                              </div>  
+                            </ul>
+                            <hr className="exam-separator"></hr>
+                            
+                          </>
+                        ))}
+                    <button className="add-term-btn" onClick={()=> setAddingExam(!addingExam)}>
+                      <FontAwesomeIcon icon={faPlus} />
+                      &nbsp;Add Exam
+                    </button>
+                    <label
+                      className={`add-class-content add-term ${
+                        !addingExam && "shrink"
+                      }`}
+                    >
+                      <input
+                        value={exam}
+                        onChange={(e) => setExam(e.target.value)}
+                        placeholder="Exam name"
+                      ></input>
+                      <div className="addClass-btn-container">
+                        <button
+                          className="cancel-add-term cancel-btn "
+                          onClick={() => setAddingExam(!addingExam)}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          className="submit-btn"
+                          onClick={() => create_exam(exam, classItem.id, term.id)}
+                        >
+                          Create
+                        </button>
+                      </div>
+                    </label>
+                  </div>
                 </div>
               </div>
-            )}
+            ))}
         <button
           className="add-term-btn"
           onClick={() => setAddingTerm(!addingTerm)}
@@ -177,13 +275,6 @@ const Account = () => {
     );
   };
 
-  useEffect(() => {
-    fetchUser();
-    if (fetchUser() == "session-expired") {
-      navigate("/session-expired");
-    }
-    fetchClasses();
-  }, []);
 
   return (
     <>

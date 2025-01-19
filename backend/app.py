@@ -272,22 +272,65 @@ def get_exams():
 
 @app.route("/api/create_exam", methods=["POST"])
 @jwt_required()
-def crrate_exam():
+def create_exam():
     exam_name = request.json.get("exam_name")
     class_id = request.json.get("class_id")
     term_id = request.json.get("term_id")
+    date = request.json.get("today_date")
     try:
         current_user = get_jwt_identity()
         user = User.query.get(current_user["id"])
         if not user:
             return jsonify({"message": "Session expired"}), 404
 
-        new_exam = Exams(name=exam_name, user_id=user.id, class_id=class_id, term_id=term_id)
+        new_exam = Exams(name=exam_name, user_id=user.id, class_id=class_id, term_id=term_id, grade=0, date=date)
         db.session.add(new_exam)
         db.session.commit()
         return jsonify({"message": "Exam created"}),201
     except Exception as error:
-        return jsonify({"message": str(error)})
+        print(error)
+        return jsonify({"message": str(error)}),400
+    
+@app.route("/api/update_exam", methods=["PATCH"])
+@jwt_required()
+def update_exam():
+    exam_id = request.json.get("id")
+    exam_name = request.json.get("exam_name")
+    date = request.json.get("date")
+    grade = request.json.get("grade")
+    try:
+        print(exam_name)
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user["id"])
+        if not user:
+            return jsonify({"message": "Session expired"}), 404
+
+        exam = Exams.query.filter_by(id=exam_id, user_id=user.id).first()
+        exam.name = exam_name if exam_name else exam.name
+        exam.date = date if date else exam.date
+        exam.grade = grade if grade else exam.grade
+        db.session.commit()
+        return jsonify({"message": "Exam updated"}), 200
+    
+    except Exception as error:
+        print(error)
+        return jsonify({"message": str(error)}),400
+    
+
+@app.route("/api/delete_exam", methods=["POST"])
+@jwt_required()
+def delete_exam():
+    exam_id = request.json.get("id")
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user["id"])
+        exam = Exams.query.filter_by(id=exam_id, user_id=user.id).first()
+        db.session.delete(exam)
+        db.session.commit()
+        return jsonify({"message": "Exam deleted succesfully!"})
+    except Exception as e:
+        return jsonify({"message": str(e)})
+
 # Sections
 
 @app.route("/api/get_sections", methods=["GET"])
