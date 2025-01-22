@@ -309,7 +309,7 @@ def update_exam():
         exam = Exams.query.filter_by(id=exam_id, user_id=user.id).first()
         exam.name = exam_name if exam_name else exam.name
         exam.date = date if date else exam.date
-        exam.grade = grade if grade and grade <= exam.max_grade else exam.grade
+        exam.grade = grade if (grade and int(grade) <= exam.max_grade) else exam.grade
         db.session.commit()
         return jsonify({"message": "Exam updated"}), 200
     

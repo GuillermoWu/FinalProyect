@@ -31,6 +31,7 @@ const Account = () => {
     state:false,
     term_id:null,
   });
+
   const [examItem, setExamItem] = useState({
     name:null,
     grade:null,
@@ -39,6 +40,8 @@ const Account = () => {
     editing:false,
     state:false,
   })
+
+
 
   const navigate = useNavigate();
 
@@ -86,7 +89,7 @@ const Account = () => {
       const response = await axiosRequest("/api/get_terms", "get");
       setTerms(response.data.terms);
     } catch (error) {
-      alert(error);
+      return 1
     }
   };
 
@@ -104,17 +107,18 @@ const Account = () => {
       const response = await axiosRequest("/api/get_exams", "get");
       setExams(response.data.exams);
     } catch (error) {
-      alert(error);
+      return 1
     }
   };
 
-  const create_exam = async (exam_name, max_grade, class_id, term_id) => {
+  const create_exam = async (e, exam_name, max_grade, class_id, term_id) => {
+      e.preventDefault();
       try{
         await axiosRequest("/api/create_exam", "post", {exam_name, max_grade, class_id, term_id, today_date});
         fetchExams();
         setAddingExam(!addingExam);
       }catch (error){
-        alert(error);
+        return 1
       }
   }
 
@@ -141,8 +145,10 @@ const Account = () => {
   const debouncedUpdateExam = useCallback(
     debounce((id, exam_name, date, grade) => {
       update_exam(id, exam_name, date, grade);
+      fetchExams()
     }, 500),
     []
+    
   );
 
   const handleInput = (name, date, grade, id) =>{
@@ -151,7 +157,6 @@ const Account = () => {
     setExamItem(prevState => ({...prevState, grade:grade}))
     // code suggested by copilot
     debouncedUpdateExam(id, name, date, grade);
-
   }
 
   const createExam = useRef(null);
@@ -175,6 +180,16 @@ const Account = () => {
     fetchExams();
     fetchTerms();
   },[]);
+
+  const calculate_average = (class_id) => {
+    let sum = 0;
+
+    exams && exams.map(exam => 
+      sum += exam.grade / exam.max_grade * 10
+    )
+    
+    return sum / exams.length;
+  }
 
   const configure_class = (classItem, terms) => {
     return (
@@ -251,7 +266,6 @@ const Account = () => {
                               {examItem.editing === exam.id &&
                               examItem.state ? (
                                 <input
-                                  type="number"
                                   className="editing-exam-grade"
                                   value={examItem.grade}
                                   onChange={(e) =>
@@ -264,9 +278,13 @@ const Account = () => {
                                   }
                                 ></input>
                               ) : (
+                                <>
                                 <label className="exam-grade">
                                   {exam.grade}
+                                  /
+                                  {exam.max_grade}
                                 </label>
+                                </>
                               )}
                               <div className="icons">
                                 <FontAwesomeIcon
@@ -307,8 +325,9 @@ const Account = () => {
                     </button>
                     {addingExam.term_id === term.id && (
                       <form
-                        onSubmit={() =>
+                        onSubmit={(e) =>
                           create_exam(
+                            e,
                             examItem.name,
                             examItem.max_grade,
                             classItem.id,
