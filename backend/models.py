@@ -39,6 +39,7 @@ class Exams(db.Model):
     name = db.Column(db.String(50), nullable=False)
     date = db.Column(db.Text(), nullable=True)
     grade = db.Column(db.Integer, nullable = False)
+    max_grade = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
     class_id = db.Column(db.Integer, nullable=False)
     term_id = db.Column(db.Integer, nullable=False)
@@ -49,6 +50,7 @@ class Exams(db.Model):
             'name': self.name,
             'date': self.date,
             'grade': self.grade,
+            'max_grade': self.max_grade,
             'user_id': self.user_id,
             'class_id': self.class_id,
             'term_id': self.term_id

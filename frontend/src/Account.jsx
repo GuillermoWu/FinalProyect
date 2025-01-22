@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useCallback } from "react";
+import { useContext, useEffect, useState, useCallback, useRef } from "react";
 import { UserContext } from "./UserContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -27,10 +27,14 @@ const Account = () => {
   const [term, setTerm] = useState("");
   const [exams, setExams] = useState([]);
   const [exam, setExam] = useState("")
-  const [addingExam, setAddingExam] = useState(false);
+  const [addingExam, setAddingExam] = useState({
+    state:false,
+    term_id:null,
+  });
   const [examItem, setExamItem] = useState({
     name:null,
     grade:null,
+    max_grade:null,
     date:null,
     editing:false,
     state:false,
@@ -104,9 +108,9 @@ const Account = () => {
     }
   };
 
-  const create_exam = async (exam_name, class_id, term_id) => {
+  const create_exam = async (exam_name, max_grade, class_id, term_id) => {
       try{
-        await axiosRequest("/api/create_exam", "post", {exam_name, class_id, term_id, today_date});
+        await axiosRequest("/api/create_exam", "post", {exam_name, max_grade, class_id, term_id, today_date});
         fetchExams();
         setAddingExam(!addingExam);
       }catch (error){
@@ -150,6 +154,18 @@ const Account = () => {
 
   }
 
+  const createExam = useRef(null);
+  const createTerm = useRef(null);
+
+  useEffect(()=>{
+    if (addingExam && createExam.current) {
+      createExam.current.scrollIntoView({ behavior: "smooth" });
+    }
+    if (addingTerm && createTerm.current) {
+      createTerm.current.scrollIntoView({ behavior: "smooth" });
+    }
+  },[addingTerm, addingExam])
+
   useEffect(()=>{
     fetchUser();
     if (fetchUser() == "session-expired") {
@@ -180,12 +196,13 @@ const Account = () => {
                 <div className="term-container">
                   <label className="term-label">{term.name}</label>
                   <div className="exam-container">
-                    {exams &&
-                    <ul className="exam-content-headers">
-                      <header className="exam-header">Name</header>
-                      <header className="exam-header">Date</header>
-                      <header className="exam-header">Grade</header>
-                    </ul>}
+                    {exams && (
+                      <ul className="exam-content-headers">
+                        <header className="exam-header">Name</header>
+                        <header className="exam-header">Date</header>
+                        <header className="exam-header">Grade</header>
+                      </ul>
+                    )}
                     {exams &&
                       exams
                         .filter(
@@ -196,47 +213,151 @@ const Account = () => {
                         .map((exam) => (
                           <>
                             <ul className="exam-display" key={exam.id}>
-                              {examItem.editing === exam.id && examItem.state ? <input className="editing-exam-name" value={examItem.name} onChange={(e) => handleInput(e.target.value,"", "", exam.id)}></input> : <label className="exam-name">{exam.name}</label>}
-                              {examItem.editing === exam.id && examItem.state ? <input type="date" className="editing-exam-date" value={examItem.date} onChange={(e) => handleInput("", e.target.value, "", exam.id)}></input> : <label className="exam-date">{exam.date}</label>}
-                              {examItem.editing === exam.id && examItem.state ? <input className="editing-exam-grade" value={examItem.grade} onChange={(e) => handleInput("", "", e.target.value, exam.id)} ></input> : <label className="exam-grade">{exam.grade}</label>}
+                              {examItem.editing === exam.id &&
+                              examItem.state ? (
+                                <input
+                                  className="editing-exam-name"
+                                  value={examItem.name}
+                                  onChange={(e) =>
+                                    handleInput(
+                                      e.target.value,
+                                      examItem.date,
+                                      examItem.grade,
+                                      exam.id
+                                    )
+                                  }
+                                ></input>
+                              ) : (
+                                <label className="exam-name">{exam.name}</label>
+                              )}
+                              {examItem.editing === exam.id &&
+                              examItem.state ? (
+                                <input
+                                  type="date"
+                                  className="editing-exam-date"
+                                  value={examItem.date}
+                                  onChange={(e) =>
+                                    handleInput(
+                                      examItem.name,
+                                      e.target.value,
+                                      examItem.grade,
+                                      exam.id
+                                    )
+                                  }
+                                ></input>
+                              ) : (
+                                <label className="exam-date">{exam.date}</label>
+                              )}
+                              {examItem.editing === exam.id &&
+                              examItem.state ? (
+                                <input
+                                  type="number"
+                                  className="editing-exam-grade"
+                                  value={examItem.grade}
+                                  onChange={(e) =>
+                                    handleInput(
+                                      examItem.name,
+                                      examItem.date,
+                                      e.target.value,
+                                      exam.id
+                                    )
+                                  }
+                                ></input>
+                              ) : (
+                                <label className="exam-grade">
+                                  {exam.grade}
+                                </label>
+                              )}
                               <div className="icons">
-                                <FontAwesomeIcon onClick={()=>setExamItem(prevState => ({...prevState, editing:exam.id, state:!examItem.state, name:exam.name, date:exam.date, grade:exam.grade}))} className="edit-icon" icon={faPenToSquare} />
-                                <FontAwesomeIcon onClick={(e)=>delete_exam(e, exam.id)} className="delete-icon" icon={faTrashCan} />
-                              </div>  
+                                <FontAwesomeIcon
+                                  onClick={() =>
+                                    setExamItem((prevState) => ({
+                                      ...prevState,
+                                      editing: exam.id,
+                                      state: !examItem.state,
+                                      name: exam.name,
+                                      date: exam.date,
+                                      grade: exam.grade,
+                                    }))
+                                  }
+                                  className="edit-icon"
+                                  icon={faPenToSquare}
+                                />
+                                <FontAwesomeIcon
+                                  onClick={(e) => delete_exam(e, exam.id)}
+                                  className="delete-icon"
+                                  icon={faTrashCan}
+                                />
+                              </div>
                             </ul>
                             <hr className="exam-separator"></hr>
-                            
                           </>
                         ))}
-                    <button className="add-term-btn" onClick={()=> setAddingExam(!addingExam)}>
+                    <button
+                      className="add-term-btn"
+                      onClick={() =>
+                        setAddingExam({
+                          state: !addingExam.state,
+                          term_id: term.id,
+                        })
+                      }
+                    >
                       <FontAwesomeIcon icon={faPlus} />
                       &nbsp;Add Exam
                     </button>
-                    <label
-                      className={`add-class-content add-term ${
-                        !addingExam && "shrink"
-                      }`}
-                    >
-                      <input
-                        value={exam}
-                        onChange={(e) => setExam(e.target.value)}
-                        placeholder="Exam name"
-                      ></input>
-                      <div className="addClass-btn-container">
-                        <button
-                          className="cancel-add-term cancel-btn "
-                          onClick={() => setAddingExam(!addingExam)}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          className="submit-btn"
-                          onClick={() => create_exam(exam, classItem.id, term.id)}
-                        >
-                          Create
-                        </button>
-                      </div>
-                    </label>
+                    {addingExam.term_id === term.id && (
+                      <form
+                        onSubmit={() =>
+                          create_exam(
+                            examItem.name,
+                            examItem.max_grade,
+                            classItem.id,
+                            term.id
+                          )
+                        }
+                        ref={createExam}
+                        className={`add-class-content add-term ${
+                          !addingExam.state && "shrink"
+                        }`}
+                      >
+                        <input
+                          required
+                          value={examItem.name}
+                          onChange={(e) =>
+                            setExamItem((prevState) => ({
+                              ...prevState,
+                              name: e.target.value,
+                            }))
+                          }
+                          placeholder="Exam name"
+                        ></input>
+                        <input
+                          required
+                          type="number"
+                          value={examItem.max_grade}
+                          onChange={(e) =>
+                            setExamItem((prevState) => ({
+                              ...prevState,
+                              max_grade: e.target.value,
+                            }))
+                          }
+                          placeholder="Maximum obtainable grade"
+                        ></input>
+                        <div className="addClass-btn-container">
+                          <button
+                            className="cancel-add-term cancel-btn "
+                            onClick={() =>
+                              setAddingExam({ state: !addingExam.state })
+                            }
+                          >
+                            Cancel
+                          </button>
+                          <button type="submit" className="submit-btn">
+                            Create
+                          </button>
+                        </div>
+                      </form>
+                    )}
                   </div>
                 </div>
               </div>
@@ -249,6 +370,7 @@ const Account = () => {
           &nbsp;Add Term
         </button>
         <label
+          ref={createTerm}
           className={`add-class-content add-term ${!addingTerm && "shrink"}`}
         >
           <input

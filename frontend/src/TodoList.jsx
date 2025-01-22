@@ -159,8 +159,21 @@ export default function TodoList({ todo, section }) {
                 ></input>
                 {todoItem.updating === todo.id ? (
                   <>
-                    <div key={todo.id} className="updating-todo-label">
+                    <form
+                      key={todo.id}
+                      onSubmit={(e) =>
+                        update_todo(
+                          e,
+                          todo.id,
+                          todoItem.current,
+                          todoItem.currentDueDate,
+                          todoItem.section.length >= 1 ? todoItem.section : ""
+                        )
+                      }
+                      className="updating-todo-label"
+                    >
                       <input
+                        required
                         value={todoItem.current}
                         onChange={(e) =>
                           setTodoItem((prevState) => ({
@@ -189,7 +202,7 @@ export default function TodoList({ todo, section }) {
                             className="description-btn-date"
                           ></input>
                         </div>
-                        
+
                         <div className="description-btns-content">
                           <select
                             name="section"
@@ -202,16 +215,22 @@ export default function TodoList({ todo, section }) {
                             }
                           >
                             <option value={section}>{section}</option>
-                            {section !== "None" && <option value="">None</option>}
+                            {section !== "None" && (
+                              <option value="">None</option>
+                            )}
                             {todoSections &&
-                              todoSections.filter(todoSection => todoSection.name !== section).map((todoSection) => (
-                                <option
-                                  key={todoSection.id}
-                                  value={todoSection.name}
-                                >
-                                  {todoSection.name}
-                                </option>
-                              ))}
+                              todoSections
+                                .filter(
+                                  (todoSection) => todoSection.name !== section
+                                )
+                                .map((todoSection) => (
+                                  <option
+                                    key={todoSection.id}
+                                    value={todoSection.name}
+                                  >
+                                    {todoSection.name}
+                                  </option>
+                                ))}
                           </select>
                         </div>
                       </div>
@@ -227,22 +246,11 @@ export default function TodoList({ todo, section }) {
                         >
                           Cancel
                         </button>
-                        <button
-                          className="submit-btn"
-                          onClick={(e) =>
-                            update_todo(
-                              e,
-                              todo.id,
-                              todoItem.current,
-                              todoItem.currentDueDate,
-                              todoItem.section.length >=1 ? todoItem.section : ""
-                            )
-                          }
-                        >
+                        <button type="submit" className="submit-btn">
                           Save
                         </button>
                       </div>
-                    </div>
+                    </form>
                   </>
                 ) : (
                   // Display the todo name
@@ -277,8 +285,19 @@ export default function TodoList({ todo, section }) {
               </div>
             </li>
             <div className="todo-info-display">
-              <div className="todo-duedate-display"><FontAwesomeIcon className="todo-duedate-icon" icon={faCalendarWeek} /><label>{formatDate(todo.due_date)}</label></div>
-              <div className="todo-section-display">Section: <label className="todo-section-label">{todo.section.length >= 1 ? todo.section : section}</label></div>
+              <div className="todo-duedate-display">
+                <FontAwesomeIcon
+                  className="todo-duedate-icon"
+                  icon={faCalendarWeek}
+                />
+                <label>{formatDate(todo.due_date)}</label>
+              </div>
+              <div className="todo-section-display">
+                Section:{" "}
+                <label className="todo-section-label">
+                  {todo.section.length >= 1 ? todo.section : section}
+                </label>
+              </div>
             </div>
             <hr className="todolist-section-separator"></hr>
           </React.Fragment>

@@ -274,6 +274,7 @@ def get_exams():
 @jwt_required()
 def create_exam():
     exam_name = request.json.get("exam_name")
+    max_grade = request.json.get("max_grade")
     class_id = request.json.get("class_id")
     term_id = request.json.get("term_id")
     date = request.json.get("today_date")
@@ -283,7 +284,7 @@ def create_exam():
         if not user:
             return jsonify({"message": "Session expired"}), 404
 
-        new_exam = Exams(name=exam_name, user_id=user.id, class_id=class_id, term_id=term_id, grade=0, date=date)
+        new_exam = Exams(name=exam_name, max_grade=max_grade, user_id=user.id, class_id=class_id, term_id=term_id, grade=0, date=date)
         db.session.add(new_exam)
         db.session.commit()
         return jsonify({"message": "Exam created"}),201
@@ -308,7 +309,7 @@ def update_exam():
         exam = Exams.query.filter_by(id=exam_id, user_id=user.id).first()
         exam.name = exam_name if exam_name else exam.name
         exam.date = date if date else exam.date
-        exam.grade = grade if grade else exam.grade
+        exam.grade = grade if grade and grade <= exam.max_grade else exam.grade
         db.session.commit()
         return jsonify({"message": "Exam updated"}), 200
     
