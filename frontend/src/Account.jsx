@@ -26,7 +26,6 @@ const Account = () => {
   const [addingTerm, setAddingTerm] = useState(false);
   const [term, setTerm] = useState("");
   const [exams, setExams] = useState([]);
-  const [exam, setExam] = useState("")
   const [addingExam, setAddingExam] = useState({
     state:false,
     term_id:null,
@@ -41,7 +40,28 @@ const Account = () => {
     state:false,
   })
 
+  const [file, setFile] = useState()
 
+  const handleChange =(e) =>{
+    setFile(e.target.files[0])
+  }
+
+  const uploadImage = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      await axios.post("/api/upload_profile_img", formData, {
+        headers:{
+          "Content-Type":"multipart/form-data",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`
+        }
+      })
+      fetchUser();
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+    }
+  };
 
   const navigate = useNavigate();
 
@@ -93,7 +113,8 @@ const Account = () => {
     }
   };
 
-  const create_term = async (class_id) => {
+  const create_term = async (e, class_id) => {
+    e.preventDefault();
     try {
       await axiosRequest("/api/create_term", "post", { term, class_id });
       fetchTerms();
@@ -101,6 +122,18 @@ const Account = () => {
       return 1;
     }
   };
+
+  const delete_term = async (e, term_id) => {
+    e.preventDefault()
+    try{
+      await axiosRequest("/api/delete_term", "post", {term_id})
+      fetchTerms()
+    }
+    catch(error)
+    {
+      return 1
+    }
+  }
 
   const fetchExams = async () => {
     try {
@@ -183,13 +216,29 @@ const Account = () => {
 
   const calculate_average = (class_id) => {
     let sum = 0;
-
-    exams && exams.map(exam => 
-      sum += exam.grade / exam.max_grade * 10
+    let length = 0;
+    exams && exams.filter(exam => exam.class_id === class_id).forEach(exam => 
+      {
+        sum += (exam.grade / exam.max_grade) * 10;
+        length++;
+      }
+      
     )
-    
-    return sum / exams.length;
+    return length > 0 ? (sum / length) * 10 : 0;
   }
+
+  const calculate_shool = () => {
+    let sum = 0;
+    let length = 0;
+    exams &&
+      exams
+        .forEach((exam) => {
+          sum += (exam.grade / exam.max_grade) * 10;
+          length++;
+        });
+    return length > 0 ? (sum / length) * 10 : 0;
+  }
+
 
   const configure_class = (classItem, terms) => {
     return (
@@ -210,8 +259,14 @@ const Account = () => {
               <div key={term.id}>
                 <div className="term-container">
                   <label className="term-label">{term.name}</label>
+                  <FontAwesomeIcon
+                    onClick={(e) => delete_term(e, term.id)}
+                    className="delete-icon"
+                    icon={faTrashCan}
+                  />
+
                   <div className="exam-container">
-                    {exams && (
+                    {exams.filter(exam => exam.term_id === term.id) && (
                       <ul className="exam-content-headers">
                         <header className="exam-header">Name</header>
                         <header className="exam-header">Date</header>
@@ -279,11 +334,9 @@ const Account = () => {
                                 ></input>
                               ) : (
                                 <>
-                                <label className="exam-grade">
-                                  {exam.grade}
-                                  /
-                                  {exam.max_grade}
-                                </label>
+                                  <label className="exam-grade">
+                                    {exam.grade}/{exam.max_grade}
+                                  </label>
                                 </>
                               )}
                               <div className="icons">
@@ -364,10 +417,12 @@ const Account = () => {
                         ></input>
                         <div className="addClass-btn-container">
                           <button
+                            type="button"
                             className="cancel-add-term cancel-btn "
-                            onClick={() =>
-                              setAddingExam({ state: !addingExam.state })
-                            }
+                            onClick={(e) => {
+                              setAddingExam({ state: !addingExam.state });
+                              e.preventDefault();
+                            }}
                           >
                             Cancel
                           </button>
@@ -388,30 +443,33 @@ const Account = () => {
           <FontAwesomeIcon icon={faPlus} />
           &nbsp;Add Term
         </button>
-        <label
+        <form
           ref={createTerm}
+          onSubmit={(e) => create_term(e, classItem.id)}
           className={`add-class-content add-term ${!addingTerm && "shrink"}`}
         >
           <input
+            required
             value={term}
             onChange={(e) => setTerm(e.target.value)}
             placeholder="1st Term"
           ></input>
           <div className="addClass-btn-container">
             <button
+              type="button"
               className="cancel-add-term cancel-btn "
-              onClick={() => setAddingTerm(!addingTerm)}
+              onClick={(e) => {
+                e.preventDefault();
+                setAddingTerm(!addingTerm);
+              }}
             >
               Cancel
             </button>
-            <button
-              className="submit-btn"
-              onClick={() => create_term(classItem.id)}
-            >
+            <button type="submit" className="submit-btn">
               Create
             </button>
           </div>
-        </label>
+        </form>
       </div>
     );
   };
@@ -422,7 +480,14 @@ const Account = () => {
       <div className="account-stats">
         <div className="profile">
           <div className="account-image">
-            <span className="account-image-circle"></span>
+            <span className="account-image-circle">
+              <form onSubmit={(e)=>uploadImage(e)}>
+                <input type="file" accept="image/*" onChange={(e)=>handleChange(e)} />
+                <button type="submit" className="submit-btn">Upload</button>
+              </form>
+
+              <img src={user.profile_img} alt="profile" />
+            </span>
           </div>
           <label>{user.username}</label>
         </div>
@@ -436,7 +501,10 @@ const Account = () => {
               icon={!showSchool ? faAngleUp : faAngleDown}
             />
             <div className="progress-bar">
-              <div className="progress-bar-content"></div>
+              <div
+                style={{ width: `${calculate_shool()}%` }}
+                className="progress-bar-content"
+              ></div>
             </div>
             <label className={`school-content ${!showSchool && "shrink"}`}>
               {classes &&
@@ -469,7 +537,10 @@ const Account = () => {
                             className="config-btn"
                             onClick={() => {
                               setClassConfigLabel(!classConfigLabel);
-                              setClassConfig((prevState)=>({...prevState, state:!classConfig.state}));
+                              setClassConfig((prevState) => ({
+                                ...prevState,
+                                state: !classConfig.state,
+                              }));
                               fetchTerms();
                             }}
                           >
@@ -485,9 +556,16 @@ const Account = () => {
                       </div>
                     </div>
                     <div className="progress-bar-children">
-                      <div className="progress-bar-content"></div>
+                      <div
+                        style={{
+                          width: `${calculate_average(class_item.id)}%`,
+                        }}
+                        className="progress-bar-content"
+                      ></div>
                     </div>
-                    {classConfigLabel && classConfig.id === class_item.id ? configure_class(class_item, terms) : ""}
+                    {classConfigLabel && classConfig.id === class_item.id
+                      ? configure_class(class_item, terms)
+                      : ""}
                   </div>
                 ))}
 
@@ -498,29 +576,27 @@ const Account = () => {
                 <FontAwesomeIcon icon={faPlus} />
                 &nbsp;Add Class
               </button>
-              <label
+              <form
+                onSubmit={(e) => create_class(e, name)}
                 className={`add-class-content ${!addingClass && "shrink"}`}
               >
                 <input
+                  required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Class Name"
                 ></input>
                 <div className="addClass-btn-container">
                   <button
+                    type="button"
                     className="cancel-btn"
                     onClick={() => setAddingClass(!addingClass)}
                   >
                     Cancel
                   </button>
-                  <button
-                    className="submit-btn"
-                    onClick={(e) => create_class(e, name)}
-                  >
-                    Create
-                  </button>
+                  <button className="submit-btn">Create</button>
                 </div>
-              </label>
+              </form>
             </label>
           </div>
 

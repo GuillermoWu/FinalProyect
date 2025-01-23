@@ -7,6 +7,9 @@ from config import app, db
 
 
 
+
+
+
 # Todos
 
 @app.route("/api/get_todos", methods=["GET"])
@@ -247,6 +250,21 @@ def create_term():
     except Exception as error:
         return jsonify({"message": str(error)})
 
+@app.route("/api/delete_term", methods=["POST"])
+@jwt_required()
+def delete_term():
+    term_id = request.json.get("term_id")
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user["id"])
+        if not user:
+            return jsonify({"message": "Session expired"}), 404
+        
+        term = Terms.query.filter_by(user_id=user.id, id=term_id).first()
+        db.session.delete(term)
+        db.session.commit()
+    except Exception as error:
+        return jsonify({"message": str(error)})
 # Exams
 
 @app.route("/api/get_exams", methods=["GET"])
@@ -404,7 +422,7 @@ def register():
     hashed = generate_password_hash(password)
     
     try:
-        new_user = User(username=username, password=hashed, email=email)
+        new_user = User(username=username, password=hashed, email=email, profile_img="")
         db.session.add(new_user)
         db.session.commit()
     except Exception as error:
@@ -433,7 +451,23 @@ def login():
     else:
         return jsonify({"message": "Invalid credentials"}),401
 
+@app.route("/api/upload_profile_img", methods=["POST"])
+@jwt_required()
+def upload_profile_img():
+    profile_image = request.files['file']
 
+    
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user["id"])
+        if not user:
+            return jsonify({"message": "Session expired"}), 404
+        
+        user.profile_img = profile_image
+        db.session.commit()
+        return jsonify({"message": "Profile picture updated"})
+    except Exception as error:
+        return jsonify({"messasge": str(error)})
 
 @app.route("/api/protected", methods=["GET"])
 @jwt_required()
@@ -447,6 +481,7 @@ def protected():
                     "id":user.id,
                     "email":user.email,
                     "username":user.username,
+                    "profile_img":user.profile_img
                 }
             }),200
         else:

@@ -7,6 +7,7 @@ class User(db.Model):
     username = db.Column(db.String(15), nullable=False, unique=True)
     email = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(200), nullable=False)
+    profile_img = db.Column(db.String, nullable=False)
 
 class Classes(db.Model):
     id = db.Column(db.Integer, primary_key=True)

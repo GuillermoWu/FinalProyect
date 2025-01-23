@@ -513,7 +513,7 @@ div .sidenav {
   align-items: center;
   width: 35vw;
   border-radius: 16px;
-  height: 30px;
+  height: 25px;
   border: 2px solid var(--white-grey);
   background-color: var(--dark-grey);
   margin-bottom: 7%;
@@ -528,6 +528,14 @@ div .sidenav {
   border: 1px solid var(--white-grey);
   background-color: var(--dark-grey);
   margin-bottom: 7%;
+}
+
+.progress-bar-content{
+  height: 100%;
+  border-radius: 16px;
+  transition: width 0.3s ease-in-out;
+  background-color: #9921e8;
+  background-image: linear-gradient(315deg, #7e4fed 0%, #5f72be 74%);
 }
 
 .school-content{
