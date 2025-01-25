@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from models import db, User, Todos, TodoSections, Classes, Exams, Terms
+from models import db, User, Todos, TodoSections, Classes, Exams, Terms, Sessions, Exercises
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date
 from config import app, db 
@@ -357,7 +357,7 @@ def delete_exam():
 def get_sections():
     try:
         current_user = get_jwt_identity()
-        user = User.query.get(current_user ["id"])
+        user = User.query.get(current_user["id"])
         if not user:
             return jsonify({"message": "Session expired"})
         
@@ -404,6 +404,45 @@ def delete_section():
         return jsonify({"message": "Failed to delete section"})
 
 
+# Training
+
+@app.route("/api/get_sessions", methods=["GET"])
+@jwt_required()
+def get_sessions():
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user["id"])
+        if not user:
+            return jsonify({"message": "Session expired"}), 404
+        
+        sessions = Sessions.query.filter_by(user_id=user.id).all()
+        if not sessions:
+            return jsonify({"message": "No sessions have been created"})
+        
+        sessions_list = list(map(lambda sessionItem: sessionItem.to_json(), sessions))
+        return jsonify({"sessions": sessions_list}), 200 
+    except Exception as e:
+        return jsonify({"message": str(e)})
+    
+@app.route("/api/create_session", methods=["POST"])
+@jwt_required()
+def create_session():
+    name = request.json.get("sessionName")
+    date = request.json.get("today_date")
+    duration = request.json.get("sessionDuration")
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user["id"])
+        if not user:
+            return jsonify({"message": "Session expired"}), 404
+
+        new_session = Sessions(name=name, user_id=user.id, date=date, duration=duration)
+        db.session.add(new_session)
+        db.session.commit()
+        return jsonify({"message": "Session created succesfully"}),201
+    except Exception as e:
+        return jsonify({"message": str(e)})
+    
 # Authentification
 
 @app.route("/api/register", methods=["POST"])
@@ -454,18 +493,18 @@ def login():
 @app.route("/api/upload_profile_img", methods=["POST"])
 @jwt_required()
 def upload_profile_img():
-    profile_image = request.files['file']
+    profile_image = request.json.get("imageUrl")
 
-    
     try:
         current_user = get_jwt_identity()
         user = User.query.get(current_user["id"])
         if not user:
             return jsonify({"message": "Session expired"}), 404
-        
+        if profile_image == "":
+            return jsonify({"message": "No image uploaded"}), 400
         user.profile_img = profile_image
         db.session.commit()
-        return jsonify({"message": "Profile picture updated"})
+        return jsonify({"image": user.profile_img}), 200
     except Exception as error:
         return jsonify({"messasge": str(error)})
 

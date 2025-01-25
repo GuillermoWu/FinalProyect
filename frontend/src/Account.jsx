@@ -16,11 +16,21 @@ import axios from "axios";
 import { debounce } from "./utils";
 
 const Account = () => {
-  const { user, fetchUser, axiosRequest, today_date } = useContext(UserContext);
+  const { user, fetchUser, axiosRequest, today_date, sessions, fetchSessions } =
+    useContext(UserContext);
   const [name, setName] = useState("");
   const [addingClass, setAddingClass] = useState(false);
   const [classes, setClasses] = useState([]);
   const [showSchool, setShowSchool] = useState(false);
+  const [showTraining, setShowTraining] = useState(false);
+  const [addingSession, setAddingSession] = useState(false);
+  const [sessionItem, setSessionItem] = useState({
+    name: null,
+    date: null,
+    duration: null,
+    editing: false,
+    state: false,
+  });
   const [classConfig, setClassConfig] = useState({ id: null, state: null });
   const [classConfigLabel, setClassConfigLabel] = useState(false);
   const [terms, setTerms] = useState([]);
@@ -49,30 +59,23 @@ const Account = () => {
   const inputRef = useRef(null);
   const [image, setImage] = useState();
   const [uploading, setUploading] = useState(false);
-  const [profilePicture, setProfilePicture] = useState(null);
 
   const handleImageClick = () => {
     inputRef.current.click();
   };
 
-  useEffect(() => {
-    
-    const profile = localStorage.getItem("image");
-    if (profile) {
-      setProfilePicture(profile);
-    }
-    else{
-      setProfilePicture(null);
-      
-    }
-  }, []);
-
-  const uploadImage = () => {
+  const uploadImage = async () => {
     if (!image) {
       return;
     }
-    localStorage.setItem("image", image);
-    setProfilePicture(image);
+    const imageUrl = URL.createObjectURL(image);
+    try {
+      await axiosRequest("/api/upload_profile_img", "post", { imageUrl });
+
+      fetchUser();
+    } catch (error) {
+      return 1;
+    }
     setUploading(!uploading);
   };
 
@@ -194,6 +197,20 @@ const Account = () => {
     }
   };
 
+  const createSession = async (e, sessionName, sessionDuration) => {
+    e.preventDefault();
+    try {
+      await axiosRequest("/api/create_session", "post", {
+        sessionName,
+        today_date,
+        sessionDuration,
+      });
+      fetchSessions();
+    } catch (error) {
+      return 1;
+    }
+  };
+
   // code suggested by copilot
   const debouncedUpdateExam = useCallback(
     debounce((id, exam_name, date, grade) => {
@@ -228,6 +245,7 @@ const Account = () => {
     fetchClasses();
     fetchExams();
     fetchTerms();
+    fetchSessions();
   }, []);
 
   const calculate_average = (class_id) => {
@@ -497,12 +515,11 @@ const Account = () => {
             onClick={() => setUploading(!uploading)}
           >
             <span className="account-image-circle">
-              {profilePicture ? (
+              {user.profile_img ? (
                 <>
                   <img
                     className="profile-picture"
-                    src={URL.createObjectURL((profilePicture)
-                    )}
+                    src={user.profile_img}
                     alt="profile-picture"
                   ></img>
                 </>
@@ -515,8 +532,8 @@ const Account = () => {
             </span>
           </div>
           {uploading && (
-            <div className="upload-menu" onClick={handleImageClick}>
-              <span>
+            <div className="upload-menu">
+              <span onClick={handleImageClick}>
                 {image ? (
                   <>
                     <img
@@ -540,7 +557,11 @@ const Account = () => {
                 />
               </span>
               <div className="upload-picture-btns">
-                <button onClick={uploadImage} className="upload-picture-btn">
+                <button
+                  type="button"
+                  onClick={() => uploadImage()}
+                  className="upload-picture-btn"
+                >
                   Upload
                 </button>
                 <button
@@ -664,9 +685,76 @@ const Account = () => {
             </label>
           </div>
 
-          <label className="progress-label">Training:</label>
-          <div className="progress-bar">
-            <div className="progress-bar-content"></div>
+          <div className="training-progress">
+            <label className="progress-label">Training:</label>
+            <FontAwesomeIcon
+              onClick={() => setShowTraining(!showTraining)}
+              className="dropdown-icon"
+              icon={!showTraining ? faAngleUp : faAngleDown}
+            />
+            <div className="progress-bar">
+              <div className="progress-bar-content"></div>
+            </div>
+
+            <label className={`school-content ${!showTraining && "shrink"}`}>
+              {sessions &&
+                sessions.map((session) => (
+                  <div key={session.id}>
+                    <div className="session-item">
+                      <label>{session.name}</label>
+                      <label>{session.date}</label>
+                      <label>{session.duration}</label>
+                    </div>
+                  </div>
+                ))}
+              <button
+                className="add-class-btn"
+                onClick={() => setAddingSession(!addingSession)}
+              >
+                <FontAwesomeIcon icon={faPlus} />
+                &nbsp;Add Session
+              </button>
+              <form
+                onSubmit={(e) =>
+                  createSession(e, sessionItem.name, sessionItem.duration)
+                }
+                className={`add-class-content ${!addingSession && "shrink"}`}
+              >
+                <input
+                  required
+                  value={sessionItem.name}
+                  onChange={(e) =>
+                    setSessionItem((prevState) => ({
+                      ...prevState,
+                      name: e.target.value,
+                    }))
+                  }
+                  placeholder="Session Name"
+                ></input>
+                <input
+                  required
+                  type="number"
+                  value={sessionItem.duration}
+                  onChange={(e) =>
+                    setSessionItem((prevState) => ({
+                      ...prevState,
+                      duration: e.target.value,
+                    }))
+                  }
+                  placeholder="Session Duration"
+                ></input>
+                <div className="addClass-btn-container">
+                  <button
+                    type="button"
+                    className="cancel-btn"
+                    onClick={() => setAddingSession(!addingSession)}
+                  >
+                    Cancel
+                  </button>
+                  <button className="submit-btn">Create</button>
+                </div>
+              </form>
+            </label>
           </div>
 
           <label className="progress-label">Sleep:</label>

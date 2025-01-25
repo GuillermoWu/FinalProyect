@@ -491,6 +491,7 @@ div .sidenav {
   border-radius: 50%; 
 }
 
+
 .edit-profile-picture{
   display: flex;
   align-items: center;
@@ -504,6 +505,9 @@ div .sidenav {
   cursor: pointer;
   .edit-profile-picture{
     color: var(--light-grey);
+  }
+  .account-image-circle{
+    border: solid 2px var(--light-grey);
   }
 }
 

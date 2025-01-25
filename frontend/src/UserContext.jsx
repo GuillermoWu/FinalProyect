@@ -12,6 +12,7 @@ export const UserProvider = ({ children }) => {
     token: null,
     username: null,
     email: null,
+    profile_img: null,
   });
 
   const fetchUser = async () => {
@@ -32,6 +33,7 @@ export const UserProvider = ({ children }) => {
             token: token,
             username: data.username,
             email: data.email,
+            profile_img: data.profile_img,
           });
         }
       } catch (error) {
@@ -82,6 +84,27 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const [sessions, setSessions] = useState([])
+
+  const fetchSessions = async () => {
+    if (!sessionStorage.getItem("token")) {
+      return "session-expired";
+    }
+    try {
+      const response = await axios.get("/api/get_sessions", {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      setSessions(response.data.sessions);
+      console.log(response.data)
+    } catch (error) {
+      setSessions([]);
+    }
+  }
+
   const login = async (email, password) => {
     try {
       const response = await axios.post(
@@ -102,6 +125,7 @@ export const UserProvider = ({ children }) => {
         token: token,
         username: decoded.sub.username,
         email: decoded.sub.email,
+        profile_img: decoded.sub.profile_img,
       });
       fetchSections()
     } catch (error) {
@@ -301,7 +325,9 @@ export const UserProvider = ({ children }) => {
        creating_label,
        creating,
        setCreating,
-       resetTodoItem
+       resetTodoItem,
+       sessions,
+       fetchSessions
        }}
     >
       {children}
