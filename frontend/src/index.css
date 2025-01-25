@@ -476,13 +476,103 @@ div .sidenav {
 .account-image-circle{
   height: 300px;  
   width: 300px; 
-  border: solid 1px;  
+  border: solid 2px;  
   border-radius: 50%;  
-  
   display: flex;
   align-items: center;
   justify-content: left;
   float: left;
+}
+
+.account-image-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  border-radius: 50%; 
+}
+
+.edit-profile-picture{
+  display: flex;
+  align-items: center;
+  left: 0;
+  right: 0;
+  margin: auto;
+  font-size: 6rem;
+}
+
+.account-image:hover{
+  cursor: pointer;
+  .edit-profile-picture{
+    color: var(--light-grey);
+  }
+}
+
+.upload-menu{
+  position: absolute;
+  background-color: var(--sidenav-background);
+  border-radius: 8px;
+  width: 400px;
+  height: 400px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  padding: 2%;
+}
+
+.upload-menu span{
+  height: 200px;  
+  width: 200px; 
+  border: solid 2px;  
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 0;
+  right: 0;
+  margin: auto;
+  margin-top: 5%;
+}
+
+.upload-menu span:hover{
+  cursor: pointer;
+  color: var(--light-grey);
+}
+
+.upload-menu img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  border-radius: 50%; 
+}
+
+.upload-picture-btns{
+  display: flex;
+  justify-content: center;
+  margin-top: 20%;
+}
+
+.upload-picture-btn{
+  background-color: var(--highlight-text-color);
+  color: white;
+  border-radius: 8px;
+  padding: 2% 3%;
+  margin: 0 5%;
+}
+
+.upload-picture-btn:hover{
+  background-color: var(--highlight-light-text-color);
+}
+
+.cancel-upload-picture-btn{
+  background-color: var(--hover-color);
+  color: white;
+  border-radius: 8px;
+  padding: 2% 3%;
+  margin: 0 5%;
+}
+
+.cancel-upload-picture-btn:hover{
+  background-color: var(--light-grey);
 }
 
 .profile{
@@ -535,7 +625,7 @@ div .sidenav {
   border-radius: 16px;
   transition: width 0.3s ease-in-out;
   background-color: #9921e8;
-  background-image: linear-gradient(315deg, #7e4fed 0%, #5f72be 74%);
+  background-image: linear-gradient(to right, #614385 0%, #516395  51%, #a475df  100%);
 }
 
 .school-content{
@@ -668,6 +758,8 @@ div .sidenav {
   margin: auto;
   margin-left: 35%;
   overflow: scroll;
+  scrollbar-color: var(--hover-color) var(--sidenav-background);
+
 }
 
 
@@ -735,7 +827,8 @@ div .sidenav {
   outline: 2px solid var(--hover-color);
   margin: 3%;
   border-radius: 12px;
-  overflow: scroll;
+  max-height: 400px;
+  overflow: auto;
 }
 
 .exam-content-headers{

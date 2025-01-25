@@ -9,6 +9,7 @@ import {
   faXmark,
   faPenToSquare,
   faTrashCan,
+  faCamera,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -27,43 +28,58 @@ const Account = () => {
   const [term, setTerm] = useState("");
   const [exams, setExams] = useState([]);
   const [addingExam, setAddingExam] = useState({
-    state:false,
-    term_id:null,
+    state: false,
+    term_id: null,
   });
 
   const [examItem, setExamItem] = useState({
-    name:null,
-    grade:null,
-    max_grade:null,
-    date:null,
-    editing:false,
-    state:false,
-  })
+    name: null,
+    grade: null,
+    max_grade: null,
+    date: null,
+    editing: false,
+    state: false,
+  });
 
-  const [file, setFile] = useState()
-
-  const handleChange =(e) =>{
-    setFile(e.target.files[0])
-  }
-
-  const uploadImage = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("file", file);
-    try {
-      await axios.post("/api/upload_profile_img", formData, {
-        headers:{
-          "Content-Type":"multipart/form-data",
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`
-        }
-      })
-      fetchUser();
-    } catch (error) {
-      console.error("Error uploading profile picture:", error);
-    }
-  };
+  const createExam = useRef(null);
+  const createTerm = useRef(null);
 
   const navigate = useNavigate();
+
+  const inputRef = useRef(null);
+  const [image, setImage] = useState();
+  const [uploading, setUploading] = useState(false);
+  const [profilePicture, setProfilePicture] = useState(null);
+
+  const handleImageClick = () => {
+    inputRef.current.click();
+  };
+
+  useEffect(() => {
+    
+    const profile = localStorage.getItem("image");
+    if (profile) {
+      setProfilePicture(profile);
+    }
+    else{
+      setProfilePicture(null);
+      
+    }
+  }, []);
+
+  const uploadImage = () => {
+    if (!image) {
+      return;
+    }
+    localStorage.setItem("image", image);
+    setProfilePicture(image);
+    setUploading(!uploading);
+  };
+
+  const handleChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+  };
 
   const fetchClasses = async () => {
     if (!sessionStorage.getItem("token")) {
@@ -109,7 +125,7 @@ const Account = () => {
       const response = await axiosRequest("/api/get_terms", "get");
       setTerms(response.data.terms);
     } catch (error) {
-      return 1
+      return 1;
     }
   };
 
@@ -124,45 +140,49 @@ const Account = () => {
   };
 
   const delete_term = async (e, term_id) => {
-    e.preventDefault()
-    try{
-      await axiosRequest("/api/delete_term", "post", {term_id})
-      fetchTerms()
+    e.preventDefault();
+    try {
+      await axiosRequest("/api/delete_term", "post", { term_id });
+      fetchTerms();
+    } catch (error) {
+      return 1;
     }
-    catch(error)
-    {
-      return 1
-    }
-  }
+  };
 
   const fetchExams = async () => {
     try {
       const response = await axiosRequest("/api/get_exams", "get");
       setExams(response.data.exams);
     } catch (error) {
-      return 1
+      return 1;
     }
   };
 
   const create_exam = async (e, exam_name, max_grade, class_id, term_id) => {
-      e.preventDefault();
-      try{
-        await axiosRequest("/api/create_exam", "post", {exam_name, max_grade, class_id, term_id, today_date});
-        fetchExams();
-        setAddingExam(!addingExam);
-      }catch (error){
-        return 1
-      }
-  }
-
-  const update_exam = async (id, exam_name, date, grade) =>{
-    try{
-      axiosRequest("/api/update_exam", "patch", {id, exam_name, date, grade})
-      fetchExams()
-    }catch(error){
-      return 1
+    e.preventDefault();
+    try {
+      await axiosRequest("/api/create_exam", "post", {
+        exam_name,
+        max_grade,
+        class_id,
+        term_id,
+        today_date,
+      });
+      fetchExams();
+      setAddingExam(!addingExam);
+    } catch (error) {
+      return 1;
     }
-  }
+  };
+
+  const update_exam = async (id, exam_name, date, grade) => {
+    try {
+      axiosRequest("/api/update_exam", "patch", { id, exam_name, date, grade });
+      fetchExams();
+    } catch (error) {
+      return 1;
+    }
+  };
 
   const delete_exam = async (e, id) => {
     e.preventDefault();
@@ -178,33 +198,29 @@ const Account = () => {
   const debouncedUpdateExam = useCallback(
     debounce((id, exam_name, date, grade) => {
       update_exam(id, exam_name, date, grade);
-      fetchExams()
+      fetchExams();
     }, 500),
     []
-    
   );
 
-  const handleInput = (name, date, grade, id) =>{
-    setExamItem(prevState => ({...prevState, name:name}))
-    setExamItem(prevState => ({...prevState, date:date}))
-    setExamItem(prevState => ({...prevState, grade:grade}))
+  const handleInput = (name, date, grade, id) => {
+    setExamItem((prevState) => ({ ...prevState, name: name }));
+    setExamItem((prevState) => ({ ...prevState, date: date }));
+    setExamItem((prevState) => ({ ...prevState, grade: grade }));
     // code suggested by copilot
     debouncedUpdateExam(id, name, date, grade);
-  }
+  };
 
-  const createExam = useRef(null);
-  const createTerm = useRef(null);
-
-  useEffect(()=>{
+  useEffect(() => {
     if (addingExam && createExam.current) {
       createExam.current.scrollIntoView({ behavior: "smooth" });
     }
     if (addingTerm && createTerm.current) {
       createTerm.current.scrollIntoView({ behavior: "smooth" });
     }
-  },[addingTerm, addingExam])
+  }, [addingTerm, addingExam]);
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchUser();
     if (fetchUser() == "session-expired") {
       navigate("/session-expired");
@@ -212,33 +228,31 @@ const Account = () => {
     fetchClasses();
     fetchExams();
     fetchTerms();
-  },[]);
+  }, []);
 
   const calculate_average = (class_id) => {
     let sum = 0;
     let length = 0;
-    exams && exams.filter(exam => exam.class_id === class_id).forEach(exam => 
-      {
-        sum += (exam.grade / exam.max_grade) * 10;
-        length++;
-      }
-      
-    )
-    return length > 0 ? (sum / length) * 10 : 0;
-  }
-
-  const calculate_shool = () => {
-    let sum = 0;
-    let length = 0;
     exams &&
       exams
+        .filter((exam) => exam.class_id === class_id)
         .forEach((exam) => {
           sum += (exam.grade / exam.max_grade) * 10;
           length++;
         });
     return length > 0 ? (sum / length) * 10 : 0;
-  }
+  };
 
+  const calculate_shool = () => {
+    let sum = 0;
+    let length = 0;
+    exams &&
+      exams.forEach((exam) => {
+        sum += (exam.grade / exam.max_grade) * 10;
+        length++;
+      });
+    return length > 0 ? (sum / length) * 10 : 0;
+  };
 
   const configure_class = (classItem, terms) => {
     return (
@@ -266,7 +280,7 @@ const Account = () => {
                   />
 
                   <div className="exam-container">
-                    {exams.filter(exam => exam.term_id === term.id) && (
+                    {exams && (
                       <ul className="exam-content-headers">
                         <header className="exam-header">Name</header>
                         <header className="exam-header">Date</header>
@@ -474,21 +488,71 @@ const Account = () => {
     );
   };
 
-
   return (
     <>
       <div className="account-stats">
         <div className="profile">
-          <div className="account-image">
+          <div
+            className="account-image"
+            onClick={() => setUploading(!uploading)}
+          >
             <span className="account-image-circle">
-              <form onSubmit={(e)=>uploadImage(e)}>
-                <input type="file" accept="image/*" onChange={(e)=>handleChange(e)} />
-                <button type="submit" className="submit-btn">Upload</button>
-              </form>
-
-              <img src={user.profile_img} alt="profile" />
+              {profilePicture ? (
+                <>
+                  <img
+                    className="profile-picture"
+                    src={URL.createObjectURL((profilePicture)
+                    )}
+                    alt="profile-picture"
+                  ></img>
+                </>
+              ) : (
+                <FontAwesomeIcon
+                  className="edit-profile-picture"
+                  icon={faCamera}
+                />
+              )}
             </span>
           </div>
+          {uploading && (
+            <div className="upload-menu" onClick={handleImageClick}>
+              <span>
+                {image ? (
+                  <>
+                    <img
+                      className="profile-picture"
+                      src={URL.createObjectURL(image)}
+                      alt="profile-picture"
+                    ></img>
+                  </>
+                ) : (
+                  <FontAwesomeIcon
+                    className="edit-profile-picture"
+                    icon={faCamera}
+                  />
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={inputRef}
+                  onChange={handleChange}
+                  style={{ display: "none" }}
+                />
+              </span>
+              <div className="upload-picture-btns">
+                <button onClick={uploadImage} className="upload-picture-btn">
+                  Upload
+                </button>
+                <button
+                  onClick={() => setUploading(!uploading)}
+                  className="cancel-upload-picture-btn"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
           <label>{user.username}</label>
         </div>
 
