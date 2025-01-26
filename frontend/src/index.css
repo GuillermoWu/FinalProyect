@@ -953,6 +953,56 @@ div .sidenav {
   cursor: pointer;
 }
 
+.session-display {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  align-items: center;
+  justify-content: space-between;
+  width: 500px;
+}
+
+.session-name,
+.session-date,
+.session-duration {
+  text-align: center;
+}
+
+.session-name {
+  color: var(--highlight-light-text-color);
+  text-align: left;
+}
+
+.session-date {
+  text-align: center;
+  margin-right: 30px;
+}
+
+.session-duration {
+  text-align: right;
+  margin-right: 60px;
+}
+
+.editing-session-duration{
+  width: 30px;
+  background: none;
+  border: 1px solid var(--white-grey);
+  border-radius: 6px;
+  padding: 5px;
+  padding-left: 10px;
+  margin-left: 30px;
+  
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.session-btn-container{
+  margin-left: 30px;
+}
+
 /* Todo Today section styles */
 
 .todo-today-title {

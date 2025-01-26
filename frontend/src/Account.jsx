@@ -23,7 +23,13 @@ const Account = () => {
   const [classes, setClasses] = useState([]);
   const [showSchool, setShowSchool] = useState(false);
   const [showTraining, setShowTraining] = useState(false);
-  const [addingSession, setAddingSession] = useState(false);
+  const [addingSession, setAddingSession] = useState({
+    name: null,
+    date: null,
+    duration: null,
+    state: false,
+  });
+
   const [sessionItem, setSessionItem] = useState({
     name: null,
     date: null,
@@ -31,6 +37,7 @@ const Account = () => {
     editing: false,
     state: false,
   });
+
   const [classConfig, setClassConfig] = useState({ id: null, state: null });
   const [classConfigLabel, setClassConfigLabel] = useState(false);
   const [terms, setTerms] = useState([]);
@@ -205,6 +212,38 @@ const Account = () => {
         today_date,
         sessionDuration,
       });
+      fetchSessions();
+    } catch (error) {
+      return 1;
+    }
+  };
+
+  const updateSession = async (
+    e,
+    id,
+    sessionName,
+    sessionDate,
+    sessionDuration
+  ) => {
+    e.preventDefault();
+    try {
+      await axiosRequest("/api/update_session", "patch", {
+        id,
+        sessionName,
+        sessionDate,
+        sessionDuration,
+      });
+      fetchSessions();
+      setSessionItem((prevState) => ({...prevState, editing: null, state: !sessionItem.state}));
+    } catch (error) {
+      return 1;
+    }
+  };
+
+  const deleteSession = async (e, id) => {
+    e.preventDefault();
+    try {
+      await axiosRequest("/api/delete_session", "post", { id });
       fetchSessions();
     } catch (error) {
       return 1;
@@ -697,63 +736,189 @@ const Account = () => {
             </div>
 
             <label className={`school-content ${!showTraining && "shrink"}`}>
+              <div className="session-item-container">
+                <ul className="exam-content-headers">
+                  <label className="exam-header">Name</label>
+                  <label className="exam-header">Date</label>
+                  <label className="exam-header">Duration</label>
+                </ul>
+              
               {sessions &&
                 sessions.map((session) => (
-                  <div key={session.id}>
-                    <div className="session-item">
-                      <label>{session.name}</label>
-                      <label>{session.date}</label>
-                      <label>{session.duration}</label>
-                    </div>
-                  </div>
+                  <>
+                    <ul key={session.id} className="session-display">
+                      {sessionItem.editing === session.id &&
+                      sessionItem.state ? (
+                        <input
+                          value={sessionItem.name}
+                          className="editing-exam-name"
+                          onChange={(e) =>
+                            setSessionItem((prevState) => ({
+                              ...prevState,
+                              name: e.target.value,
+                            }))
+                          }
+                        ></input>
+                      ) : (
+                        <label className="session-name">{session.name}</label>
+                      )}
+                      {sessionItem.editing === session.id &&
+                      sessionItem.state ? (
+                        <input
+                          type="date"
+                          value={sessionItem.date}
+                          className="editing-exam-date"
+                          onChange={(e) =>
+                            setSessionItem((prevState) => ({
+                              ...prevState,
+                              date: e.target.value,
+                            }))
+                          }
+                        ></input>
+                      ) : (
+                        <label className="session-date">{session.date}</label>
+                      )}
+                      {sessionItem.editing === session.id &&
+                      sessionItem.state ? (
+                        <input
+                          type="number"
+                          value={sessionItem.duration}
+                          className="editing-session-duration"
+                          onChange={(e) =>
+                            setSessionItem((prevState) => ({
+                              ...prevState,
+                              duration: e.target.value,
+                            }))
+                          }
+                        ></input>
+                      ) : (
+                        <label className="session-duration">
+                          {session.duration}
+                        </label>
+                      )}
+                      <div className="icons">
+                        {sessionItem.editing === session.id &&
+                        sessionItem.state ? (
+                          <>
+                            <div className="session-btn-container">
+                              <button
+                                className="submit-btn"
+                                onClick={(e) => {
+                                  updateSession(
+                                    e,
+                                    session.id,
+                                    sessionItem.name,
+                                    sessionItem.date,
+                                    sessionItem.duration
+                                  );
+                                }}
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() =>
+                                  setSessionItem((prevState) => ({
+                                    ...prevState,
+                                    editing: null,
+                                    state: !sessionItem.state,
+                                  }))
+                                }
+                                className="cancel-add-term cancel-btn "
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                          <div className="icons">
+                            <FontAwesomeIcon
+                                onClick={() =>
+                                  setSessionItem((prevState) => ({
+                                    ...prevState,
+                                    editing: session.id,
+                                    state: !sessionItem.state,
+                                    name: session.name,
+                                    date: session.date,
+                                    duration: session.duration,
+                                  }))
+                                }
+                                className="edit-icon"
+                                icon={faPenToSquare}
+                              />
+                              <FontAwesomeIcon
+                                onClick={(e) => deleteSession(e, session.id)}
+                                className="delete-icon"
+                                icon={faTrashCan}
+                              />
+                          </div>
+                          </>
+                        )}
+                      </div>
+                    </ul>
+                    <hr></hr>
+                  </>
                 ))}
+              </div>
               <button
                 className="add-class-btn"
-                onClick={() => setAddingSession(!addingSession)}
+                onClick={() =>
+                  setAddingSession((prevState) => ({
+                    ...prevState,
+                    state: !addingSession.state,
+                  }))
+                }
               >
                 <FontAwesomeIcon icon={faPlus} />
                 &nbsp;Add Session
               </button>
-              <form
-                onSubmit={(e) =>
-                  createSession(e, sessionItem.name, sessionItem.duration)
-                }
-                className={`add-class-content ${!addingSession && "shrink"}`}
-              >
-                <input
-                  required
-                  value={sessionItem.name}
-                  onChange={(e) =>
-                    setSessionItem((prevState) => ({
-                      ...prevState,
-                      name: e.target.value,
-                    }))
+              {addingSession.state && (
+                <form
+                  onSubmit={(e) =>
+                    createSession(e, addingSession.name, addingSession.duration)
                   }
-                  placeholder="Session Name"
-                ></input>
-                <input
-                  required
-                  type="number"
-                  value={sessionItem.duration}
-                  onChange={(e) =>
-                    setSessionItem((prevState) => ({
-                      ...prevState,
-                      duration: e.target.value,
-                    }))
-                  }
-                  placeholder="Session Duration"
-                ></input>
-                <div className="addClass-btn-container">
-                  <button
-                    type="button"
-                    className="cancel-btn"
-                    onClick={() => setAddingSession(!addingSession)}
-                  >
-                    Cancel
-                  </button>
-                  <button className="submit-btn">Create</button>
-                </div>
-              </form>
+                  className="add-class-content"
+                >
+                  <input
+                    required
+                    value={addingSession.name}
+                    onChange={(e) =>
+                      setAddingSession((prevState) => ({
+                        ...prevState,
+                        name: e.target.value,
+                      }))
+                    }
+                    placeholder="Session Name"
+                  ></input>
+                  <input
+                    required
+                    type="number"
+                    value={addingSession.duration}
+                    onChange={(e) =>
+                      setAddingSession((prevState) => ({
+                        ...prevState,
+                        duration: e.target.value,
+                      }))
+                    }
+                    placeholder="Session Duration"
+                  ></input>
+                  <div className="addClass-btn-container">
+                    <button
+                      type="button"
+                      className="cancel-btn"
+                      onClick={() =>
+                        setAddingSession((prevState) => ({
+                          ...prevState,
+                          state: !addingSession.state,
+                        }))
+                      }
+                    >
+                      Cancel
+                    </button>
+                    <button className="submit-btn">Create</button>
+                  </div>
+                </form>
+              )}
             </label>
           </div>
 

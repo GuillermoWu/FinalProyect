@@ -443,6 +443,49 @@ def create_session():
     except Exception as e:
         return jsonify({"message": str(e)})
     
+@app.route("/api/update_session", methods=["PATCH"])
+@jwt_required()
+def update_session():
+    id = request.json.get("id")
+    name = request.json.get("sessionName")
+    date = request.json.get("sessionDate")
+    duration = request.json.get("sessionDuration")
+    print(name)
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user["id"])
+        if not user:
+            return jsonify({"message": "Session expired"}), 404
+        
+        session = Sessions.query.filter_by(id=id, user_id=user.id).first()
+        session.name = name if name else session.name
+        session.date = date if date else session.date
+        session.duration = duration if duration else session.duration
+        db.session.commit()
+        return jsonify({"message": "Session updated succesfully"}),200
+    except Exception as e:
+        print(e)
+        return jsonify({"message": str(e)})
+    
+@app.route("/api/delete_session", methods=["POST"])
+@jwt_required()
+def delete_session():
+    id = request.json.get("id")
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.get(current_user["id"])
+        if not user:
+            return jsonify({"message": "Session expired"}), 404
+        
+        session = Sessions.query.filter_by(id=id, user_id=user.id).first()
+        db.session.delete(session)
+        db.session.commit()
+        return jsonify({"message": "Session deleted succesfully"}),200
+    except Exception as e:
+        return jsonify({"message": str(e)})
+
+
+
 # Authentification
 
 @app.route("/api/register", methods=["POST"])
