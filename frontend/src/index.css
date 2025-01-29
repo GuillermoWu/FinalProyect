@@ -719,6 +719,7 @@ div .sidenav {
   margin-top: 1%;
   border-radius: 4px;
   z-index: 10;
+  height: 90px;
 }
 
 .config-btn{
@@ -735,15 +736,16 @@ div .sidenav {
 
 .delete-btn{
   cursor: pointer;
-  background-color: rgb(226, 172, 172);
+  background-color: var(--hover-color);
   border-radius: 4px;
   padding: 0 10px;
-  color:rgb(198, 66, 66);
+  color:rgb(255, 133, 133);
   
 }
 
 .delete-btn:hover{
-  background-color: rgb(232, 194, 194);
+  color: rgb(255, 81, 81);
+  background-color: #ffb5b5;
 }
 
 

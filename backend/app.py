@@ -202,6 +202,8 @@ def delete_class():
         current_user = get_jwt_identity()
         user = User.query.get(current_user ["id"])
         class_item = Classes.query.filter_by(id=class_id, user_id=user.id).first()
+        exams = Exams.query.filter_by(class_id=class_id, user_id=user.id).all()
+        db.session.delete(exams)
         db.session.delete(class_item)
         db.session.commit()
         return 0

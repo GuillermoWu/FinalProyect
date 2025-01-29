@@ -10,7 +10,13 @@ import {
   faPenToSquare,
   faTrashCan,
   faCamera,
+  faGear
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTrashCan as faTrashCanRegular,
+  
+} from "@fortawesome/free-regular-svg-icons";
+
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { debounce } from "./utils";
@@ -656,7 +662,11 @@ const Account = () => {
                           }
                           className={`class-config-btns`}
                         >
-                          <button className="config-btn">Edit</button>
+                          <button className="config-btn">
+                            <FontAwesomeIcon icon={faPenToSquare}/>
+                            &nbsp;
+                            Edit
+                          </button>
                           <button
                             className="config-btn"
                             onClick={() => {
@@ -668,12 +678,16 @@ const Account = () => {
                               fetchTerms();
                             }}
                           >
+                            <FontAwesomeIcon icon={faGear}/>
+                            &nbsp;
                             Configure
                           </button>
                           <button
                             onClick={(e) => delete_class(e, class_item.id)}
                             className="delete-btn"
                           >
+                            <FontAwesomeIcon icon={faTrashCanRegular}/>
+                            &nbsp;
                             Delete
                           </button>
                         </div>
