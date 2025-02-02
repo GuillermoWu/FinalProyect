@@ -99,7 +99,6 @@ export const UserProvider = ({ children }) => {
         },
       });
       setSessions(response.data.sessions);
-      console.log(response.data)
     } catch (error) {
       setSessions([]);
     }

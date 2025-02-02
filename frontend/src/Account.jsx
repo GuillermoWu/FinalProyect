@@ -81,10 +81,16 @@ const Account = () => {
     if (!image) {
       return;
     }
-    const imageUrl = URL.createObjectURL(image);
+    const formData = new FormData();
+    formData.append("profile_image", image);
+  
     try {
-      await axiosRequest("/api/upload_profile_img", "post", { imageUrl });
-
+      await axios.post("/api/upload_profile_img", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      });
       fetchUser();
     } catch (error) {
       return 1;
@@ -121,6 +127,7 @@ const Account = () => {
       await axiosRequest("/api/create_class", "post", { name });
       setAddingClass(!addingClass);
       fetchClasses();
+      setName("")
     } catch (error) {
       return 1;
     }
@@ -131,6 +138,8 @@ const Account = () => {
     try {
       await axiosRequest("/api/delete_class", "post", { id });
       fetchClasses();
+      fetchTerms();
+      fetchExams();
     } catch (error) {
       return 1;
     }
@@ -150,6 +159,7 @@ const Account = () => {
     try {
       await axiosRequest("/api/create_term", "post", { term, class_id });
       fetchTerms();
+      setTerm("");
     } catch (error) {
       return 1;
     }
@@ -160,6 +170,7 @@ const Account = () => {
     try {
       await axiosRequest("/api/delete_term", "post", { term_id });
       fetchTerms();
+      fetchExams();
     } catch (error) {
       return 1;
     }
@@ -186,6 +197,14 @@ const Account = () => {
       });
       fetchExams();
       setAddingExam(!addingExam);
+      setExamItem({
+        name: null,
+        grade: null,
+        max_grade: null,
+        date: null,
+        editing: false,
+        state: false,
+      });
     } catch (error) {
       return 1;
     }
@@ -256,6 +275,24 @@ const Account = () => {
     }
   };
 
+  const handleCancelEditSession = () => {
+    setSessionItem((prevState) => ({
+      ...prevState,
+      editing:null,
+      state:false,
+    }));
+  };
+
+  const handleCancelAddSession = () =>{
+    setAddingSession((prevState) => ({
+      ...prevState,
+      name:null,
+      date:null,
+      duration:null,
+      state:false,
+    }));
+  };
+
   // code suggested by copilot
   const debouncedUpdateExam = useCallback(
     debounce((id, exam_name, date, grade) => {
@@ -292,6 +329,17 @@ const Account = () => {
     fetchTerms();
     fetchSessions();
   }, []);
+
+  const calculate_average_session = () =>{
+    let sum = 0;
+    let length = 0;
+    sessions &&
+      sessions.forEach((session)=>{
+        sum += session.duration;
+        length++;
+      })
+    return length > 0 ? ((sum / length)/2 * 100) : 0;
+  }
 
   const calculate_average = (class_id) => {
     let sum = 0;
@@ -746,7 +794,7 @@ const Account = () => {
               icon={!showTraining ? faAngleUp : faAngleDown}
             />
             <div className="progress-bar">
-              <div className="progress-bar-content"></div>
+              <div className="progress-bar-content" style={{width : `${calculate_average_session()}%`}}></div>
             </div>
 
             <label className={`school-content ${!showTraining && "shrink"}`}>
@@ -830,13 +878,7 @@ const Account = () => {
                                 Save
                               </button>
                               <button
-                                onClick={() =>
-                                  setSessionItem((prevState) => ({
-                                    ...prevState,
-                                    editing: null,
-                                    state: !sessionItem.state,
-                                  }))
-                                }
+                                onClick={handleCancelEditSession}
                                 className="cancel-add-term cancel-btn "
                               >
                                 Cancel
@@ -920,12 +962,7 @@ const Account = () => {
                     <button
                       type="button"
                       className="cancel-btn"
-                      onClick={() =>
-                        setAddingSession((prevState) => ({
-                          ...prevState,
-                          state: !addingSession.state,
-                        }))
-                      }
+                      onClick={handleCancelAddSession}
                     >
                       Cancel
                     </button>

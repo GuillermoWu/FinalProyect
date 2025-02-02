@@ -16,8 +16,7 @@ app.config['JWT_SECRET_KEY'] = '6a432013ecb84893d2149f78f1ca047ed9e9734ed430a29e
 app.config['SECRET_KEY'] = 'dasdjahdwudasljfbskjlfflytfuat2953sakdjn+qwd'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///finalproyect.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-
+app.config['BASE_URL'] = 'http://localhost:5000'
 
 db = SQLAlchemy(app)
 jwt = JWTManager(app)

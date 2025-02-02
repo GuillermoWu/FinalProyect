@@ -10,6 +10,7 @@ from config import app, db
 
 
 
+
 # Todos
 
 @app.route("/api/get_todos", methods=["GET"])
@@ -202,8 +203,13 @@ def delete_class():
         current_user = get_jwt_identity()
         user = User.query.get(current_user ["id"])
         class_item = Classes.query.filter_by(id=class_id, user_id=user.id).first()
+        terms = Terms.query.filter_by(class_id=class_id, user_id=user.id).all()
         exams = Exams.query.filter_by(class_id=class_id, user_id=user.id).all()
-        db.session.delete(exams)
+        
+        for exam in exams:
+            db.session.delete(exam)
+        for term in terms:
+            db.session.delete(term)
         db.session.delete(class_item)
         db.session.commit()
         return 0
@@ -263,6 +269,9 @@ def delete_term():
             return jsonify({"message": "Session expired"}), 404
         
         term = Terms.query.filter_by(user_id=user.id, id=term_id).first()
+        exams = Exams.query.filter_by(term_id=term_id, user_id=user.id).all()
+        for exam in exams:
+            db.session.delete(exam)
         db.session.delete(term)
         db.session.commit()
     except Exception as error:
@@ -272,7 +281,6 @@ def delete_term():
 @app.route("/api/get_exams", methods=["GET"])
 @jwt_required()
 def get_exams():
-
     try:
         current_user = get_jwt_identity()
         user = User.query.get(current_user["id"])
@@ -538,20 +546,27 @@ def login():
 @app.route("/api/upload_profile_img", methods=["POST"])
 @jwt_required()
 def upload_profile_img():
-    profile_image = request.json.get("imageUrl")
+    if 'profile_image' not in request.files:
+        return jsonify({"message": "No image uploaded"}), 400
 
+    profile_image = request.files['profile_image']
+    if profile_image.filename == '':
+        return jsonify({"message": "No image selected"}), 400
     try:
         current_user = get_jwt_identity()
         user = User.query.get(current_user["id"])
         if not user:
             return jsonify({"message": "Session expired"}), 404
-        if profile_image == "":
-            return jsonify({"message": "No image uploaded"}), 400
-        user.profile_img = profile_image
+       
+        
+       
+
         db.session.commit()
         return jsonify({"image": user.profile_img}), 200
     except Exception as error:
         return jsonify({"messasge": str(error)})
+    
+
 
 @app.route("/api/protected", methods=["GET"])
 @jwt_required()

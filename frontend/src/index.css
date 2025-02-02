@@ -960,7 +960,7 @@ div .sidenav {
   grid-template-columns: 1fr 1fr 1fr auto;
   align-items: center;
   justify-content: space-between;
-  width: 500px;
+  width: 100%
 }
 
 .session-name,
@@ -976,12 +976,12 @@ div .sidenav {
 
 .session-date {
   text-align: center;
-  margin-right: 30px;
+
 }
 
 .session-duration {
   text-align: right;
-  margin-right: 60px;
+  margin-right: 30%;
 }
 
 .editing-session-duration{
@@ -991,7 +991,7 @@ div .sidenav {
   border-radius: 6px;
   padding: 5px;
   padding-left: 10px;
-  margin-left: 30px;
+
   
 }
 
@@ -1001,8 +1001,17 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
+.icons{
+  display: flex;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
 .session-btn-container{
-  margin-left: 30px;
+  display: flex;
+  justify-content: flex-end;
+  margin-left: auto;
+  
 }
 
 /* Todo Today section styles */
