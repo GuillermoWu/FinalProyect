@@ -338,7 +338,7 @@ const Account = () => {
         sum += session.duration;
         length++;
       })
-    return length > 0 ? ((sum / length)/2 * 100) : 0;
+    return length > 0 ? ((sum / length)/1.5 * 100) : 0;
   }
 
   const calculate_average = (class_id) => {
@@ -446,6 +446,8 @@ const Account = () => {
                               {examItem.editing === exam.id &&
                               examItem.state ? (
                                 <input
+                                  type="number"
+                                  step={"0.01"}
                                   className="editing-exam-grade"
                                   value={examItem.grade}
                                   onChange={(e) =>
@@ -459,7 +461,7 @@ const Account = () => {
                                 ></input>
                               ) : (
                                 <>
-                                  <label className="exam-grade">
+                                  <label className="exam-grade" style={{color: exam.grade > exam.max_grade * 0.5 && exam.grade <= (exam.max_grade - exam.max_grade / exam.max_grade * 2)  ? "rgb(223, 175, 111)" : exam.grade <= exam.max_grade * 0.5 ? "rgb(223, 111, 111)" : "rgb(111, 223, 135)"}}>
                                     {exam.grade}/{exam.max_grade}
                                   </label>
                                 </>
@@ -684,7 +686,7 @@ const Account = () => {
                 className="progress-bar-content"
               ></div>
             </div>
-            <label className={`school-content ${!showSchool && "shrink"}`}>
+            <div className={`school-content ${!showSchool && "shrink"}`}>
               {classes &&
                 classes.map((class_item) => (
                   <div key={class_item.id}>
@@ -783,7 +785,7 @@ const Account = () => {
                   <button className="submit-btn">Create</button>
                 </div>
               </form>
-            </label>
+            </div>
           </div>
 
           <div className="training-progress">
@@ -797,7 +799,7 @@ const Account = () => {
               <div className="progress-bar-content" style={{width : `${calculate_average_session()}%`}}></div>
             </div>
 
-            <label className={`school-content ${!showTraining && "shrink"}`}>
+            <div className={`school-content ${!showTraining && "shrink"}`}>
               <div className="session-item-container">
                 <ul className="exam-content-headers">
                   <label className="exam-header">Name</label>
@@ -844,6 +846,7 @@ const Account = () => {
                       sessionItem.state ? (
                         <input
                           type="number"
+                          step="0.01"
                           value={sessionItem.duration}
                           className="editing-session-duration"
                           onChange={(e) =>
@@ -970,7 +973,7 @@ const Account = () => {
                   </div>
                 </form>
               )}
-            </label>
+            </div>
           </div>
 
           <label className="progress-label">Sleep:</label>

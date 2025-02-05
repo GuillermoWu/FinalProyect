@@ -3,6 +3,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  
 }
 
 /* Colors */
@@ -820,8 +821,10 @@ div .sidenav {
 }
 
 .term-label{
-  color: var(--white-grey);
-  font-size: 1rem;
+  color: var(--highlight-text-color);
+  font-weight: 700;
+  -webkit-text-stroke: var(--white-grey) 0.5px;
+  font-size: 1.2rem;
   margin: 3%;
 
 }
@@ -985,7 +988,7 @@ div .sidenav {
 }
 
 .editing-session-duration{
-  width: 30px;
+  width: 40px;
   background: none;
   border: 1px solid var(--white-grey);
   border-radius: 6px;
@@ -1005,6 +1008,17 @@ input::-webkit-inner-spin-button {
   display: flex;
   justify-content: flex-end;
   margin-left: auto;
+}
+
+.icons .submit-btn{
+  margin-right: 5px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  color-scheme: dark;
+  margin-right: 5px;
+  
+  
 }
 
 .session-btn-container{
