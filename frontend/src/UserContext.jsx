@@ -12,7 +12,6 @@ export const UserProvider = ({ children }) => {
     token: null,
     username: null,
     email: null,
-    profile_img: null,
   });
 
   const fetchUser = async () => {
@@ -33,7 +32,6 @@ export const UserProvider = ({ children }) => {
             token: token,
             username: data.username,
             email: data.email,
-            profile_img: data.profile_img,
           });
         }
       } catch (error) {
@@ -124,7 +122,7 @@ export const UserProvider = ({ children }) => {
         token: token,
         username: decoded.sub.username,
         email: decoded.sub.email,
-        profile_img: decoded.sub.profile_img,
+    
       });
       fetchSections()
     } catch (error) {

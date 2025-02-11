@@ -317,7 +317,7 @@ def create_exam():
         db.session.commit()
         return jsonify({"message": "Exam created"}),201
     except Exception as error:
-        print(error)
+     
         return jsonify({"message": str(error)}),400
     
 @app.route("/api/update_exam", methods=["PATCH"])
@@ -328,7 +328,7 @@ def update_exam():
     date = request.json.get("date")
     grade = request.json.get("grade")
     try:
-        print(exam_name)
+       
         current_user = get_jwt_identity()
         user = User.query.get(current_user["id"])
         if not user:
@@ -543,28 +543,7 @@ def login():
     else:
         return jsonify({"message": "Invalid credentials"}),401
 
-@app.route("/api/upload_profile_img", methods=["POST"])
-@jwt_required()
-def upload_profile_img():
-    if 'profile_image' not in request.files:
-        return jsonify({"message": "No image uploaded"}), 400
 
-    profile_image = request.files['profile_image']
-    if profile_image.filename == '':
-        return jsonify({"message": "No image selected"}), 400
-    try:
-        current_user = get_jwt_identity()
-        user = User.query.get(current_user["id"])
-        if not user:
-            return jsonify({"message": "Session expired"}), 404
-       
-        
-       
-
-        db.session.commit()
-        return jsonify({"image": user.profile_img}), 200
-    except Exception as error:
-        return jsonify({"messasge": str(error)})
     
 
 
@@ -580,7 +559,7 @@ def protected():
                     "id":user.id,
                     "email":user.email,
                     "username":user.username,
-                    "profile_img":user.profile_img
+
                 }
             }),200
         else:

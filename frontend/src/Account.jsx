@@ -10,16 +10,18 @@ import {
   faPenToSquare,
   faTrashCan,
   faCamera,
-  faGear
+  faGear,
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  faTrashCan as faTrashCanRegular,
-  
-} from "@fortawesome/free-regular-svg-icons";
+import { faTrashCan as faTrashCanRegular } from "@fortawesome/free-regular-svg-icons";
 
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { debounce } from "./utils";
+
+
+import elementary from '../images/elementary.webp';
+import primary from '../images/primary.webp'
+
+
 
 const Account = () => {
   const { user, fetchUser, axiosRequest, today_date, sessions, fetchSessions } =
@@ -69,40 +71,7 @@ const Account = () => {
 
   const navigate = useNavigate();
 
-  const inputRef = useRef(null);
-  const [image, setImage] = useState();
-  const [uploading, setUploading] = useState(false);
-
-  const handleImageClick = () => {
-    inputRef.current.click();
-  };
-
-  const uploadImage = async () => {
-    if (!image) {
-      return;
-    }
-    const formData = new FormData();
-    formData.append("profile_image", image);
   
-    try {
-      await axios.post("/api/upload_profile_img", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-        },
-      });
-      fetchUser();
-    } catch (error) {
-      return 1;
-    }
-    setUploading(!uploading);
-  };
-
-  const handleChange = (e) => {
-    const file = e.target.files[0];
-    setImage(file);
-  };
-
   const fetchClasses = async () => {
     if (!sessionStorage.getItem("token")) {
       return "session-expired";
@@ -127,7 +96,7 @@ const Account = () => {
       await axiosRequest("/api/create_class", "post", { name });
       setAddingClass(!addingClass);
       fetchClasses();
-      setName("")
+      setName("");
     } catch (error) {
       return 1;
     }
@@ -212,8 +181,13 @@ const Account = () => {
 
   const update_exam = async (id, exam_name, date, grade) => {
     try {
-      axiosRequest("/api/update_exam", "patch", { id, exam_name, date, grade });
+      await axiosRequest("/api/update_exam", "patch", { id, exam_name, date, grade });
       fetchExams();
+      setExamItem((prevState) => ({
+        ...prevState,
+        editing: null,
+        state: !examItem.state,
+      }));
     } catch (error) {
       return 1;
     }
@@ -259,7 +233,11 @@ const Account = () => {
         sessionDuration,
       });
       fetchSessions();
-      setSessionItem((prevState) => ({...prevState, editing: null, state: !sessionItem.state}));
+      setSessionItem((prevState) => ({
+        ...prevState,
+        editing: null,
+        state: !sessionItem.state,
+      }));
     } catch (error) {
       return 1;
     }
@@ -278,37 +256,26 @@ const Account = () => {
   const handleCancelEditSession = () => {
     setSessionItem((prevState) => ({
       ...prevState,
-      editing:null,
-      state:false,
+      editing: null,
+      state: false,
     }));
   };
 
-  const handleCancelAddSession = () =>{
+  const handleCancelAddSession = () => {
     setAddingSession((prevState) => ({
       ...prevState,
-      name:null,
-      date:null,
-      duration:null,
-      state:false,
+      name: null,
+      date: null,
+      duration: null,
+      state: false,
     }));
   };
 
   // code suggested by copilot
-  const debouncedUpdateExam = useCallback(
-    debounce((id, exam_name, date, grade) => {
-      update_exam(id, exam_name, date, grade);
-      fetchExams();
-    }, 500),
-    []
-  );
 
-  const handleInput = (name, date, grade, id) => {
-    setExamItem((prevState) => ({ ...prevState, name: name }));
-    setExamItem((prevState) => ({ ...prevState, date: date }));
-    setExamItem((prevState) => ({ ...prevState, grade: grade }));
-    // code suggested by copilot
-    debouncedUpdateExam(id, name, date, grade);
-  };
+
+
+
 
   useEffect(() => {
     if (addingExam && createExam.current) {
@@ -330,16 +297,16 @@ const Account = () => {
     fetchSessions();
   }, []);
 
-  const calculate_average_session = () =>{
+  const calculate_average_session = () => {
     let sum = 0;
     let length = 0;
     sessions &&
-      sessions.forEach((session)=>{
+      sessions.forEach((session) => {
         sum += session.duration;
         length++;
-      })
-    return length > 0 ? ((sum / length)/1.5 * 100) : 0;
-  }
+      });
+    return length > 0 ? (sum / length / 1.5) * 100 : 0;
+  };
 
   const calculate_average = (class_id) => {
     let sum = 0;
@@ -414,12 +381,10 @@ const Account = () => {
                                   className="editing-exam-name"
                                   value={examItem.name}
                                   onChange={(e) =>
-                                    handleInput(
-                                      e.target.value,
-                                      examItem.date,
-                                      examItem.grade,
-                                      exam.id
-                                    )
+                                    setExamItem((prevState) => ({
+                                      ...prevState,
+                                      name: e.target.value,
+                                    }))
                                   }
                                 ></input>
                               ) : (
@@ -432,12 +397,7 @@ const Account = () => {
                                   className="editing-exam-date"
                                   value={examItem.date}
                                   onChange={(e) =>
-                                    handleInput(
-                                      examItem.name,
-                                      e.target.value,
-                                      examItem.grade,
-                                      exam.id
-                                    )
+                                    setExamItem((prevState) => ({ ...prevState, date: e.target.value }))
                                   }
                                 ></input>
                               ) : (
@@ -451,41 +411,84 @@ const Account = () => {
                                   className="editing-exam-grade"
                                   value={examItem.grade}
                                   onChange={(e) =>
-                                    handleInput(
-                                      examItem.name,
-                                      examItem.date,
-                                      e.target.value,
-                                      exam.id
-                                    )
+                                    setExamItem((prevState) => ({ ...prevState, grade: e.target.value }))
                                   }
                                 ></input>
                               ) : (
                                 <>
-                                  <label className="exam-grade" style={{color: exam.grade > exam.max_grade * 0.5 && exam.grade <= (exam.max_grade - exam.max_grade / exam.max_grade * 2)  ? "rgb(223, 175, 111)" : exam.grade <= exam.max_grade * 0.5 ? "rgb(223, 111, 111)" : "rgb(111, 223, 135)"}}>
+                                  <label
+                                    className="exam-grade"
+                                    style={{
+                                      color:
+                                        exam.grade > exam.max_grade * 0.5 &&
+                                        exam.grade <=
+                                          exam.max_grade -
+                                            (exam.max_grade / exam.max_grade) *
+                                              2
+                                          ? "rgb(223, 175, 111)"
+                                          : exam.grade <= exam.max_grade * 0.5
+                                          ? "rgb(223, 111, 111)"
+                                          : "rgb(111, 223, 135)",
+                                    }}
+                                  >
                                     {exam.grade}/{exam.max_grade}
                                   </label>
                                 </>
                               )}
                               <div className="icons">
-                                <FontAwesomeIcon
-                                  onClick={() =>
-                                    setExamItem((prevState) => ({
-                                      ...prevState,
-                                      editing: exam.id,
-                                      state: !examItem.state,
-                                      name: exam.name,
-                                      date: exam.date,
-                                      grade: exam.grade,
-                                    }))
-                                  }
-                                  className="edit-icon"
-                                  icon={faPenToSquare}
-                                />
-                                <FontAwesomeIcon
-                                  onClick={(e) => delete_exam(e, exam.id)}
-                                  className="delete-icon"
-                                  icon={faTrashCan}
-                                />
+                                {examItem.editing === exam.id &&
+                                examItem.state ? (
+                                  <>
+                                    <div className="session-btn-container">
+                                      <button
+                                        className="submit-btn"
+                                        onClick={() => {
+                                          update_exam(
+                                            
+                                            exam.id,
+                                            examItem.name,
+                                            examItem.date,
+                                            examItem.grade
+                                          );
+                                        }}
+                                      >
+                                        Save
+                                      </button>
+                                      <button
+                                        onClick={()=>setExamItem((prevState) => ({
+                                          ...prevState,
+                                          editing: null,
+                                          state: false,
+                                        }))}
+                                        className="cancel-add-term cancel-btn "
+                                      >
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <>
+                                    <FontAwesomeIcon
+                                      onClick={() =>
+                                        setExamItem((prevState) => ({
+                                          ...prevState,
+                                          editing: exam.id,
+                                          state: !examItem.state,
+                                          name: exam.name,
+                                          date: exam.date,
+                                          grade: exam.grade,
+                                        }))
+                                      }
+                                      className="edit-icon"
+                                      icon={faPenToSquare}
+                                    />
+                                    <FontAwesomeIcon
+                                      onClick={(e) => delete_exam(e, exam.id)}
+                                      className="delete-icon"
+                                      icon={faTrashCan}
+                                    />
+                                  </>
+                                )}
                               </div>
                             </ul>
                             <hr className="exam-separator"></hr>
@@ -607,67 +610,16 @@ const Account = () => {
         <div className="profile">
           <div
             className="account-image"
-            onClick={() => setUploading(!uploading)}
+            
           >
             <span className="account-image-circle">
-              {user.profile_img ? (
-                <>
-                  <img
-                    className="profile-picture"
-                    src={user.profile_img}
-                    alt="profile-picture"
-                  ></img>
-                </>
-              ) : (
-                <FontAwesomeIcon
-                  className="edit-profile-picture"
-                  icon={faCamera}
-                />
-              )}
+                {(calculate_shool() + calculate_average_session())/2 <= 33 ? 
+                <img src={elementary} alt="pfp"/> : (calculate_shool() + calculate_average_session())/2 >= 33 && (calculate_shool() + calculate_average_session())/2 <= 66 ?
+                <img src={primary} alt="pfp"/> : (calculate_shool() + calculate_average_session())/2 >= 66 &&( calculate_shool() + calculate_average_session())/2 <= 100 ?
+                <img src={primary} alt="pfp"/> : <></>
+              }
             </span>
           </div>
-          {uploading && (
-            <div className="upload-menu">
-              <span onClick={handleImageClick}>
-                {image ? (
-                  <>
-                    <img
-                      className="profile-picture"
-                      src={URL.createObjectURL(image)}
-                      alt="profile-picture"
-                    ></img>
-                  </>
-                ) : (
-                  <FontAwesomeIcon
-                    className="edit-profile-picture"
-                    icon={faCamera}
-                  />
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={inputRef}
-                  onChange={handleChange}
-                  style={{ display: "none" }}
-                />
-              </span>
-              <div className="upload-picture-btns">
-                <button
-                  type="button"
-                  onClick={() => uploadImage()}
-                  className="upload-picture-btn"
-                >
-                  Upload
-                </button>
-                <button
-                  onClick={() => setUploading(!uploading)}
-                  className="cancel-upload-picture-btn"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
 
           <label>{user.username}</label>
         </div>
@@ -713,9 +665,8 @@ const Account = () => {
                           className={`class-config-btns`}
                         >
                           <button className="config-btn">
-                            <FontAwesomeIcon icon={faPenToSquare}/>
-                            &nbsp;
-                            Edit
+                            <FontAwesomeIcon icon={faPenToSquare} />
+                            &nbsp; Edit
                           </button>
                           <button
                             className="config-btn"
@@ -728,17 +679,15 @@ const Account = () => {
                               fetchTerms();
                             }}
                           >
-                            <FontAwesomeIcon icon={faGear}/>
-                            &nbsp;
-                            Configure
+                            <FontAwesomeIcon icon={faGear} />
+                            &nbsp; Configure
                           </button>
                           <button
                             onClick={(e) => delete_class(e, class_item.id)}
                             className="delete-btn"
                           >
-                            <FontAwesomeIcon icon={faTrashCanRegular}/>
-                            &nbsp;
-                            Delete
+                            <FontAwesomeIcon icon={faTrashCanRegular} />
+                            &nbsp; Delete
                           </button>
                         </div>
                       </div>
@@ -796,7 +745,10 @@ const Account = () => {
               icon={!showTraining ? faAngleUp : faAngleDown}
             />
             <div className="progress-bar">
-              <div className="progress-bar-content" style={{width : `${calculate_average_session()}%`}}></div>
+              <div
+                className="progress-bar-content"
+                style={{ width: `${calculate_average_session()}%` }}
+              ></div>
             </div>
 
             <div className={`school-content ${!showTraining && "shrink"}`}>
@@ -806,118 +758,125 @@ const Account = () => {
                   <label className="exam-header">Date</label>
                   <label className="exam-header">Duration</label>
                 </ul>
-              
-              {sessions &&
-                sessions.map((session) => (
-                  <>
-                    <ul key={session.id} className="session-display">
-                      {sessionItem.editing === session.id &&
-                      sessionItem.state ? (
-                        <input
-                          value={sessionItem.name}
-                          className="editing-exam-name"
-                          onChange={(e) =>
-                            setSessionItem((prevState) => ({
-                              ...prevState,
-                              name: e.target.value,
-                            }))
-                          }
-                        ></input>
-                      ) : (
-                        <label className="session-name">{session.name}</label>
-                      )}
-                      {sessionItem.editing === session.id &&
-                      sessionItem.state ? (
-                        <input
-                          type="date"
-                          value={sessionItem.date}
-                          className="editing-exam-date"
-                          onChange={(e) =>
-                            setSessionItem((prevState) => ({
-                              ...prevState,
-                              date: e.target.value,
-                            }))
-                          }
-                        ></input>
-                      ) : (
-                        <label className="session-date">{session.date}</label>
-                      )}
-                      {sessionItem.editing === session.id &&
-                      sessionItem.state ? (
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={sessionItem.duration}
-                          className="editing-session-duration"
-                          onChange={(e) =>
-                            setSessionItem((prevState) => ({
-                              ...prevState,
-                              duration: e.target.value,
-                            }))
-                          }
-                        ></input>
-                      ) : (
-                        <label className="session-duration">
-                          {session.duration}
-                        </label>
-                      )}
-                      <div className="icons">
+
+                {sessions &&
+                  sessions.map((session) => (
+                    <>
+                      <ul key={session.id} className="session-display">
                         {sessionItem.editing === session.id &&
                         sessionItem.state ? (
-                          <>
-                            <div className="session-btn-container">
-                              <button
-                                className="submit-btn"
-                                onClick={(e) => {
-                                  updateSession(
-                                    e,
-                                    session.id,
-                                    sessionItem.name,
-                                    sessionItem.date,
-                                    sessionItem.duration
-                                  );
-                                }}
-                              >
-                                Save
-                              </button>
-                              <button
-                                onClick={handleCancelEditSession}
-                                className="cancel-add-term cancel-btn "
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          </>
+                          <input
+                            value={sessionItem.name}
+                            className="editing-exam-name"
+                            onChange={(e) =>
+                              setSessionItem((prevState) => ({
+                                ...prevState,
+                                name: e.target.value,
+                              }))
+                            }
+                          ></input>
                         ) : (
-                          <>
-                          <div className="icons">
-                            <FontAwesomeIcon
-                                onClick={() =>
-                                  setSessionItem((prevState) => ({
-                                    ...prevState,
-                                    editing: session.id,
-                                    state: !sessionItem.state,
-                                    name: session.name,
-                                    date: session.date,
-                                    duration: session.duration,
-                                  }))
-                                }
-                                className="edit-icon"
-                                icon={faPenToSquare}
-                              />
-                              <FontAwesomeIcon
-                                onClick={(e) => deleteSession(e, session.id)}
-                                className="delete-icon"
-                                icon={faTrashCan}
-                              />
-                          </div>
-                          </>
+                          <label className="session-name">{session.name}</label>
                         )}
-                      </div>
-                    </ul>
-                    <hr></hr>
-                  </>
-                ))}
+                        {sessionItem.editing === session.id &&
+                        sessionItem.state ? (
+                          <input
+                            type="date"
+                            value={sessionItem.date}
+                            className="editing-exam-date"
+                            onChange={(e) =>
+                              setSessionItem((prevState) => ({
+                                ...prevState,
+                                date: e.target.value,
+                              }))
+                            }
+                          ></input>
+                        ) : (
+                          <label className="session-date">{session.date}</label>
+                        )}
+                        {sessionItem.editing === session.id &&
+                        sessionItem.state ? (
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={sessionItem.duration}
+                            className="editing-session-duration"
+                            onChange={(e) =>
+                              setSessionItem((prevState) => ({
+                                ...prevState,
+                                duration: e.target.value,
+                              }))
+                            }
+                          ></input>
+                        ) : (
+                          <label style={{
+                            color:
+                              session.duration > 0.5 && session.duration <=1
+                                ? "rgb(223, 175, 111)"
+                                : session.duration <=0.5
+                                ? "rgb(223, 111, 111)"
+                                : "rgb(111, 223, 135)",
+                          }} className="session-duration">
+                            {session.duration}
+                          </label>
+                        )}
+                        <div className="icons">
+                          {sessionItem.editing === session.id &&
+                          sessionItem.state ? (
+                            <>
+                              <div className="session-btn-container">
+                                <button
+                                  className="submit-btn"
+                                  onClick={(e) => {
+                                    updateSession(
+                                      e,
+                                      session.id,
+                                      sessionItem.name,
+                                      sessionItem.date,
+                                      sessionItem.duration
+                                    );
+                                  }}
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  onClick={handleCancelEditSession}
+                                  className="cancel-add-term cancel-btn "
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="icons">
+                                <FontAwesomeIcon
+                                  onClick={() =>
+                                    setSessionItem((prevState) => ({
+                                      ...prevState,
+                                      editing: session.id,
+                                      state: !sessionItem.state,
+                                      name: session.name,
+                                      date: session.date,
+                                      duration: session.duration,
+                                    }))
+                                  }
+                                  className="edit-icon"
+                                  icon={faPenToSquare}
+                                />
+                                <FontAwesomeIcon
+                                  onClick={(e) => deleteSession(e, session.id)}
+                                  className="delete-icon"
+                                  icon={faTrashCan}
+                                />
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </ul>
+                      <hr></hr>
+                    </>
+                  ))}
               </div>
               <button
                 className="add-class-btn"
@@ -976,10 +935,7 @@ const Account = () => {
             </div>
           </div>
 
-          <label className="progress-label">Sleep:</label>
-          <div className="progress-bar">
-            <div className="progress-bar-content"></div>
-          </div>
+        
         </div>
       </div>
     </>

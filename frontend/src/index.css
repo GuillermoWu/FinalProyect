@@ -502,84 +502,6 @@ div .sidenav {
   font-size: 6rem;
 }
 
-.account-image:hover{
-  cursor: pointer;
-  .edit-profile-picture{
-    color: var(--light-grey);
-  }
-  .account-image-circle{
-    border: solid 2px var(--light-grey);
-  }
-}
-
-.upload-menu{
-  position: absolute;
-  background-color: var(--sidenav-background);
-  border-radius: 8px;
-  width: 400px;
-  height: 400px;
-  left: 0;
-  right: 0;
-  margin: auto;
-  padding: 2%;
-}
-
-.upload-menu span{
-  height: 200px;  
-  width: 200px; 
-  border: solid 2px;  
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  left: 0;
-  right: 0;
-  margin: auto;
-  margin-top: 5%;
-}
-
-.upload-menu span:hover{
-  cursor: pointer;
-  color: var(--light-grey);
-}
-
-.upload-menu img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover; 
-  border-radius: 50%; 
-}
-
-.upload-picture-btns{
-  display: flex;
-  justify-content: center;
-  margin-top: 20%;
-}
-
-.upload-picture-btn{
-  background-color: var(--highlight-text-color);
-  color: white;
-  border-radius: 8px;
-  padding: 2% 3%;
-  margin: 0 5%;
-}
-
-.upload-picture-btn:hover{
-  background-color: var(--highlight-light-text-color);
-}
-
-.cancel-upload-picture-btn{
-  background-color: var(--hover-color);
-  color: white;
-  border-radius: 8px;
-  padding: 2% 3%;
-  margin: 0 5%;
-}
-
-.cancel-upload-picture-btn:hover{
-  background-color: var(--light-grey);
-}
-
 .profile{
   display: grid;
 }
@@ -823,7 +745,7 @@ div .sidenav {
 .term-label{
   color: var(--highlight-text-color);
   font-weight: 700;
-  -webkit-text-stroke: var(--white-grey) 0.5px;
+
   font-size: 1.2rem;
   margin: 3%;
 
@@ -1026,6 +948,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   justify-content: flex-end;
   margin-left: auto;
   
+}
+
+.session-item-container{
+  max-height: 500px;
+  overflow: auto;
+  scrollbar-color: var(--hover-color) var(--sidenav-background);
+  scroll-margin-left: 100px;
 }
 
 /* Todo Today section styles */

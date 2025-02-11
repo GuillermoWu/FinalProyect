@@ -294,27 +294,6 @@ export default function Index() {
                   </div>
                 </div>
 
-                <a
-                  className={`nav-item ${
-                    location === `${url}settings` && "background-active"
-                  }`}
-                  href="/settings"
-                  onClick={() => localStorage.setItem("section", "settings")}
-                >
-                  <FontAwesomeIcon
-                    className={`nav-item-icon ${
-                      location === `${url}settings` && "text-active"
-                    }`}
-                    icon={faGearSolid}
-                  />
-                  <label
-                    className={`nav-label ${
-                      location === `${url}settings` && "text-active"
-                    }`}
-                  >
-                    Settings
-                  </label>
-                </a>
               </nav>
             </div>
             <div className="sidebar-footer">
