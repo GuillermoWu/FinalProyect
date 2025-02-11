@@ -305,7 +305,7 @@ const Account = () => {
         sum += session.duration;
         length++;
       });
-    return length > 0 ? (sum / length / 1.5) * 100 : 0;
+    return length > 0 && (sum / length / 1.5) * 100 <= 100 && (sum / length / 1.5) * 100 >=0 ? (sum / length / 1.5) * 100 : (sum / length / 1.5) * 100 > 100 ? 100 : 0;
   };
 
   const calculate_average = (class_id) => {
@@ -329,7 +329,7 @@ const Account = () => {
         sum += (exam.grade / exam.max_grade) * 10;
         length++;
       });
-    return length > 0 ? (sum / length) * 10 : 0;
+    return length > 0 && (sum / length) * 10  <= 100 && (sum / length) * 10  >=0 ? (sum / length) * 10 : (sum / length) * 10  > 100 ? 100 : 0;
   };
 
   const configure_class = (classItem, terms) => {
@@ -408,6 +408,7 @@ const Account = () => {
                                 <input
                                   type="number"
                                   step={"0.01"}
+                                  min="0"
                                   className="editing-exam-grade"
                                   value={examItem.grade}
                                   onChange={(e) =>
@@ -625,6 +626,7 @@ const Account = () => {
         </div>
 
         <div className="progress-bars-container">
+          <label className="profile-progress">Current Progress: <label style={{width: `${(Math.round(calculate_shool()) + Math.round(calculate_average_session()))/2}%`}} className="profile-progress-value">{(Math.round(calculate_shool()) + Math.round(calculate_average_session()))/2}%</label></label>
           <div className="school-progress">
             <label className="progress-label">School:</label>
             <FontAwesomeIcon
@@ -632,12 +634,16 @@ const Account = () => {
               className="dropdown-icon"
               icon={!showSchool ? faAngleUp : faAngleDown}
             />
-            <div className="progress-bar">
-              <div
-                style={{ width: `${calculate_shool()}%` }}
-                className="progress-bar-content"
-              ></div>
+            <div className="progress-display">
+              <div className="progress-bar">
+                <div
+                  style={{ width: `${calculate_shool()}%` }}
+                  className="progress-bar-content"
+                ></div>
+              </div>
+              <label className="progress-bar-percentage">{Math.round(calculate_shool())}%</label>
             </div>
+            
             <div className={`school-content ${!showSchool && "shrink"}`}>
               {classes &&
                 classes.map((class_item) => (
@@ -744,12 +750,16 @@ const Account = () => {
               className="dropdown-icon"
               icon={!showTraining ? faAngleUp : faAngleDown}
             />
+            <div className="progress-display">
             <div className="progress-bar">
               <div
                 className="progress-bar-content"
                 style={{ width: `${calculate_average_session()}%` }}
               ></div>
             </div>
+            <label className="progress-bar-percentage">{Math.round(calculate_average_session())}%</label>
+            </div>
+            
 
             <div className={`school-content ${!showTraining && "shrink"}`}>
               <div className="session-item-container">
@@ -776,7 +786,11 @@ const Account = () => {
                             }
                           ></input>
                         ) : (
-                          <label className="session-name">{session.name}</label>
+                          <div>
+                            <label className="session-name">{session.name}</label>
+                            <button className="open-session-btn">Open session</button>
+                          </div>
+                          
                         )}
                         {sessionItem.editing === session.id &&
                         sessionItem.state ? (
@@ -799,6 +813,7 @@ const Account = () => {
                           <input
                             type="number"
                             step="0.01"
+                            min="0"
                             value={sessionItem.duration}
                             className="editing-session-duration"
                             onChange={(e) =>
@@ -820,6 +835,7 @@ const Account = () => {
                             {session.duration}
                           </label>
                         )}
+                        
                         <div className="icons">
                           {sessionItem.editing === session.id &&
                           sessionItem.state ? (

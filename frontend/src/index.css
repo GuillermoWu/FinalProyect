@@ -569,6 +569,30 @@ div .sidenav {
  
 }
 
+.profile-progress{
+  font-size: 1.2rem;
+  font-weight: 800;
+  display: grid;
+  margin-bottom: 25px;
+}
+
+.profile-progress-value{
+  border-radius: 16px;
+  padding-left: 20px;
+  background-image: linear-gradient(to right, #614385 0%, #516395  51%, #614385  100%);
+}
+
+.progress-display{
+  display: flex;
+}
+
+.progress-bar-percentage{
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-left: 25px;
+  color: var(--highlight-light-text-color)
+}
+
 .shrink {
   display: none;
   overflow: hidden;
@@ -703,6 +727,7 @@ div .sidenav {
   color: var(--white-grey);
   margin-top: 1%;
   flex-grow: 1;
+
 }
 
 .close-icon{
@@ -714,6 +739,10 @@ div .sidenav {
   justify-content: right;
   font-size: 1.5rem;
   
+}
+
+.class-name label{
+  font-weight: 700;
 }
 
 .add-term-btn{
@@ -797,6 +826,7 @@ div .sidenav {
 .exam-name {
   color: var(--highlight-light-text-color);
   text-align: left;
+  font-weight: 700;
 }
 
 .exam-date{
@@ -807,6 +837,7 @@ div .sidenav {
 .exam-grade {
   text-align: right;
   margin-right: 30px;
+  font-weight: 700;
 }
 
 .editing-exam{
@@ -897,6 +928,7 @@ div .sidenav {
 .session-name {
   color: var(--highlight-light-text-color);
   text-align: left;
+  font-weight: 700;
 }
 
 .session-date {
@@ -906,7 +938,8 @@ div .sidenav {
 
 .session-duration {
   text-align: right;
-  margin-right: 30%;
+  margin-right: 25%;
+  font-weight: 700;
 }
 
 .editing-session-duration{
@@ -916,7 +949,6 @@ div .sidenav {
   border-radius: 6px;
   padding: 5px;
   padding-left: 10px;
-
   
 }
 
@@ -955,6 +987,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   overflow: auto;
   scrollbar-color: var(--hover-color) var(--sidenav-background);
   scroll-margin-left: 100px;
+}
+
+.open-session-btn{
+  background: none;
+  color: var(--white-grey);
+  font-weight: 700;
+  margin-left: 5%;
+  outline: 1px solid var(--white-grey);
+  border-radius: 8px;
+  padding: 2%;
+  width: 100px;
 }
 
 /* Todo Today section styles */
