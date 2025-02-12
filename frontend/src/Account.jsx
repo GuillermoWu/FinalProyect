@@ -46,8 +46,9 @@ const Account = () => {
     state: false,
   });
 
-  const [classConfig, setClassConfig] = useState({ id: null, state: null });
+  const [classConfig, setClassConfig] = useState({ id: null, state: null, name: null, edit: null });
   const [classConfigLabel, setClassConfigLabel] = useState(false);
+  
   const [terms, setTerms] = useState([]);
   const [addingTerm, setAddingTerm] = useState(false);
   const [term, setTerm] = useState("");
@@ -101,6 +102,18 @@ const Account = () => {
       return 1;
     }
   };
+
+  const update_class = async (e, id, name) => {
+    e.preventDefault();
+    try{
+      await axiosRequest("/api/update_class", "patch", {id, name});
+      fetchClasses();
+      setClassConfig((prevState)=> ({...prevState, edit:null}))
+    }
+    catch(error){
+      return 1;
+    }
+  }
 
   const delete_class = async (e, id) => {
     e.preventDefault();
@@ -253,29 +266,11 @@ const Account = () => {
     }
   };
 
-  const handleCancelEditSession = () => {
-    setSessionItem((prevState) => ({
-      ...prevState,
-      editing: null,
-      state: false,
-    }));
-  };
 
-  const handleCancelAddSession = () => {
-    setAddingSession((prevState) => ({
-      ...prevState,
-      name: null,
-      date: null,
-      duration: null,
-      state: false,
-    }));
-  };
+
+
 
   // code suggested by copilot
-
-
-
-
 
   useEffect(() => {
     if (addingExam && createExam.current) {
@@ -649,14 +644,31 @@ const Account = () => {
                 classes.map((class_item) => (
                   <div key={class_item.id}>
                     <div className="class-name">
-                      <label>{class_item.name}</label>
+                      {classConfig.edit === class_item.id ? 
+                      <>
+                      <div className="edit-class-form">
+                        <input required value={classConfig.name} onChange={(e)=>setClassConfig((prevState)=>({...prevState, name: e.target.value}))}></input>
+                        <div className="class-edit-btns">
+                          <button
+                          className="cancel-btn"
+                          onClick={()=>setClassConfig((prevState)=>({...prevState, edit: null}))}
+                          >
+                          Cancel
+                          </button>
+                          <button onClick={(e)=> update_class(e, class_item.id, classConfig.name)} className="submit-btn">Save</button>
+                        </div>
+                      </div>
+                      </> : 
+                      <label>{class_item.name}</label>}
+                      
                       <div className="class-config">
                         <FontAwesomeIcon
                           onClick={() =>
-                            setClassConfig({
+                            setClassConfig((prevState) => ({
+                              ...prevState,
                               id: class_item.id,
                               state: !classConfig.state,
-                            })
+                            }))
                           }
                           className="class-config-icon"
                           icon={faEllipsis}
@@ -670,7 +682,9 @@ const Account = () => {
                           }
                           className={`class-config-btns`}
                         >
-                          <button className="config-btn">
+                          <button className="config-btn"
+                            onClick={()=>setClassConfig((prevState) => ({...prevState, edit:class_item.id, name:class_item.name, state: !classConfig.state}))}
+                          >
                             <FontAwesomeIcon icon={faPenToSquare} />
                             &nbsp; Edit
                           </button>
@@ -856,7 +870,11 @@ const Account = () => {
                                   Save
                                 </button>
                                 <button
-                                  onClick={handleCancelEditSession}
+                                  onClick={()=>setSessionItem((prevState) => ({
+                                    ...prevState,
+                                    editing: null,
+                                    state: false,
+                                  }))}
                                   className="cancel-add-term cancel-btn "
                                 >
                                   Cancel
@@ -940,7 +958,13 @@ const Account = () => {
                     <button
                       type="button"
                       className="cancel-btn"
-                      onClick={handleCancelAddSession}
+                      onClick={()=>setAddingSession((prevState) => ({
+                        ...prevState,
+                        name: null,
+                        date: null,
+                        duration: null,
+                        state: false,
+                      }))}
                     >
                       Cancel
                     </button>

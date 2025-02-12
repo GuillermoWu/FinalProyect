@@ -180,10 +180,10 @@ def create_class():
 @jwt_required()
 def update_class():
     new_name = request.json.get("name")
-    class_id = request.json("class_id")
+    class_id = request.json.get("id")
     try:
         current_user = get_jwt_identity()
-        user = User.query.get(current_user ["id"])
+        user = User.query.get(current_user["id"])
         if not user:
             return jsonify({"message": "Session expired"})
         
@@ -194,6 +194,7 @@ def update_class():
         return jsonify({"message": "Class updated succesfully"}),200
     except Exception as error:
         return jsonify({"message": str(error)})
+
 
 @app.route("/api/delete_class", methods=["POST"])
 @jwt_required()
