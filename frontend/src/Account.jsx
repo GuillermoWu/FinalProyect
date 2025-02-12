@@ -19,7 +19,9 @@ import axios from "axios";
 
 
 import elementary from '../images/elementary.webp';
-import primary from '../images/primary.webp'
+import primary from '../images/primary.webp';
+import highschool from '../images/highschool.webp';
+import university from '../images/university.webp';
 
 
 
@@ -609,10 +611,11 @@ const Account = () => {
             
           >
             <span className="account-image-circle">
-                {(calculate_shool() + calculate_average_session())/2 <= 33 ? 
-                <img src={elementary} alt="pfp"/> : (calculate_shool() + calculate_average_session())/2 >= 33 && (calculate_shool() + calculate_average_session())/2 <= 66 ?
-                <img src={primary} alt="pfp"/> : (calculate_shool() + calculate_average_session())/2 >= 66 &&( calculate_shool() + calculate_average_session())/2 <= 100 ?
-                <img src={primary} alt="pfp"/> : <></>
+                {(calculate_shool() + calculate_average_session())/2 <= 25 ? 
+                <img src={elementary} alt="pfp"/> : (calculate_shool() + calculate_average_session())/2 > 25 && (calculate_shool() + calculate_average_session())/2 <= 50 ?
+                <img src={primary} alt="pfp"/> : (calculate_shool() + calculate_average_session())/2 > 50 &&( calculate_shool() + calculate_average_session())/2 <= 75 ?
+                <img src={highschool} alt="pfp"/> :(calculate_shool() + calculate_average_session())/2 > 75 &&( calculate_shool() + calculate_average_session())/2 <= 100 ?
+                <img src={university} alt="pfp"/> : ""
               }
             </span>
           </div>

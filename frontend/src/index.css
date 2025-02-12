@@ -277,7 +277,7 @@ div .sidenav {
 }
 
 .delete-section-button{
-    color: white;
+    color: rgb(241, 98, 98);
     font-size: 90%;
     display: block;
     align-items: center;

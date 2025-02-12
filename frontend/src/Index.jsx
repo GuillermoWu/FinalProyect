@@ -10,7 +10,7 @@ import {
   faAngleUp,
   faAngleDown,
   faCalendarWeek,
-  faX,
+  faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
@@ -228,12 +228,12 @@ export default function Index() {
                               className="sidenav-section-icon"
                               icon={faCalendarWeek}
                             />
-                            <label key={section.id} className="nav-label">{section.name}</label>
-                            <FontAwesomeIcon 
-                            className="delete-section-button"
-                            onClick={(e) => delete_section(e, section.id)}
-                            icon={faX}
-                            />
+                            <label key={section.id} className="nav-label">{section.name}</label>              
+                            <FontAwesomeIcon
+                             onClick={(e) => delete_section(e, section.id)}
+                              className="delete-section-button"
+                             icon={faTrashCan}
+                           />
                           </a>
                           </React.Fragment>
                         </>
