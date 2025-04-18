@@ -805,7 +805,7 @@ const Account = () => {
                         ) : (
                           <div>
                             <label className="session-name">{session.name}</label>
-                            <button className="open-session-btn">Open session</button>
+                            
                           </div>
                           
                         )}

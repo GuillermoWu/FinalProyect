@@ -1449,6 +1449,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* Text shown when no todos left*/
 
+
 .todo-info {
   margin-top: 5%;
   color: var(--light-grey);
