@@ -36,7 +36,13 @@ const Register = () => {
         username,
         email,
         password,
-      });
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
       alert(response.data.message);
       navigate("/login");
     } catch (error) {

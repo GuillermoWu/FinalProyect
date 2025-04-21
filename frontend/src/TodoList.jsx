@@ -11,13 +11,15 @@ export default function TodoList({ todo, section }) {
   const complete_todo = async (id, e, completed) => {
     e.preventDefault();
     axiosRequest("/api/complete_todo", "patch", { id, completed });
-    //setTimeout(() => {
-     // delete_todo(id, e);
-    //}, 500);
+    fetchTodos();
+    setTimeout(() => {
+      delete_todo(id, e);
+    }, 500);
   };
 
   const delete_todo = async (id, e) => {
-    axiosRequest("/api/delete_todo", "post", { id });
+    axiosRequest("/api/delete_todo", "delete", { id });
+    fetchTodos();
   };
 
   const update_todo = async (e, id, name, due_date, section) => {
@@ -28,7 +30,9 @@ export default function TodoList({ todo, section }) {
       due_date,
       section,
     });
+    fetchTodos();
     resetTodoItem();
+    
   };
 
   const updatePriority = async (e, id, priority) => {
@@ -39,7 +43,7 @@ export default function TodoList({ todo, section }) {
       ...prevState,
       priorityUpdating: { id: null, state: false },
     }));
-    fetchTodos()
+    fetchTodos();
 
   };
 
@@ -135,8 +139,8 @@ export default function TodoList({ todo, section }) {
   };
 
   useEffect(()=>{
-    fetchTodos()
-  },[complete_todo,delete_todo,updatePriority,update_todo])
+    fetchTodos();
+  },[])
 
 
   return (

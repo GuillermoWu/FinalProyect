@@ -89,7 +89,7 @@ export default function Index() {
   const delete_section = async (e, section_id) => {
     e.preventDefault();
     try{
-      await axios.post(
+      await axios.delete(
         "/api/delete_section",
         { section_id },
         {

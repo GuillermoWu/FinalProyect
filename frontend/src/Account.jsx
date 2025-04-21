@@ -120,7 +120,7 @@ const Account = () => {
   const delete_class = async (e, id) => {
     e.preventDefault();
     try {
-      await axiosRequest("/api/delete_class", "post", { id });
+      await axiosRequest("/api/delete_class", "delete", { id });
       fetchClasses();
       fetchTerms();
       fetchExams();
@@ -152,7 +152,7 @@ const Account = () => {
   const delete_term = async (e, term_id) => {
     e.preventDefault();
     try {
-      await axiosRequest("/api/delete_term", "post", { term_id });
+      await axiosRequest("/api/delete_term", "delete", { term_id });
       fetchTerms();
       fetchExams();
     } catch (error) {
@@ -211,7 +211,7 @@ const Account = () => {
   const delete_exam = async (e, id) => {
     e.preventDefault();
     try {
-      await axiosRequest("/api/delete_exam", "post", { id });
+      await axiosRequest("/api/delete_exam", "delete", { id });
       fetchExams();
     } catch (error) {
       return 1;
@@ -261,7 +261,7 @@ const Account = () => {
   const deleteSession = async (e, id) => {
     e.preventDefault();
     try {
-      await axiosRequest("/api/delete_session", "post", { id });
+      await axiosRequest("/api/delete_session", "delete", { id });
       fetchSessions();
     } catch (error) {
       return 1;
@@ -419,10 +419,7 @@ const Account = () => {
                                     style={{
                                       color:
                                         exam.grade > exam.max_grade * 0.5 &&
-                                        exam.grade <=
-                                          exam.max_grade -
-                                            (exam.max_grade / exam.max_grade) *
-                                              2
+                                        exam.grade <= (80 * exam.max_grade) / 100
                                           ? "rgb(223, 175, 111)"
                                           : exam.grade <= exam.max_grade * 0.5
                                           ? "rgb(223, 111, 111)"

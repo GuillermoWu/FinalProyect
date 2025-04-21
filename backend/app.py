@@ -122,7 +122,7 @@ def complete_todo():
     except Exception as e:
         return jsonify({"message": str(e)})
 
-@app.route("/api/delete_todo", methods=["POST"])
+@app.route("/api/delete_todo", methods=["DELETE"])
 @jwt_required()
 def delete_todo():
     todo_id = request.json.get("id")
@@ -196,7 +196,7 @@ def update_class():
         return jsonify({"message": str(error)})
 
 
-@app.route("/api/delete_class", methods=["POST"])
+@app.route("/api/delete_class", methods=["DELETE"])
 @jwt_required()
 def delete_class():
     class_id = request.json.get("id")
@@ -259,7 +259,7 @@ def create_term():
     except Exception as error:
         return jsonify({"message": str(error)})
 
-@app.route("/api/delete_term", methods=["POST"])
+@app.route("/api/delete_term", methods=["DELETE"])
 @jwt_required()
 def delete_term():
     term_id = request.json.get("term_id")
@@ -347,7 +347,7 @@ def update_exam():
         return jsonify({"message": str(error)}),400
     
 
-@app.route("/api/delete_exam", methods=["POST"])
+@app.route("/api/delete_exam", methods=["DELETE"])
 @jwt_required()
 def delete_exam():
     exam_id = request.json.get("id")
@@ -397,7 +397,7 @@ def create_section():
     except Exception as error:
         return jsonify({"message": "Could not create section"})
 
-@app.route("/api/delete_section", methods=["POST"])
+@app.route("/api/delete_section", methods=["DELETE"])
 @jwt_required()
 def delete_section():
     section_id = request.json.get("section_id")
@@ -478,7 +478,7 @@ def update_session():
         print(e)
         return jsonify({"message": str(e)})
     
-@app.route("/api/delete_session", methods=["POST"])
+@app.route("/api/delete_session", methods=["DELETE"])
 @jwt_required()
 def delete_session():
     id = request.json.get("id")
@@ -505,23 +505,24 @@ def register():
     password = request.json.get("password")
     email = request.json.get("email")
 
+    if not email or not username or not password:
+        return jsonify({"message": "Missing credentials"}),400
     if len(username) > 15:
         return jsonify({"message": "Username is too long"}),400
     if "@" not in email:
         return jsonify({"message": "Invalid email"}),400
-    if not email or not username or not password:
-        return jsonify({"message": "Missing credentials"}),400
+    
     
     hashed = generate_password_hash(password)
     
     try:
-        new_user = User(username=username, password=hashed, email=email, profile_img="")
+        new_user = User(username=username, password=hashed, email=email)
         db.session.add(new_user)
         db.session.commit()
     except Exception as error:
         db.session.rollback()
         db.session.remove()
-        return jsonify({"message": "Failed to register"}),500
+        return jsonify({"message": str(error)}),500
     
     return jsonify({"message": "User registered succesfully"}),201
 
