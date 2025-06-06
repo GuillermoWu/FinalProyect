@@ -30,13 +30,13 @@ In this file i handle all the backend functions and connect with the frontend fo
 
 The three main functions inside **app.py** to handle authentification are **register**, **login** and **protected**. 
 
-Inside **register** it requests basic user info from the frontend with the **request.json.get()** function, and makes some checks on the info. After, it hashed the password for security issues and stores the info along with the hashed password in the database using **db.session.add()** and **db.session.commit()**.
+Inside **register** it requests basic user info from the frontend with the **request.json.get()** function, and makes some checks on the info. After, it hashes the password for security issues and stores the info along with the hashed password in the database using **db.session.add()** and **db.session.commit()**.
 
-Due to potential issues or bugs, everytime i add or delete something from the database, i use **try** function along with **except**, and send the error messages to the frontend. This way we avoid errors when handling data and it made debugging more easy.
+Due to potential issues or bugs, everytime i add or delete something from the database, i use **try** function along with **except**, and send the error messages to the frontend. This way we avoid errors when handling data and it made debugging more comfortable.
 
-Inside **login** it checks that the user existed and that the password matched the unhashed password. It also stores user info the the json web token and sends it to the frontend.
+Inside **login** it checks that the user exists and that the password matches the unhashed password. It also stores user info into the json web token and sends it to the frontend.
 
-Finally, **protected** checks if the user is currently logged in and if so, it send user info to the frontend, however if the session expired, it sends and error message.
+Finally, **protected** checks if the user is currently logged in and if so, it sends user info to the frontend, however if the session expired, it sends and error message.
 
 #### CRUD
 
@@ -101,3 +101,30 @@ The training progress bar is very similar to the school progress bar, only diffe
 
 
 Finally, there is a profile image that shows a different image depending on the current progress. In total there are 4 profile images that can show up depending one the average of school and training progress.
+
+### Index.jsx
+
+This file contains all the components from the navigation bar of the web app.
+
+This navigation bar continuously checks if the user session is expired, as there are some elements in the nav bar that are created and stored for each user, like todo list sections.
+
+I also used the url to highlight the background of the element in which the user is navigating in, for example, if the user is inside **Account**, that will trigger the 
+**location.startsWith()** condition, and change the background color of the corresponding element.
+
+### Authentification
+
+The web app has 2 files to handle authentification as well as the functions inside **UserContext.jsx**.
+
+Both **Register.jsx** and **Login.jsx** contain a form in which the user has to input their account info and on submit, the form will call for the **handleSubmit** function which sends the user info to the backend and makes changes based on the received information.
+
+I also created a **LoginRequired** function because as i mentioned before, the different components of the web app require the user to be logged in in order to make changes.
+
+### Todo
+
+For the todo list part of the web app there are 3 different files, **TodoFrom.jsx**, **TodoList.jsx** and **TodoSection.jsx**
+
+The main todo section is formed by **TodoForm.jsx** and **TodoList.jsx**, inside TodoForm, i have divided the todos in three subsections: overdue, due to today and upcoming. Each subsection is shown when a task with the corresponding due_date exists in the database, for example, overdue tasks will only show up when a todo has **due_date** previous to the current date. Also, for cleaner and more readable code, i separated the todo list into a different file, **TodoList.jsx**. Each subsection calls the TodoList function using the filtered todos depending on the due_date as parameter by using the filter() and map() functions.
+
+Inside **TodoList.jsx** there's a function for each property of the todos that make requests to the backend using the parameters inputted by the user. Each time the properties of the todos are updated, I call the **fetchTodos()** function in order to display the changes.
+
+Finally, the **TodoSection.jsx** is used to display the todos that have a section. The file displays the title of the section by slicing the url, as well as filtering the todos by section. To show the todos, it calls the TodoList component with the filtered todos.
